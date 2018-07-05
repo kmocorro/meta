@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Fab4META - Log in </title>
+    <title>Fab4META - Forgot Password </title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -39,32 +39,59 @@
                         <div class="col-md-12">
                             <div class="signup-form">
                                 <div class="col-xs-12">
-                                    <p class="login-box-msg">Sign in to start your session</p>
+                                    <p class="login-box-msg">Sign up to post your activities</p>
                                     <div id='responseDiv'>
                                         <!-- response here-->
                                     </div>
-                                    <form id="userLogin">
+                                    <form id="emailRegister">
                                         <div id="toHideIfSuccess">
-                                            <label class="label-form">Username</label>
-                                            <div class="form-group has-feedback">
-                                                <input type="text" autocomplete="off" name="username" id="username" class="form-control form-login-interface" required  onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                                <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                                            <div class="row">
+                                                <div class="col-xs-6">
+                                                    <label class="label-form">First Name</label>
+                                                    <div class="form-group has-feedback">
+                                                        <input type="text" name="firstname" id="firstname" class="form-control form-signup-interface input-firstletter-uppercase" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-6">
+                                                    <label class="label-form">Last Name</label>
+                                                    <div class="form-group has-feedback">
+                                                        <input type="text" name="lastname" id="lastname" class="form-control form-signup-interface input-firstletter-uppercase" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <label class="label-form">Password</label>
                                             <div class="form-group has-feedback">
-                                                <input type="password" autocomplete="off" name="password" id="password" class="form-control form-login-interface" required  onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                                                    <label class="label-form">Username</label>
+                                                    <input type="text" autocomplete="off" name="username" id="username" class="form-control form-signup-interface" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                            </div>
+                                            <div class="form-group has-feedback input-group">
+                                                <label class="label-form">Email</label>
+                                                <input type="email" autocomplete="off" name="email" id="email" class="form-control form-signup-interface" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';"><span class="input-group-addon group-addon-clean">@sunpowercorp.com</span>
+                                            </div>
+                                            <div class="form-group has-feedback ">
+                                                    <label class="label-form">Department</label>
+                                                    <select class="form-control form-signup-interface" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        <option value="Engineering">Engineering</option>
+                                                        <option value="Manufacturing">Manufacturing</option>
+                                                        <option value="Yield">Yield</option>
+                                                    </select>
+                                            </div>
+                                            <div class="form-group has-feedback">
+                                                <label class="label-form">Password</label> <i class="label-form">(Do Not Use your Outlook Password)</i>
+                                                <input type="password" autocomplete="off" name="password" id="password" class="form-control form-signup-interface" title="Password must contain at least 6 characters, including UPPER, lowercase and numbers." required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-12">
+                                                    <div class="signup-sub-link">
+                                                        By clicking "Sign Up" you agree that this app is a prototype and will be subject to change.
+                                                    </div>
+                                                </div>
                                             </div>
                                             <div class="row">
                                                 <div class="col-xs-8">
-                                                    <div class="signup-sub-link">
-                                                        <a href="/forgotpassword">Forgot password?</a> or 
-                                                        <a href="/signup">Sign up</a>.</br>
-                                                        This is a <a href="https://en.wikipedia.org/wiki/Prototype" target="_blank">prototype</a> and will be subject to change.
-                                                    </div>
+                                                    <a href="/" class="pull-right" style="padding-top:10px;">Cancel</a>
                                                 </div>
                                                 <div class="col-xs-4">
-                                                    <button type="submit" id="signinbutton" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                                                    <button type="submit" id="signupbutton" class="btn btn-primary btn-block btn-flat">Sign Up</button>
                                                 </div>
                                             </div>
                                         </div>
@@ -77,12 +104,34 @@
             </div>
         </section>
     </div>
+<!-- Password Checker -->
+<script>
+    document.addEventListener('DOMContentLoaded', function(){
 
+        let supports_input_validity = function() {
+            let i = document.createElement('input');
+            return 'setCustomValidity' in i;
+        }
+
+        if(supports_input_validity()){
+
+            let password = document.getElementById('password');
+            password.setCustomValidity(password.title);
+
+            // input handler
+            password.addEventListener('keyup', function(e){
+                this.setCustomValidity(this.validity.patternMismatch ? password.title : "");
+            }, false);
+
+        }
+
+    });
+</script>
 <!-- API Response handler -->
 <script>
     window.addEventListener('load', function(){
 
-        function goLogin(){
+        function goSignUp(){
 
             let xhr = new XMLHttpRequest();
             let fd = new FormData(form); // bind form data object and form element
@@ -95,7 +144,7 @@
                     let responseDiv = document.getElementById('responseDiv');
                     
                     if(resFromServer.err){
-                        document.getElementById('signinbutton').removeAttribute("disabled");
+                        document.getElementById('signupbutton').removeAttribute("disabled");
 
                         if (responseDiv.classList) { 
                             responseDiv.classList.add("responseDivErr");
@@ -122,11 +171,6 @@
                             
                             let hideDiv = document.getElementById('toHideIfSuccess');
                                 hideDiv.style.display = "none";
-                                
-                            setInterval(function(){
-                                window.location.href="/";
-
-                            }, 3000);
 
                         } else {
                             // For IE9
@@ -143,9 +187,6 @@
                                 let hideDiv = document.getElementById('toHideIfSuccess');
                                     hideDiv.style.display = "none";
 
-                                setInterval(function(){
-                                    window.location.href="/";
-                                }, 3000);
                             }
                         }
                     }
@@ -160,19 +201,19 @@
                 alert('Something went wrong.');
             });
 
-            xhr.open('POST', '/api/login');
+            xhr.open('POST', '/api/register');
             xhr.send(fd);
 
         }
 
         // access FORM element
-        let form = document.getElementById('userLogin');
+        let form = document.getElementById('emailRegister');
         // take over submit event
         form.addEventListener('submit', function(event){
-            document.getElementById('signinbutton').setAttribute("disabled", "disabled");
+            document.getElementById('submitforgotpass').setAttribute("disabled", "disabled");
             event.preventDefault();
             document.getElementById('responseDiv').style.display="none";
-            goLogin();
+            goSignUp();
         });
 
 

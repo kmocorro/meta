@@ -15,7 +15,7 @@ module.exports = function(app){
      * @param {firstname, department} res
      */
 
-     app.get('/', verifyToken, function(req, res){
+    app.get('/', verifyToken, function(req, res){
         res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
         res.header('Expires', '-1');
         res.header('Pragma', 'no-cache');
@@ -26,7 +26,13 @@ module.exports = function(app){
             res.render('signin');
         }
 
-     });
+    });
+
+    /** Sign up page */
+    app.get('/signup', function(req, res){
+        res.render('signup');
+    });
+
 
 
 }

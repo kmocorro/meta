@@ -18,6 +18,40 @@ module.exports = function(app){
         res.render('login');
     });
 
+    /** GET API for forgotpassword */
+    app.get('/forgotpassword', function(req, res){
+        res.render('forgotpassword');
+    });
+
+    /** POST API for user SIGN UP */
+    app.post('/api/register', function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){ return res.send({err: 'Invalid form. Try again.'})}
+
+            if(fields){
+
+                let form_signup_details = fields;
+
+                if(form_signup_details.email && form_signup_details.username){
+
+                    let signup_credentials = {
+                        email: form_signup_details.email,
+                        username: form_signup_details.username
+                    }
+
+
+                }
+
+                
+
+            }
+
+        });
+
+    });
+
     /** POST API for user login */
     app.post('/api/login', function(req, res){
         let form = new formidable.IncomingForm();
@@ -38,12 +72,12 @@ module.exports = function(app){
 
                     // connect to database
                     mysql.pool.getConnection(function(err, connection){
-                        if(err){ return res.send({err: 'Database pool error.'})};
+                        if(err){ return res.send({err: 'Database pool error at login.'})};
 
                         connection.query({
                             sql: 'SELECT * FROM deepmes_auth_login WHERE username=?',
                             values: [credentials.username]
-                        },  function(err, results, fields){
+                        },  function(err, results){
                             if(err){ return res.send({err: 'Login query error'})};
                     
                             if(results){
@@ -89,4 +123,8 @@ module.exports = function(app){
         });
     });
 
+    /** POST API for user forgotpassword */
+    app.post('/api/forgitpassword', function(req, res){
+
+    });
 }
