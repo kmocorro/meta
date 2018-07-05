@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Fab4META - Log in </title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="./assets/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="./assets/bower_components/font-awesome/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="./assets/bower_components/Ionicons/css/ionicons.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="./assets/dist/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="./assets/dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="./assets/dist/css/fab4meta.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+<body class="layout-top-nav">
+    <div class="wrapper signin-pg ">
+        <section class="content">
+            <div class="row">
+                <div class="container">
+                    <div class="login-box">
+                        <div class="login-logo">
+                            <a href="/">META</a>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="signup-form">
+                                <div class="col-xs-12">
+                                    <p class="login-box-msg">Sign in to start your session</p>
+                                    <div id='responseDiv'>
+                                        <!-- response here-->
+                                    </div>
+                                    <form id="userLogin">
+                                        <div id="toHideIfSuccess">
+                                            <label class="label-form">Username</label>
+                                            <div class="form-group has-feedback">
+                                                <input type="text" autocomplete="off" name="username" id="username" class="form-control form-login-interface" required  onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                <span class="glyphicon glyphicon-envelope form-control-feedback"></span>
+                                            </div>
+                                            <label class="label-form">Password</label>
+                                            <div class="form-group has-feedback">
+                                                <input type="password" autocomplete="off" name="password" id="password" class="form-control form-login-interface" required  onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-xs-8">
+                                                    <div class="signup-sub-link">
+                                                        <a href="/forgotpassword">Forgot password?</a> or 
+                                                        <a href="/">Sign up</a>.</br>
+                                                        By signing in you agree that this app is a <a href="https://en.wikipedia.org/wiki/Prototype" target="_blank">prototype</a> and will be subject to change.
+                                                    </div>
+                                                </div>
+                                                <div class="col-xs-4">
+                                                    <button type="submit" id="signinbutton" class="btn btn-primary btn-block btn-flat">Sign In</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+<!-- API Response handler -->
+<script>
+    window.addEventListener('load', function(){
+
+        function goLogin(){
+
+            let xhr = new XMLHttpRequest();
+            let fd = new FormData(form); // bind form data object and form element
+            
+            xhr.addEventListener('load', function(event){
+                console.log(event.target.response);
+                let resFromServer = JSON.parse(event.target.response);
+                document.getElementById('responseDiv').style.display='block';
+                function resDiv(){
+                    let responseDiv = document.getElementById('responseDiv');
+                    
+                    if(resFromServer.err){
+                        document.getElementById('signinbutton').removeAttribute("disabled");
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("responseDivErr");
+                            responseDiv.innerHTML = resFromServer.err
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("responseDivErr");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("responseDivErr");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.err
+                            }
+                        }
+
+                    } else {
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("responseDivSuccess");
+                            responseDiv.innerHTML = resFromServer.auth;
+                            
+                            let hideDiv = document.getElementById('toHideIfSuccess');
+                                hideDiv.style.display = "none";
+                                
+                            setInterval(function(){
+                                window.location.href="/";
+
+                            }, 3000);
+
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("responseDivSuccess");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("responseDivSuccess");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.auth;
+                                
+                                let hideDiv = document.getElementById('toHideIfSuccess');
+                                    hideDiv.style.display = "none";
+
+                                setInterval(function(){
+                                    window.location.href="/";
+                                }, 3000);
+                            }
+                        }
+                    }
+
+                    
+                }
+
+                resDiv();
+            });
+
+            xhr.addEventListener('error', function(event){
+                alert('Something went wrong.');
+            });
+
+            xhr.open('POST', '/api/login');
+            xhr.send(fd);
+
+        }
+
+        // access FORM element
+        let form = document.getElementById('userLogin');
+        // take over submit event
+        form.addEventListener('submit', function(event){
+            document.getElementById('signinbutton').setAttribute("disabled", "disabled");
+            event.preventDefault();
+            document.getElementById('responseDiv').style.display="none";
+            goLogin();
+        });
+
+
+    });
+</script>
+<!-- jQuery 3 -->
+<script src="./assets/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="./assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,6 @@
+/node_modules
+/public/assets
+
+/auth/c*
+/db/d*
+/mail/c*
