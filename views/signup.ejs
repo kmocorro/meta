@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Fab4META - Forgot Password </title>
+    <title>Fab4META - Sign Up </title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -47,6 +47,7 @@
                                         <div id="toHideIfSuccess">
                                             <div class="row">
                                                 <div class="col-xs-6">
+                                                    <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
                                                     <label class="label-form">First Name</label>
                                                     <div class="form-group has-feedback">
                                                         <input type="text" name="firstname" id="firstname" class="form-control form-signup-interface input-firstletter-uppercase" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
@@ -61,15 +62,15 @@
                                             </div>
                                             <div class="form-group has-feedback">
                                                     <label class="label-form">Username</label>
-                                                    <input type="text" autocomplete="off" name="username" id="username" class="form-control form-signup-interface" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    <input type="text" autocomplete="off" name="username" id="username" class="form-control form-signup-interface" required pattern="(?=.*[a-z]).{3,}" onchange="document.getElementById('responseDiv').style.display = 'none';" title="Username must contain at least 3 characters, lowercase or numbers.">
                                             </div>
                                             <div class="form-group has-feedback input-group">
                                                 <label class="label-form">Email</label>
-                                                <input type="email" autocomplete="off" name="email" id="email" class="form-control form-signup-interface" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';"><span class="input-group-addon group-addon-clean">@sunpowercorp.com</span>
+                                                <input type="text" autocomplete="off" name="email" id="email" class="form-control form-signup-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';"><span class="input-group-addon group-addon-clean" disabled>@sunpowercorp.com</span>
                                             </div>
                                             <div class="form-group has-feedback ">
                                                     <label class="label-form">Department</label>
-                                                    <select class="form-control form-signup-interface" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    <select class="form-control form-signup-interface" onchange="document.getElementById('responseDiv').style.display = 'none';" name="department" id="department">
                                                         <option value="Engineering">Engineering</option>
                                                         <option value="Manufacturing">Manufacturing</option>
                                                         <option value="Yield">Yield</option>
@@ -77,7 +78,7 @@
                                             </div>
                                             <div class="form-group has-feedback">
                                                 <label class="label-form">Password</label> <i class="label-form">(Do Not Use your Outlook Password)</i>
-                                                <input type="password" autocomplete="off" name="password" id="password" class="form-control form-signup-interface" title="Password must contain at least 6 characters, including UPPER, lowercase and numbers." required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{6,}" placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                <input type="password" autocomplete="off" name="password" id="password" class="form-control form-signup-interface" title="Password must contain at least 7 characters, including UPPER, lowercase and numbers." required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,}" onchange="document.getElementById('responseDiv').style.display = 'none';">
                                             </div>
                                             <div class="row">
                                                 <div class="col-xs-12">
@@ -88,7 +89,9 @@
                                             </div>
                                             <div class="row">
                                                 <div class="col-xs-8">
-                                                    <a href="/" class="pull-right" style="padding-top:10px;">Cancel</a>
+                                                    <div id="idcancel">
+                                                        <a href="/" id="cancellink" class="pull-right" style="padding-top:10px;">Cancel</a>
+                                                    </div>
                                                 </div>
                                                 <div class="col-xs-4">
                                                     <button type="submit" id="signupbutton" class="btn btn-primary btn-block btn-flat">Sign Up</button>
@@ -144,7 +147,15 @@
                     let responseDiv = document.getElementById('responseDiv');
                     
                     if(resFromServer.err){
+                        document.getElementById('firstname').removeAttribute("disabled");
+                        document.getElementById('lastname').removeAttribute("disabled");
+                        document.getElementById('username').removeAttribute("disabled");
+                        document.getElementById('email').removeAttribute("disabled");
+                        document.getElementById('department').removeAttribute("disabled");
+                        document.getElementById('password').removeAttribute("disabled");
                         document.getElementById('signupbutton').removeAttribute("disabled");
+                        document.getElementById('idcancel').style.display='block';
+                        document.getElementById('signupbutton').innerHTML = 'Sign Up'
 
                         if (responseDiv.classList) { 
                             responseDiv.classList.add("responseDivErr");
@@ -210,10 +221,19 @@
         let form = document.getElementById('emailRegister');
         // take over submit event
         form.addEventListener('submit', function(event){
-            document.getElementById('submitforgotpass').setAttribute("disabled", "disabled");
+            document.getElementById('signupbutton').innerHTML = 'Sending...'
             event.preventDefault();
             document.getElementById('responseDiv').style.display="none";
             goSignUp();
+            
+            document.getElementById('firstname').setAttribute("disabled", "disabled");
+            document.getElementById('lastname').setAttribute("disabled", "disabled");
+            document.getElementById('username').setAttribute("disabled", "disabled");
+            document.getElementById('email').setAttribute("disabled", "disabled");
+            document.getElementById('department').setAttribute("disabled", "disabled");
+            document.getElementById('password').setAttribute("disabled", "disabled");
+            document.getElementById('signupbutton').setAttribute("disabled", "disabled");
+            document.getElementById('idcancel').style.display='none';
         });
 
 

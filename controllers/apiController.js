@@ -1,5 +1,8 @@
 let bodyParser = require('body-parser');
 let verifyToken = require('../auth/verifyToken');
+let uuidv4 = require('uuid/v4');
+let jwt = require('jsonwebtoken');
+let config = require('../auth/config');
 
 module.exports = function(app){
     // parse out json and app can handle url requests
@@ -23,14 +26,22 @@ module.exports = function(app){
         if(req.userID && req.claim){
             res.render('index', {firstname: req.claim.firstname || req.claim.given_name, department: req.claim.department});
         } else {
-            res.render('signin');
+            res.redirect('login');
         }
 
     });
 
     /** Sign up page */
     app.get('/signup', function(req, res){
-        res.render('signup');
+
+        let authenticity_token = jwt.sign({
+            id: uuidv4(),
+            claim: {
+                signup: 'valid'
+            }
+        }, config.secret, { expiresIn: 300 });
+
+        res.render('signup', {authenticity_token});
     });
 
 

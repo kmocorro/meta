@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Fab4META - Log in </title>
+    <title>Fab4META - Login </title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -45,6 +45,7 @@
                                     </div>
                                     <form id="userLogin">
                                         <div id="toHideIfSuccess">
+                                            <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
                                             <label class="label-form">Username</label>
                                             <div class="form-group has-feedback">
                                                 <input type="text" autocomplete="off" name="username" id="username" class="form-control form-login-interface" required  onchange="document.getElementById('responseDiv').style.display = 'none';">
@@ -58,9 +59,11 @@
                                             <div class="row">
                                                 <div class="col-xs-8">
                                                     <div class="signup-sub-link">
-                                                        <a href="/forgotpassword">Forgot password?</a> or 
-                                                        <a href="/signup">Sign up</a>.</br>
-                                                        This is a <a href="https://en.wikipedia.org/wiki/Prototype" target="_blank">prototype</a> and will be subject to change.
+                                                        <div id="aftersub">
+                                                            <a href="/forgotpassword">Forgot password?</a> or 
+                                                            <a href="/signup">Sign up</a>.</br>
+                                                            This is a <a href="https://en.wikipedia.org/wiki/Prototype" target="_blank">prototype</a> and will be subject to change.
+                                                        </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-xs-4">
@@ -95,7 +98,10 @@
                     let responseDiv = document.getElementById('responseDiv');
                     
                     if(resFromServer.err){
+                        document.getElementById('aftersub').style.display="block";
                         document.getElementById('signinbutton').removeAttribute("disabled");
+                        document.getElementById('username').removeAttribute("disabled");
+                        document.getElementById('password').removeAttribute("disabled");
 
                         if (responseDiv.classList) { 
                             responseDiv.classList.add("responseDivErr");
@@ -169,10 +175,13 @@
         let form = document.getElementById('userLogin');
         // take over submit event
         form.addEventListener('submit', function(event){
-            document.getElementById('signinbutton').setAttribute("disabled", "disabled");
             event.preventDefault();
             document.getElementById('responseDiv').style.display="none";
+            document.getElementById('aftersub').style.display="none";
             goLogin();
+            document.getElementById('signinbutton').setAttribute("disabled", "disabled");
+            document.getElementById('username').setAttribute("disabled", "disabled");
+            document.getElementById('password').setAttribute("disabled", "disabled");
         });
 
 
