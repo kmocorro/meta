@@ -97,8 +97,20 @@ module.exports = function(app){
                                 values: [verifiedClaim.date, verifiedClaim.username, verifiedClaim.firstname + ' ' + verifiedClaim.lastname, verifiedClaim.email, verifiedClaim.department, verifiedClaim.password ]
                             },  function(err, results){
                                 if(err){return res.send({err: 'Error inserting to database at verify signup'})};
+
+                                // send email notification.
+                                let mailSettings = {
+                                    from: '"Automailer" <' + mailer.mail.auth.user + '>',
+                                    to: verifiedClaim.email,
+                                    subject: 'Welcome to META!',
+                                    html: '<p>Hello ' + verifiedClaim.firstname + ', <br><br> Thanks for joining META! <br><br>You may now use your username <b>'+ verifiedClaim.username +'</b> to upload your activites, view reports and more. <br><br>To continue to META, Here\'s the link: http://'+ approver.admin.ip +' <br><br> Thanks </p>'
+                                }
+
+                                transporter.sendMail(mailSettings, function(error, info){
+                                    if(error){ return res.send({err: '<center>Oops, there is a problem folding the email.<br> Please try it again. </center>'})};
+                                    res.render('verifysignup_success', {email: verifiedClaim.email});
+                                });
         
-                                res.render('verifysignup_success', {email: verifiedClaim.email});
                                 
                             });
                         }
@@ -292,7 +304,7 @@ module.exports = function(app){
                                         from: '"Automailer" <' + mailer.mail.auth.user + '>',
                                         to: approver.admin.email,
                                         subject: 'Verify Email Address for META',
-                                        html: '<p>Hey ' + approver.admin.name + ', <br><br> As an Admintrator of META, We\'d like to know if you want to accept <b>' + signup_credentials.email + '</b> as a new user. <br><br><table style="border: 1px solid gray; padding:2px;"><tr ><th style="border: 1px solid gray; padding:2px;">Firstname</th><th style="border: 1px solid gray; padding:2px;">Lastname</th><th style="border: 1px solid gray; padding:2px;">Username</th><th style="border: 1px solid gray; padding:2px;">Email</th><th style="border: 1px solid gray; padding:2px;">Department</th></tr><tr><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.firstname +'</td><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.lastname +'</td><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.username +'</td><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.email +'</td><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.department +'</td></tr></table><br>Click below to verify the email address: <br><br><a href="http://' + approver.admin.ip + '/verifysignup?token=' + signupVerificationToken + '" target="_blank">Verify Email Address</a>. <br><br> If you don\'t want to accept, just ignore this email. <br><br> Thanks! </p>'
+                                        html: '<p>Hey ' + approver.admin.name + ', <br><br> As an admintrator of META, We\'d like to know if you want to accept <b>' + signup_credentials.email + '</b> as a new user. <br><br><table style="border: 1px solid gray; padding:2px;"><tr ><th style="border: 1px solid gray; padding:2px;">Firstname</th><th style="border: 1px solid gray; padding:2px;">Lastname</th><th style="border: 1px solid gray; padding:2px;">Username</th><th style="border: 1px solid gray; padding:2px;">Email</th><th style="border: 1px solid gray; padding:2px;">Department</th></tr><tr><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.firstname +'</td><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.lastname +'</td><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.username +'</td><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.email +'</td><td style="border: 1px solid gray; padding:2px;">'+ signup_credentials.department +'</td></tr></table><br>Click below to verify the email address: <br><br><a href="http://' + approver.admin.ip + '/verifysignup?token=' + signupVerificationToken + '" target="_blank">Verify Email Address</a>. <br><br> If you don\'t want to accept, just ignore this email. <br><br> Thanks! </p>'
                                     }
 
                                     transporter.sendMail(mailSettings, function(error, info){
@@ -586,6 +598,19 @@ module.exports = function(app){
                                     res.cookie('basicToken_cookie', token);
 
                                     res.status(200).send({auth: 'Redirecting...', basicToken_cookie: true, token: token});
+
+                                    // send email notification.
+                                    let mailSettings = {
+                                        from: '"Automailer" <' + mailer.mail.auth.user + '>',
+                                        to: resetClaim.email,
+                                        subject: 'Password Change Notification',
+                                        html: '<p>Hello ' + resetClaim.name + ', <br><br> Password has been successfully changed. <br>You may now use your new password. To continue to META, Here\'s the link: http://'+ approver.admin.ip +' <br><br> Thanks </p>'
+                                    }
+
+                                    transporter.sendMail(mailSettings, function(error, info){
+                                        if(error){ return res.send({err: '<center>Oops, there is a problem folding the email.<br> Please try it again. </center>'})};
+                                    });
+
                                 }
                             });
                             
