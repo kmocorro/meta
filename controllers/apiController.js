@@ -24,7 +24,7 @@ module.exports = function(app){
         res.header('Pragma', 'no-cache');
 
         if(req.userID && req.claim){
-            res.render('index', {firstname: req.claim.firstname || req.claim.given_name, department: req.claim.department});
+            res.render('index', {username: req.claim.username, department: req.claim.department});
         } else {
             res.redirect('login');
         }
