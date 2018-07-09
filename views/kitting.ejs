@@ -88,7 +88,7 @@
                     <h1 class="coa-body-header">Certificate of Analysis</h1>
                     <ol class="breadcrumb">
                         <li><a href="/">Home</a></li>
-                        <li class="active">CoA - QA</li>
+                        <li class="active">CoA - Kitting</li>
                     </ol>
                 </section>
             </div>
@@ -111,46 +111,31 @@
                                             <div id="responseDiv">
                                                 <!-- response here-->
                                             </div>
-                                            <form id="uploadcoa">
+                                            <form id="uploadboxid">
                                                 <div id="toHideIfSuccess">
                                                     <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
-                                                    <h4 class="coa-body-form">Upload CoA File</h4>
-                                                    <label class="coa-form-label">Excel file:</label>
+                                                    <h4 class="coa-body-form">CoA Box ID & Runcard</h4>
+                                                    <label class="coa-form-label">Box ID:</label>
                                                     <div class="form-group has-feedback">
-                                                        <input type="file" name="coafile" id="coafile" required style="width:100%" >
+                                                        <input type="text" autofocus="on" name="boxid" id="boxid" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
-                                                    <label class="coa-form-label">Invoice:</label>
+                                                    <label class="coa-form-label">Tag Runcard</label>
                                                     <div class="form-group has-feedback">
-                                                        <input type="text" autocomplete="off" name="invoice" id="invoice" class="form-control form-coa-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                                    </div>
-                                                    <label class="coa-form-label">Delivery Date:</label>
-                                                    <div class="form-group has-feedback">
-                                                        <div class="input-group date">
-                                                            <div class="input-group-addon form-coa-date-interface ">
-                                                                <i class="fa fa-calendar"></i>
+                                                        <section id="multiRow">
+                                                            <div id="initRow">
+                                                                <input name="multifield" id="runcardno" class="form-control form-kitting-interface" onchange="document.getElementById('responseDiv').style.display = 'none';" style="display:inline; width:95%;">
                                                             </div>
-                                                            <input type="text" autocomplete="off" name="datepicker" id="datepicker" class="form-control form-coa-interface pull-right" required>
-                                                        </div>
-                                                    </div>
-                                                    <label class="coa-form-label">Supplier:</label>
-                                                    <div class="form-group has-feedback">
-                                                        <select class="form-control select2 select2-hidden-accessible  form-coa-interface" style="width:100%" tabindex="-1" aria-hidden="true" required name="supplier" id="supplier" >
-                                                            <option selected="selected">TZS</option>
-                                                            <option>FERROTEC</option>
-                                                            <option>ACC</option>
-                                                            <option>NORSUN</option>
-                                                            <option>LONGI</option>
-                                                        </select>
+                                                        </section>
                                                     </div>
                                                     <br>
                                                     <div class="row">
                                                         <div class="col-xs-7">
                                                             <div class="coa-sub-link">
-                                                                By clicking "Submit", you indicate that all fields are true and correct.
+                                                                By tagging "4 runcards" consecutively, this form will automatically be submitted.
                                                             </div>
                                                         </div>
                                                         <div class="col-xs-5">
-                                                            <button type="submit" class="btn btn-primary btn-block btn-success btn-flat">Submit</button>
+                                                            <button type="submit" id="submitkitting" class="btn btn-primary btn-block btn-success btn-flat">Submit</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -186,16 +171,15 @@
                                 <div class="tab-pane" id="settings">
                                     <div class="row">
                                         <div class="col-md-11 col-centered table-responsive no-padding">
-                                            <h4 class="coa-body-form">CoA Information</h4>
+                                            <h4 class="coa-body-form">Box ID & Runcard Details</h4>
                                             <table class="table table-striped">
                                                 <tbody>
                                                     <thead>
                                                     <tr>
                                                         <th>ID</th>
                                                         <th>Upload Date</th>
-                                                        <th>Filename</th>
-                                                        <th>Invoice</th>
-                                                        <th>Delivery Date</th>
+                                                        <th>Box Id</th>
+                                                        <th>Runcard</th>
                                                         <th>Username</th>
                                                         <th>Danger zone</th>
                                                     </tr>
@@ -203,9 +187,8 @@
                                                     <tr>
                                                         <td>11</td>
                                                         <td>18 Jul. 2018 12:39</td>
-                                                        <td>CoA CHuchuchens</td>
-                                                        <td>INV2829120</td>
-                                                        <td>11 Jul. 2018 12:39</td>
+                                                        <td>PB2131D123S2</td>
+                                                        <td>E66L_1829_123-1</td>
                                                         <td>kmocorro</td>
                                                         <td><a href="">edit</a>  /  <a href="">delete</a></td>
                                                     </tr>
@@ -258,6 +241,7 @@
                 console.log(event.target.response);
                 let resFromServer = JSON.parse(event.target.response);
                 document.getElementById('responseDiv').style.display='block';
+
                 function resDiv(){
                     let responseDiv = document.getElementById('responseDiv');
                     
@@ -285,10 +269,11 @@
                         if (responseDiv.classList) { 
                             responseDiv.classList.add("responseDivSuccess");
                             responseDiv.innerHTML = resFromServer.auth;
-                            
-                            let hideDiv = document.getElementById('toHideIfSuccess');
-                                hideDiv.style.display = "none";
 
+                            
+                            setInterval(function(){
+                                window.location.href="";
+                            }, 500);
 
                         } else {
                             // For IE9
@@ -302,9 +287,9 @@
                                 responseDiv.className = classes.join(" "); 
                                 responseDiv.innerHTML = resFromServer.auth;
                                 
-                                let hideDiv = document.getElementById('toHideIfSuccess');
-                                    hideDiv.style.display = "none";
-
+                                setInterval(function(){
+                                    window.location.href="";
+                                }, 500);
                             }
                         }
                     }
@@ -319,20 +304,95 @@
                 alert('Something went wrong.');
             });
 
-            xhr.open('POST', '/api/coa');
+            xhr.open('POST', '/api/coakitting');
             xhr.send(fd);
 
         }
 
         // access FORM element
-        let form = document.getElementById('uploadcoa');
+        let form = document.getElementById('uploadboxid');
         // take over submit event
         form.addEventListener('submit', function(event){
             event.preventDefault();
-            document.getElementById('responseDiv').style.display="none";
+            //document.getElementById('responseDiv').style.display="none";
             goUpload();
         });
 
+
+    });
+</script>
+<!-- Tag runcard script-->
+<script>
+    $('document').ready(function(){
+
+        $('#boxid').keydown(function(e){
+            if(e.keyCode == 13){
+                if($('#boxid').val()){
+                    $('#runcardno').focus();
+                    return false;
+                }
+            }
+        });
+
+        function addRow(section, clone){
+
+            let newRow = clone.removeAttr('id').addClass('new').insertBefore(initRow);
+            let deleteRow = $('<a class="rowDelete"><i class="fa fa-close"></i></a>');
+
+            newRow
+            .append(deleteRow)
+            .on('click', 'a.rowDelete', function(){
+                removeRow(newRow);
+            })
+            .slideDown(300, function(){
+                $(this).find('input').focus();
+            })
+            .keydown(function(e){
+                if(e.keyCode == 13){
+                    $('#initRow').find('input').focus();
+                    return false;
+                }
+            });
+        }
+
+        function removeRow(newRow){
+            newRow
+            .slideUp(200, function(){
+                $(this)
+                    .next('div:not(#initRow)')
+                    .find('input').focus()
+                    .end()
+                    .remove();
+            });
+        }
+
+        $(function(){
+            let initRow = $('#initRow')
+            let section = initRow.parent('section');
+            let i = 0;
+
+            initRow.on('focus', 'input', function(){
+                i++;
+
+                if(i<5){
+                    let clone = initRow.clone();
+                    clone.attr("id", "runcardno");
+                    clone.find("#runcardno").attr("name", 'runcard'+i);
+                    addRow(section, clone);
+                } else {
+                    
+                    document.getElementsByName('multifield')[0].setAttribute("disabled", "disabled");
+
+                    if($('#boxid').val()){
+                        document.getElementById('submitkitting').click();
+                        document.getElementById('submitkitting').setAttribute("disabled", "disabled");
+                        return 0;
+                    }
+                }
+
+            });
+
+        });
 
     });
 </script>
