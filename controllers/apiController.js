@@ -6,6 +6,7 @@ let config = require('../auth/config');
 let formidable = require('formidable');
 let XLSX = require('xlsx');
 let mysql = require('../db/dbConfig');
+let moment = require('moment');
 
 module.exports = function(app){
     // parse out json and app can handle url requests
@@ -63,7 +64,7 @@ module.exports = function(app){
         if(req.userID && req.claim){
             res.render('coa', {username: req.claim.username, department: req.claim.department, authenticity_token});
         } else {
-            res.redirect('login');
+            res.render('login');
         }
 
     });
@@ -82,9 +83,81 @@ module.exports = function(app){
         }, config.secret);
 
         if(req.userID && req.claim){
-            res.render('kitting', {username: req.claim.username, department: req.claim.department, authenticity_token});
+
+            mysql.pool.getConnection(function(err, connection){
+                if(err){return res.send({err: 'Cannot connect to database'})};
+
+                function coaKitting(){
+                    return new Promise(function(resolve, reject){
+
+                        connection.query({
+                            sql: 'SELECT * FROM tbl_coa_box ORDER BY id DESC LIMIT 50'
+                        },  function(err, results){
+                            if(err){return reject()};
+
+                            if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+
+                                let recent_activity_obj = [];
+                                let kitting_settings_obj = [];
+                                
+                                for(let i=0;i<results.slice(-5).length;i++){
+                                    if(results[i].box_id){
+
+                                        recent_activity_obj.push({
+                                            id: results[i].id,
+                                            upload_date: moment(results[i].upload_date).calendar(),
+                                            box_id: results[i].box_id,
+                                            runcard: results[i].runcard,
+                                            username: results[i].username
+                                        });
+                                    }
+                                }
+
+                                for(let i=0;i<results.length;i++){
+                                    if(results[i].box_id){
+
+                                        kitting_settings_obj.push({
+                                            id: results[i].id,
+                                            upload_date: moment(results[i].upload_date).format('lll'),
+                                            box_id: results[i].box_id,
+                                            runcard: results[i].runcard,
+                                            username: results[i].username
+                                        });
+                                    }
+                                }
+
+                                let data = {
+                                    recent : recent_activity_obj,
+                                    settings: kitting_settings_obj
+                                }
+
+                                resolve(data);
+
+                            } else {
+                                reject();
+                            }
+
+                        });
+
+                        connection.release();
+
+                    });
+
+                }
+
+                coaKitting().then(function(data){
+                    let todayDate = moment(new Date()).format('lll');
+
+                    res.render('kitting', { username: req.claim.username, department: req.claim.department, authenticity_token,  data, todayDate});
+                },  function(err){
+                    res.send({err: err});
+                });
+                
+
+            });
+
         } else {
-            res.redirect('login');
+            res.render('login');
         }
     })
 
@@ -259,6 +332,45 @@ module.exports = function(app){
 
 
         });
-    })
+    });
+
+    /** delete coa boxid and runcard details */
+    app.post('/api/kittingdelete', verifyToken, function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){ return res.send({err: 'Invalid action. Try again'})};
+
+            if(req.userID && req.claim){
+
+                if(fields){
+                    console.log(fields);
+                    res.send({auth: 'Deleted successfully.'});
+                }
+            }
+
+        });
+
+    });
+
+    /** edit coa boxid and runcard details */
+    app.post('/api/kittingedit', verifyToken, function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){ return res.send({err: 'Invalid action. Try again'})};
+
+            if(req.userID && req.claim){
+
+                if(fields){
+                    console.log(fields);
+                    res.send({auth: 'Form saved.'});
+                }
+
+            }
+
+        });
+
+    });
 
 }
