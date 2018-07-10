@@ -344,9 +344,71 @@ module.exports = function(app){
             if(req.userID && req.claim){
 
                 if(fields){
-                    console.log(fields);
-                    res.send({auth: 'Deleted successfully.'});
+
+                    let data_editor = req.claim.username;
+                    let data_owner = fields.deleteByUsername;
+                    let data_token = fields.authenticity_token;
+                    let data_id = fields.deleteById;
+
+                    if(data_editor == data_owner){ // valid requestor of form?
+
+                        //  verify token
+                        function verifyLinkToken(){
+                            return new Promise(function(resolve, reject){
+
+                                jwt.verify(data_token, config.secret, function(err, decoded){
+                                    if(err){ return reject(err)};
+
+                                    resolve();
+
+                                });
+
+                            });
+                        }
+
+                        mysql.pool.getConnection(function(err, connection){
+                            if(err){return res.send({err: 'Cannot connect to database.'})};
+
+                            function deleteData(){
+                                return new Promise(function(resolve, reject){
+
+                                    connection.query({
+                                        sql: 'DELETE FROM tbl_coa_box WHERE id=?',
+                                        values: [data_id]
+                                    },  function(err, results){
+                                        if(err){return reject()};
+                                        resolve();
+                                    });
+
+                                });
+                            }
+
+                            verifyLinkToken().then(function(){
+                                return deleteData().then(function(){
+
+                                    connection.release();
+                                    res.send({auth: 'Deleted successfully.'});
+
+
+                                },  function(err){
+                                    res.send({err:'Error delete query.'});
+                                });
+
+                            },  function(err){
+                                res.send({err:'Invalid token. Please refresh page.'});
+                            });
+                        
+                        });
+
+                    } else {
+                        
+                        res.send({err: 'Unauthorized. <br> Only <i>' + data_owner + '</i> can delete transaction id ' + data_id +'.'});
+
+                    }
+
+
                 }
+
             }
 
         });
@@ -363,8 +425,73 @@ module.exports = function(app){
             if(req.userID && req.claim){
 
                 if(fields){
-                    console.log(fields);
-                    res.send({auth: 'Form saved.'});
+
+                    let data_editor = req.claim.username;
+                    let data_owner = fields.edit_username;
+
+                    let data_update = {
+                        authenticity_token: fields.authenticity_token,
+                        id: fields.edit_id,
+                        box_id: fields.edit_boxid,
+                        runcard: fields.edit_runcard
+                    }
+
+                    if(data_editor == data_owner){ // valid requestor of form?
+
+                        //  verify token
+                        function verifyLinkToken(){
+                            return new Promise(function(resolve, reject){
+
+                                jwt.verify(data_update.authenticity_token, config.secret, function(err, decoded){
+                                    if(err){ return reject(err)};
+
+                                    resolve();
+
+                                });
+
+                            });
+                        }
+
+                        mysql.pool.getConnection(function(err, connection){
+                            if(err){ return res.send({err: 'Cannot connect to database'})};
+
+                            function editData(){
+                                return new Promise(function(resolve, reject){
+                                    
+                                    connection.query({
+                                        sql: 'UPDATE tbl_coa_box SET box_id=?, runcard=? WHERE id=?',
+                                        values: [data_update.box_id, data_update.runcard, data_update.id]
+                                    },  function(err, results){
+                                        if(err){return reject()};
+                                        resolve();
+                                    });
+                                
+                                });
+                            }
+
+
+                            verifyLinkToken().then(function(){
+                                return editData().then(function(){
+                                    
+                                    connection.release();
+                                    res.send({auth: 'Updated successfully.'});
+
+                                },  function(err){
+                                    res.send({err: 'Error update to database.'});
+                                });
+                                
+                            },  function(err){
+                                res.send({err: 'Invalid token. Please refresh page.'});
+                            });
+
+                        });
+
+                    } else {
+                        
+                        res.send({err: 'Unauthorized. <br> Only <i>' + data_owner + '</i> can edit transaction id ' + data_update.id +'.'});
+
+                    }
+
                 }
 
             }
