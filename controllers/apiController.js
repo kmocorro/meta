@@ -35,6 +35,16 @@ module.exports = function(app){
 
     });
 
+    /**redirect */
+
+    app.get('/kitting', function(req, res){
+        res.redirect('/coa/kitting');
+    });
+
+    app.get('/coauploader', function(req, res){
+        res.redirect('/coa/qa');
+    })
+
     /** Sign up page */
     app.get('/signup', function(req, res){
 
