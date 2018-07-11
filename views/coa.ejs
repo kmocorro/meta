@@ -59,7 +59,7 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="/setup"><span class="link-nav coa-header">Reports </span></a>
+                                <a href="/#"><span class="link-nav coa-header">Reports </span></a>
                             </li>
                         </ul>
                     </div>
@@ -135,9 +135,9 @@
                                                     <label class="coa-form-label">Supplier:</label>
                                                     <div class="form-group has-feedback">
                                                         <select class="form-control select2 select2-hidden-accessible  form-coa-interface" style="width:100%" tabindex="-1" aria-hidden="true" required name="supplier" id="supplier" >
-                                                            <option selected="selected">TZS</option>
-                                                            <option>FERROTEC</option>
-                                                            <option>ACC</option>
+                                                            <option selected="selected" value="1001">TZS</option>
+                                                            <option value="1003">FERROTEC</option>
+                                                            <option value="1007">ACC</option>
                                                             <option>NORSUN</option>
                                                             <option>LONGI</option>
                                                         </select>
@@ -150,7 +150,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-xs-5">
-                                                            <button type="submit" class="btn btn-primary btn-block btn-success btn-flat">Submit</button>
+                                                            <button type="submit" id="submitcoafile" class="btn btn-primary btn-block btn-success btn-flat">Submit</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -161,21 +161,23 @@
                                             <ul class="timeline timeline-invers">
                                                 <li class="time-label">
                                                     <span class="bg-red">
-                                                        18 Jul. 2018
+                                                        <%= todayDate %>
                                                     </span>
                                                 </li>
+                                                <% for(let i=0; i<data.recent.length; i++) { %>
                                                 <li>
                                                     <i class="fa fa-cloud-upload bg-blue">
                                                     </i>
                                                     <div class="timeline-item">
                                                         <span class="time">
-                                                            <i class="fa fa-clock-o"></i> July 18, 2018 12:39
+                                                            <i class="fa fa-clock-o"></i> <%= data.recent[i].date %>
                                                         </span>
-                                                        <h3 class="timeline-header">Username uploaded CoA file</h3>
-                                                        <div class="timeline-body">Invoice number: 39239, Delivery date: Today, and so on..</div>
+                                                        <h3 class="timeline-header"><%= data.recent[i].invoice %> has been uploaded</h3>
+                                                        <div class="timeline-body">Delivery date: <%= data.recent[i].delivery_date %> | Supplier: <%= data.recent[i].supplier %> | uploaded by <%= data.recent[i].username %></div>
                                                         <div class="timeline-footer"></div>
                                                     </div>
                                                 </li>
+                                                <% } %>
                                                 <li>
                                                     <i class="fa fa-clock-o bg-gray"></i>
                                                 </li>
@@ -191,24 +193,22 @@
                                                 <tbody>
                                                     <thead>
                                                     <tr>
-                                                        <th>ID</th>
                                                         <th>Upload Date</th>
-                                                        <th>Filename</th>
-                                                        <th>Invoice</th>
                                                         <th>Delivery Date</th>
+                                                        <th>Invoice</th>
+                                                        <th>Supplier</th>
                                                         <th>Username</th>
-                                                        <th>Danger zone</th>
                                                     </tr>
                                                     </thead>
+                                                    <% for(let i=0; i<data.settings.length; i++) { %>
                                                     <tr>
-                                                        <td>11</td>
-                                                        <td>18 Jul. 2018 12:39</td>
-                                                        <td>CoA CHuchuchens</td>
-                                                        <td>INV2829120</td>
-                                                        <td>11 Jul. 2018 12:39</td>
-                                                        <td>kmocorro</td>
-                                                        <td><a href="">edit</a>  /  <a href="">delete</a></td>
+                                                        <td><%= data.settings[i].date %></td>
+                                                        <td><%= data.settings[i].delivery_date %></td>
+                                                        <td><%= data.settings[i].invoice %></td>
+                                                        <td><%= data.settings[i].supplier %></td>
+                                                        <td><%= data.settings[i].username %></td>
                                                     </tr>
+                                                    <% } %>
                                                 </tbody>
                                             </table>
                                         </div>
@@ -262,6 +262,11 @@
                     let responseDiv = document.getElementById('responseDiv');
                     
                     if(resFromServer.err){
+                        document.getElementById('coafile').removeAttribute("disabled");
+                        document.getElementById('datepicker').removeAttribute("disabled");
+                        document.getElementById('invoice').removeAttribute("disabled");
+                        document.getElementById('supplier').removeAttribute("disabled");
+                        document.getElementById('submitcoafile').removeAttribute("disabled");
 
                         if (responseDiv.classList) { 
                             responseDiv.classList.add("responseDivErr");
@@ -283,27 +288,34 @@
                     } else {
 
                         if (responseDiv.classList) { 
-                            responseDiv.classList.add("responseDivSuccess");
+                            responseDiv.classList.add("responseDivUploading");
                             responseDiv.innerHTML = resFromServer.auth;
                             
                             let hideDiv = document.getElementById('toHideIfSuccess');
                                 hideDiv.style.display = "none";
-
+                            
+                            setTimeout(function(){
+                                window.location.href="/coa/qa";
+                            }, 500);
 
                         } else {
                             // For IE9
                             var classes = responseDiv.className.split(" ");
-                            var i = classes.indexOf("responseDivSuccess");
+                            var i = classes.indexOf("responseDivUploading");
 
                             if (i >= 0) {
                                 classes.splice(i, 1);
                             } else { 
-                                classes.push("responseDivSuccess");
+                                classes.push("responseDivUploading");
                                 responseDiv.className = classes.join(" "); 
                                 responseDiv.innerHTML = resFromServer.auth;
                                 
                                 let hideDiv = document.getElementById('toHideIfSuccess');
                                     hideDiv.style.display = "none";
+
+                                setTimeout(function(){
+                                window.location.href="/coa/qa";
+                                }, 500);
 
                             }
                         }
@@ -331,6 +343,11 @@
             event.preventDefault();
             document.getElementById('responseDiv').style.display="none";
             goUpload();
+            document.getElementById('coafile').setAttribute("disabled", "disabled");
+            document.getElementById('datepicker').setAttribute("disabled", "disabled");
+            document.getElementById('invoice').setAttribute("disabled", "disabled");
+            document.getElementById('supplier').setAttribute("disabled", "disabled");
+            document.getElementById('submitcoafile').setAttribute("disabled", "disabled");
         });
 
 

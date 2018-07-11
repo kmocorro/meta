@@ -415,6 +415,7 @@ module.exports = function(app){
         
                                                 res.cookie('auth', token); // send cookie auth token
                                                 res.status(200).send({auth: 'Authenticated. Please wait...'});
+                                                console.log(credentials.username + ' has logged in.');
         
                                             } else {
                                                 res.send({err: 'Password does not match.'});
