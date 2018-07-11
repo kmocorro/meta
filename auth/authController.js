@@ -297,7 +297,7 @@ module.exports = function(app){
                                     let signupVerificationToken = jwt.sign({
                                         id: uuidv4(),
                                         claim: signup_credentials
-                                    }, config.secret, {expiresIn: 300}); // 5 mins expiry
+                                    }, config.secret, {expiresIn: 432000}); // 5 days? expiry
                                     
                                     // mail settings
                                     let mailSettings = {
