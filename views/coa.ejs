@@ -135,11 +135,11 @@
                                                     <label class="coa-form-label">Supplier:</label>
                                                     <div class="form-group has-feedback">
                                                         <select class="form-control select2 select2-hidden-accessible  form-coa-interface" style="width:100%" tabindex="-1" aria-hidden="true" required name="supplier" id="supplier" >
-                                                            <option selected="selected" value="1001">TZS</option>
+                                                            <option selected="selected" value="1007">ACC</option>
                                                             <option value="1003">FERROTEC</option>
-                                                            <option value="1007">ACC</option>
-                                                            <option>NORSUN</option>
-                                                            <option>LONGI</option>
+                                                            <option value="1001" disabled >TZS</option>
+                                                            <option disabled>NORSUN</option>
+                                                            <option disabled>LONGI</option>
                                                         </select>
                                                     </div>
                                                     <br>
@@ -294,10 +294,12 @@
                             let hideDiv = document.getElementById('toHideIfSuccess');
                                 hideDiv.style.display = "none";
                             
-                            setTimeout(function(){
+                                
+                                setTimeout(function(){
                                 window.location.href="/coa/qa";
-                            }, 500);
-
+                                }, 500);
+                                
+                               
                         } else {
                             // For IE9
                             var classes = responseDiv.className.split(" ");
@@ -313,10 +315,11 @@
                                 let hideDiv = document.getElementById('toHideIfSuccess');
                                     hideDiv.style.display = "none";
 
+                                
                                 setTimeout(function(){
                                 window.location.href="/coa/qa";
                                 }, 500);
-
+                                
                             }
                         }
                     }

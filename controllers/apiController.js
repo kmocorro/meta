@@ -256,16 +256,6 @@ module.exports = function(app){
                         date_modified: file.coafile.lastModifiedDate
                     }
 
-                    //  expected worksheets name per supplier
-                    let workbook_checker = {
-                        acc_sheet1: 'COA',
-                        acc_sheet2: 'Pallet_ID Carton_ID LOT_ID',
-                        ferrotec_sheet1: 'COA',
-                        ferrotec_sheet2: 'Ingot Lot Barcodes',
-                        tzs_sheet1: 'PROPOSED CofA',
-                        tzs_sheet2: 'Ingot Lot Barcodes',
-                    }
-    
                     let workbook = XLSX.readFile(excelFile.path);
     
                     //  verify token
@@ -291,9 +281,20 @@ module.exports = function(app){
                                 sheet1: workbook.SheetNames[0],
                                 sheet2: workbook.SheetNames[1]
                             }
+
+                            
+                            //  expected worksheets name per supplier
+                            let workbook_checker = {
+                                acc_sheet1: 'COA',
+                                acc_sheet2: 'Pallet_ID Carton_ID LOT_ID',
+                                ferrotec_sheet1: 'COA',
+                                ferrotec_sheet2: 'Ingot Lot Barcodes',
+                                tzs_sheet1: 'PROPOSED CofA',
+                                tzs_sheet2: 'Ingot Lot Barcodes',
+                            }
     
     
-                            if(worksheet.sheet2 == workbook_checker.acc_sheet2){   // is workbook ACC ?
+                            if(worksheet.sheet1 == workbook_checker.acc_sheet1 && worksheet.sheet2 == workbook_checker.acc_sheet2){   // is workbook ACC ?
                                 
                                 let supplier_acc ={
                                     id: '1007',
@@ -302,7 +303,7 @@ module.exports = function(app){
                                 
                                 resolve(supplier_acc);
     
-                            } else if (worksheet.sheet1 == workbook_checker.ferrotec_sheet1){ // is workbook Ferrotec?
+                            } else if (worksheet.sheet1 == workbook_checker.ferrotec_sheet1 && worksheet.sheet2 == workbook_checker.ferrotec_sheet2){ // is workbook Ferrotec?
     
                                 let supplier_ferrotec ={
                                     id: '1003',
@@ -311,7 +312,7 @@ module.exports = function(app){
 
                                 resolve(supplier_ferrotec);
     
-                            } else if (worksheet.sheet1 == workbook_checker.tzs_sheet1){ // is workbook tzs?
+                            } else if (worksheet.sheet1 == workbook_checker.tzs_sheet1 && worksheet.sheet2 == workbook_checker.tzs_sheet2){ // is workbook tzs?
                                 
                                 let supplier_tzs ={
                                     id: '1001',
@@ -387,9 +388,9 @@ module.exports = function(app){
                         return checkSupplier().then(function(supplier_name){
                             return checkUser().then(function(verified_username){
                                 return isInvoiceExists().then(function(){
-                                    
-                                    if(supplier_name.id == credentials.supplier_id){
-                                        
+
+                                    if(supplier_name.id == credentials.supplier_id && supplier_name.id == '1007' ){ // is ACC?
+
                                         let sheet1_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['COA'],{header: 'A'});
                                         let sheet2_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['Pallet_ID Carton_ID LOT_ID'],{header: 'A'});
 
@@ -469,7 +470,7 @@ module.exports = function(app){
                                             });
                                         }
 
-                                        function coaInsert(){
+                                        function coaInsertACC(){
                                             return new Promise(function(resolve, reject){
 
                                                 // insert sheet1 to tbl_achl_coa_v2
@@ -495,7 +496,7 @@ module.exports = function(app){
                                             });
                                         }
 
-                                        function ingotInsert(){
+                                        function ingotInsertACC(){
                                             return new Promise(function(resolve, reject){
 
                                                 // insert sheet2 to tbl_achl_ingot_v2
@@ -521,8 +522,8 @@ module.exports = function(app){
                                             });
                                         }
 
-                                        return coaInsert().then(function(){
-                                            return ingotInsert().then(function(){
+                                        return coaInsertACC().then(function(){
+                                            return ingotInsertACC().then(function(){
 
                                                 res.send({auth:'Uploading... <br> Be patient. Large files need more time to build.'});
 
@@ -535,12 +536,166 @@ module.exports = function(app){
                                         });
 
 
-                                    } else if (supplier_name.id == credentials.supplier_id) {
-                                        res.send({auth: 'FERROTEC'});
-                                    } else if (supplier_name.id == credentials.supplier_id) {
+                                    } else if (supplier_name.id == credentials.supplier_id && supplier_name.id == '1003') { // is FERROTEC?
+                                        
+                                        let sheet1_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['COA'],{header: 'A'});
+                                        let sheet2_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['Ingot Lot Barcodes'],{header: 1 });
+
+                                        let cleaned_ferrotec_sheet1 = [];
+                                        let cleaned_ferrotec_sheet2 = [];
+
+                                        if(!sheet1_workbookJSON[1].BC){
+
+                                            // clean sheet 1 obj
+                                            for(let i=4;i<sheet1_workbookJSON.length;i++){ //STARTS in 4th array
+                                                if(sheet1_workbookJSON[i].A != '' && sheet1_workbookJSON[i].B != null){
+
+                                                    cleaned_ferrotec_sheet1.push({
+                                                        A: sheet1_workbookJSON[i].A || null,
+                                                        B: sheet1_workbookJSON[i].B || null,
+                                                        C: sheet1_workbookJSON[i].C || null,
+                                                        D: sheet1_workbookJSON[i].D || null,
+                                                        E: sheet1_workbookJSON[i].E || null,
+                                                        F: sheet1_workbookJSON[i].F || null,
+                                                        G: sheet1_workbookJSON[i].G || null,
+                                                        H: sheet1_workbookJSON[i].H || null,
+                                                        I: sheet1_workbookJSON[i].I || null,
+                                                        J: sheet1_workbookJSON[i].J || null,
+                                                        K: sheet1_workbookJSON[i].K || null,
+                                                        L: sheet1_workbookJSON[i].L || null,
+                                                        M: sheet1_workbookJSON[i].M || null,
+                                                        N: sheet1_workbookJSON[i].N || null,
+                                                        O: sheet1_workbookJSON[i].O || null,
+                                                        P: sheet1_workbookJSON[i].P || null,
+                                                        Q: sheet1_workbookJSON[i].Q || null,
+                                                        R: sheet1_workbookJSON[i].R || null,
+                                                        S: sheet1_workbookJSON[i].S || null,
+                                                        T: sheet1_workbookJSON[i].T || null,
+                                                        U: sheet1_workbookJSON[i].U || null,
+                                                        V: sheet1_workbookJSON[i].V || null,
+                                                        W: sheet1_workbookJSON[i].W || null,
+                                                        X: sheet1_workbookJSON[i].X || null,
+                                                        Y: sheet1_workbookJSON[i].Y || null,
+                                                        Z: sheet1_workbookJSON[i].Z || null,
+                                                        AA: sheet1_workbookJSON[i].AA || null,
+                                                        AB: sheet1_workbookJSON[i].AB || null,
+                                                        AC: sheet1_workbookJSON[i].AC || null,
+                                                        AD: sheet1_workbookJSON[i].AD || null,
+                                                        AE: sheet1_workbookJSON[i].AE || null,
+                                                        AF: sheet1_workbookJSON[i].AF || null,
+                                                        AG: sheet1_workbookJSON[i].AG || null,
+                                                        AH: sheet1_workbookJSON[i].AH || null,
+                                                        AI: sheet1_workbookJSON[i].AI || null,
+                                                        AJ: sheet1_workbookJSON[i].AJ || null,
+                                                        AK: sheet1_workbookJSON[i].AK || null,
+                                                        AL: sheet1_workbookJSON[i].AL || null,
+                                                        AM: sheet1_workbookJSON[i].AM || null,
+                                                        AN: sheet1_workbookJSON[i].AN || null,
+                                                        AO: sheet1_workbookJSON[i].AO || null,
+                                                        AP: sheet1_workbookJSON[i].AP || null,
+                                                        AQ: sheet1_workbookJSON[i].AQ || null,
+                                                        AR: sheet1_workbookJSON[i].AR || null,
+                                                        AS: sheet1_workbookJSON[i].AS || null,
+                                                        AT: sheet1_workbookJSON[i].AT || null,
+                                                        AU: sheet1_workbookJSON[i].AU || null,
+                                                        AV: sheet1_workbookJSON[i].AV || null,
+                                                        AW: sheet1_workbookJSON[i].AW || null,
+                                                        AX: sheet1_workbookJSON[i].AX || null,
+                                                        AY: sheet1_workbookJSON[i].AY || null,
+                                                        AZ: sheet1_workbookJSON[i].AZ || null,
+                                                        BA: sheet1_workbookJSON[i].BA || null,
+                                                        BB: sheet1_workbookJSON[i].BB || null
+                                                    });
+
+                                                }
+
+                                            }
+
+                                            // clean sheet 2 obj
+                                            for(let i=1;i<sheet2_workbookJSON.length;i++){
+                                                if(sheet2_workbookJSON[i][0] !== null){
+
+                                                    for(let j=1;j<sheet2_workbookJSON[i].length;j++){
+                                                        cleaned_ferrotec_sheet2.push({
+                                                            A: sheet2_workbookJSON[i][0] || null,
+                                                            B: sheet2_workbookJSON[i][j] || null
+                                                        });
+                                                    }
+
+                                                }
+                                            }
+
+                                            function coaInsertFERROTEC(){
+                                                return new Promise(function(resolve, reject){
+
+                                                    for(let i=0;i<cleaned_ferrotec_sheet1.length;i++){
+                                                        mysql.pool.getConnection(function(err, connection){
+                                                            if(err){return reject()}
+
+                                                            connection.query({
+                                                                sql: 'INSERT INTO tbl_ferrotec_coa SET supplier_id=?, delivery_date=?, order_no=?, upload_time=?, username=?, ingot_lot_id=?, box_id=?, wafer_qty=?, wafer_qty_difference=?, block_length=?, totalCrystal=?, seedBlock=?, MCLT_top=?, MCLT_tail=?, Res_top=?, Res_tail=?, Oi_top=?, Oi_tail=?, Cs_top=?, Cs_tail=?, Dia_ave=?, Dia_std=?, Dia_min=?, Dia_max=?, Flat_ave=?, Flat_std=?, Flat_min=?, Flat_max=?, Flat_taper_ave=?, Flat_taper_std=?, Flat_taper_min=?, Flat_taper_max=?, Corner_ave=?, Corner_std=?, Corner_min=?, Corner_max=?, Thickness_ave=?, Thickness_std=?, Thickness_min=?, Thickness_max=?, TTV_ave=?, TTV_std=?, TTV_min=?, TTV_max=?, RA_ave=?, RA_std=?, RA_min=?, RA_max=?, RZ_ave=?, RZ_std=?, RZ_min=?, RZ_max=?, Vertical_ave=?, Vertical_std=?, Vertical_min=?, Vertical_max=?, Copper_content=?, Iron_content=?, AcceptReject=?',
+                                                                values: [credentials.supplier_id, credentials.delivery_date, credentials.order_no, new Date(), verified_username, cleaned_ferrotec_sheet1[i].A, cleaned_ferrotec_sheet1[i].B, cleaned_ferrotec_sheet1[i].C, cleaned_ferrotec_sheet1[i].D, cleaned_ferrotec_sheet1[i].E, cleaned_ferrotec_sheet1[i].F, cleaned_ferrotec_sheet1[i].G, cleaned_ferrotec_sheet1[i].H, cleaned_ferrotec_sheet1[i].I, cleaned_ferrotec_sheet1[i].J, cleaned_ferrotec_sheet1[i].K, cleaned_ferrotec_sheet1[i].L, cleaned_ferrotec_sheet1[i].M, cleaned_ferrotec_sheet1[i].N, cleaned_ferrotec_sheet1[i].O, cleaned_ferrotec_sheet1[i].P, cleaned_ferrotec_sheet1[i].Q, cleaned_ferrotec_sheet1[i].R, cleaned_ferrotec_sheet1[i].S, cleaned_ferrotec_sheet1[i].T, cleaned_ferrotec_sheet1[i].U, cleaned_ferrotec_sheet1[i].V, cleaned_ferrotec_sheet1[i].W, cleaned_ferrotec_sheet1[i].X, cleaned_ferrotec_sheet1[i].Y, cleaned_ferrotec_sheet1[i].Z, cleaned_ferrotec_sheet1[i].AA, cleaned_ferrotec_sheet1[i].AB, cleaned_ferrotec_sheet1[i].AC, cleaned_ferrotec_sheet1[i].AD, cleaned_ferrotec_sheet1[i].AE, cleaned_ferrotec_sheet1[i].AF, cleaned_ferrotec_sheet1[i].AG, cleaned_ferrotec_sheet1[i].AH, cleaned_ferrotec_sheet1[i].AI, cleaned_ferrotec_sheet1[i].AJ, cleaned_ferrotec_sheet1[i].AK, cleaned_ferrotec_sheet1[i].AL, cleaned_ferrotec_sheet1[i].AM, cleaned_ferrotec_sheet1[i].AN, cleaned_ferrotec_sheet1[i].AO, cleaned_ferrotec_sheet1[i].AP, cleaned_ferrotec_sheet1[i].AQ, cleaned_ferrotec_sheet1[i].AR, cleaned_ferrotec_sheet1[i].AS, cleaned_ferrotec_sheet1[i].AT, cleaned_ferrotec_sheet1[i].AU, cleaned_ferrotec_sheet1[i].AV, cleaned_ferrotec_sheet1[i].AW, cleaned_ferrotec_sheet1[i].AX, cleaned_ferrotec_sheet1[i].AY, cleaned_ferrotec_sheet1[i].AZ, cleaned_ferrotec_sheet1[i].BA, cleaned_ferrotec_sheet1[i].BB ]
+                                                            },  function(err, results){
+                                                                if(err){return reject()};
+
+                                                                resolve();
+                                                            });
+
+                                                            connection.release();
+
+                                                        });
+                                                    }
+
+                                                });
+                                            }
+
+                                            function ingotInsertFERROTEC(){
+                                                return new Promise(function(resolve, reject){
+
+                                                    for(let i=0;i<cleaned_ferrotec_sheet2.length;i++){
+                                                        mysql.pool.getConnection(function(err, connection){
+                                                            if(err){return reject()};
+
+                                                            connection.query({
+                                                                sql: 'INSERT INTO tbl_ferrotec_ingot SET supplier_id=?, delivery_date=?, order_no=?, upload_time=?, username=?,ingot_lot_id=?, bundle_barcode=?',
+                                                                values: [credentials.supplier_id, credentials.delivery_date, credentials.order_no, new Date(), verified_username, cleaned_ferrotec_sheet2[i].A, cleaned_ferrotec_sheet2[i].B]
+                                                            },  function(err, results){
+                                                                if(err){return reject()};
+
+                                                                resolve();
+                                                            });
+
+                                                            connection.release();
+
+
+                                                        });
+
+
+                                                    }
+
+                                                });
+                                            }
+
+                                            return coaInsertFERROTEC().then(function(){
+                                                return ingotInsertFERROTEC().then(function(){
+
+                                                    res.send({auth:'Uploading... <br> Be patient. Large files need more time to build.'});
+
+                                                });
+
+                                            },  function(err){
+                                                res.send({err: err});
+                                            });
+
+
+                                        } else {
+                                            res.send({err: 'Invalid format.'});
+                                        }
+
+                                    } else if (supplier_name.id == credentials.supplier_id && supplier_name.id == '1001') {
                                         res.send({auth: 'TZS'});
                                     } else {
-                                        res.send({err: 'File does not matched with supplier.'});
+                                        res.send({err: 'File does not matched to supplier.'});
                                     }
 
 
