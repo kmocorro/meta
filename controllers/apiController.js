@@ -554,7 +554,7 @@ module.exports = function(app){
                                         let cleaned_ferrotec_sheet1 = [];
                                         let cleaned_ferrotec_sheet2 = [];
 
-                                        if(!sheet1_workbookJSON[1].BC){
+                                        if(!sheet1_workbookJSON[1].BC){ // valid
 
                                             // clean sheet 1 obj
                                             for(let i=4;i<sheet1_workbookJSON.length;i++){ //STARTS in 4th array
@@ -703,7 +703,220 @@ module.exports = function(app){
                                         }
 
                                     } else if (supplier_name.id == credentials.supplier_id && supplier_name.id == '1001') {
-                                        res.send({auth: 'TZS'});
+
+                                        let sheet1_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['PROPOSED CofA'],{header: 'A'});
+                                        let sheet2_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['Ingot Lot Barcodes'],{header: 1 });
+
+                                        let cleaned_tzs_sheet1 = [];
+                                        let cleaned_tzs_sheet2 = [];
+
+                                        if(!sheet1_workbookJSON[3].BV){ // valid IF property .BV exists, invalid.
+
+                                            // clean sheet 1 obj for tzs
+                                            for(let i=3;i<sheet1_workbookJSON.length;i++){ //STARTS in 3rd array
+                                                if(sheet1_workbookJSON[i].A && sheet1_workbookJSON[i].B){
+
+                                                    cleaned_tzs_sheet1.push({
+                                                        A: sheet1_workbookJSON[i].A || null,
+                                                        B: sheet1_workbookJSON[i].B || null,
+                                                        C: sheet1_workbookJSON[i].C || null,
+                                                        D: sheet1_workbookJSON[i].D || null,
+                                                        E: sheet1_workbookJSON[i].E || null,
+                                                        F: sheet1_workbookJSON[i].F || null,
+                                                        G: sheet1_workbookJSON[i].G || null,
+                                                        H: sheet1_workbookJSON[i].H || null,
+                                                        I: sheet1_workbookJSON[i].I || null,
+                                                        J: sheet1_workbookJSON[i].J || null,
+                                                        K: sheet1_workbookJSON[i].K || null,
+                                                        L: sheet1_workbookJSON[i].L || null,
+                                                        M: sheet1_workbookJSON[i].M || null,
+                                                        N: sheet1_workbookJSON[i].N || null,
+                                                        O: sheet1_workbookJSON[i].O || null,
+                                                        P: sheet1_workbookJSON[i].P || null,
+                                                        Q: sheet1_workbookJSON[i].Q || null,
+                                                        R: sheet1_workbookJSON[i].R || null,
+                                                        S: sheet1_workbookJSON[i].S || null,
+                                                        T: sheet1_workbookJSON[i].T || null,
+                                                        U: sheet1_workbookJSON[i].U || null,
+                                                        V: sheet1_workbookJSON[i].V || null,
+                                                        W: sheet1_workbookJSON[i].W || null,
+                                                        X: sheet1_workbookJSON[i].X || null,
+                                                        Y: sheet1_workbookJSON[i].Y || null,
+                                                        Z: sheet1_workbookJSON[i].Z || null,
+                                                        AA: sheet1_workbookJSON[i].AA || null,
+                                                        AB: sheet1_workbookJSON[i].AB || null,
+                                                        AC: sheet1_workbookJSON[i].AC || null,
+                                                        AD: sheet1_workbookJSON[i].AD || null,
+                                                        AE: sheet1_workbookJSON[i].AE || null,
+                                                        AF: sheet1_workbookJSON[i].AF || null,
+                                                        AG: sheet1_workbookJSON[i].AG || null,
+                                                        AH: sheet1_workbookJSON[i].AH || null,
+                                                        AI: sheet1_workbookJSON[i].AI || null,
+                                                        AJ: sheet1_workbookJSON[i].AJ || null,
+                                                        AK: sheet1_workbookJSON[i].AK || null,
+                                                        AL: sheet1_workbookJSON[i].AL || null,
+                                                        AM: sheet1_workbookJSON[i].AM || null,
+                                                        AN: sheet1_workbookJSON[i].AN || null,
+                                                        AO: sheet1_workbookJSON[i].AO || null,
+                                                        AP: sheet1_workbookJSON[i].AP || null,
+                                                        AQ: sheet1_workbookJSON[i].AQ || null,
+                                                        AR: sheet1_workbookJSON[i].AR || null,
+                                                        AS: sheet1_workbookJSON[i].AS || null,
+                                                        AT: sheet1_workbookJSON[i].AT || null,
+                                                        AU: sheet1_workbookJSON[i].AU || null,
+                                                        AV: sheet1_workbookJSON[i].AV || null,
+                                                        AW: sheet1_workbookJSON[i].AW || null,
+                                                        AX: sheet1_workbookJSON[i].AX || null,
+                                                        AY: sheet1_workbookJSON[i].AY || null,
+                                                        AZ: sheet1_workbookJSON[i].AZ || null,
+                                                        BA: sheet1_workbookJSON[i].BA || null,
+                                                        BB: sheet1_workbookJSON[i].BB || null
+                                                    });
+
+                                                } else if(!sheet1_workbookJSON[i].A){ // FOR MISSING A column
+
+                                                    cleaned_tzs_sheet1.push({
+                                                        A: sheet1_workbookJSON[i-1].A || sheet1_workbookJSON[i-2].A || sheet1_workbookJSON[i-3].A,
+                                                        B: sheet1_workbookJSON[i].B || null,
+                                                        C: sheet1_workbookJSON[i].C || null,
+                                                        D: sheet1_workbookJSON[i].D || null,
+                                                        E: sheet1_workbookJSON[i].E || sheet1_workbookJSON[i-2].E || sheet1_workbookJSON[i-3].E,
+                                                        F: sheet1_workbookJSON[i-1].F || sheet1_workbookJSON[i-2].F || sheet1_workbookJSON[i-3].F,
+                                                        G: sheet1_workbookJSON[i-1].G || sheet1_workbookJSON[i-2].G || sheet1_workbookJSON[i-3].G,
+                                                        H: sheet1_workbookJSON[i-1].H || sheet1_workbookJSON[i-2].H || sheet1_workbookJSON[i-3].H,
+                                                        I: sheet1_workbookJSON[i-1].I || sheet1_workbookJSON[i-2].I || sheet1_workbookJSON[i-3].I,
+                                                        J: sheet1_workbookJSON[i-1].J || sheet1_workbookJSON[i-2].J || sheet1_workbookJSON[i-3].J,
+                                                        K: sheet1_workbookJSON[i-1].K || sheet1_workbookJSON[i-2].K || sheet1_workbookJSON[i-3].K,
+                                                        L: sheet1_workbookJSON[i-1].L || sheet1_workbookJSON[i-2].L || sheet1_workbookJSON[i-3].L,
+                                                        M: sheet1_workbookJSON[i-1].M || sheet1_workbookJSON[i-2].M || sheet1_workbookJSON[i-3].M,
+                                                        N: sheet1_workbookJSON[i-1].N || sheet1_workbookJSON[i-2].N || sheet1_workbookJSON[i-3].N,
+                                                        O: sheet1_workbookJSON[i-1].O || sheet1_workbookJSON[i-2].O || sheet1_workbookJSON[i-3].O,
+                                                        P: sheet1_workbookJSON[i-1].P || sheet1_workbookJSON[i-2].P || sheet1_workbookJSON[i-3].P,
+                                                        Q: sheet1_workbookJSON[i-1].Q || sheet1_workbookJSON[i-2].Q || sheet1_workbookJSON[i-3].Q,
+                                                        R: sheet1_workbookJSON[i-1].R || sheet1_workbookJSON[i-2].R || sheet1_workbookJSON[i-3].R,
+                                                        S: sheet1_workbookJSON[i-1].S || sheet1_workbookJSON[i-2].S || sheet1_workbookJSON[i-3].S,
+                                                        T: sheet1_workbookJSON[i-1].T || sheet1_workbookJSON[i-2].T || sheet1_workbookJSON[i-3].T,
+                                                        U: sheet1_workbookJSON[i-1].U || sheet1_workbookJSON[i-2].U || sheet1_workbookJSON[i-3].U,
+                                                        V: sheet1_workbookJSON[i-1].V || sheet1_workbookJSON[i-2].V || sheet1_workbookJSON[i-3].V,
+                                                        W: sheet1_workbookJSON[i-1].W || sheet1_workbookJSON[i-2].W || sheet1_workbookJSON[i-3].W,
+                                                        X: sheet1_workbookJSON[i-1].X || sheet1_workbookJSON[i-2].X || sheet1_workbookJSON[i-3].X,
+                                                        Y: sheet1_workbookJSON[i-1].Y || sheet1_workbookJSON[i-2].Y || sheet1_workbookJSON[i-3].Y,
+                                                        Z: sheet1_workbookJSON[i-1].Z || sheet1_workbookJSON[i-2].Z || sheet1_workbookJSON[i-3].Z,
+                                                        AA: sheet1_workbookJSON[i-1].AA || sheet1_workbookJSON[i-2].AA || sheet1_workbookJSON[i-3].AA,
+                                                        AB: sheet1_workbookJSON[i-1].AB || sheet1_workbookJSON[i-2].AB || sheet1_workbookJSON[i-3].AB,
+                                                        AC: sheet1_workbookJSON[i-1].AC || sheet1_workbookJSON[i-2].AC || sheet1_workbookJSON[i-3].AC,
+                                                        AD: sheet1_workbookJSON[i-1].AD || sheet1_workbookJSON[i-2].AD || sheet1_workbookJSON[i-3].AD,
+                                                        AE: sheet1_workbookJSON[i-1].AE || sheet1_workbookJSON[i-2].AE || sheet1_workbookJSON[i-3].AE,
+                                                        AF: sheet1_workbookJSON[i-1].AF || sheet1_workbookJSON[i-2].AF || sheet1_workbookJSON[i-3].AF,
+                                                        AG: sheet1_workbookJSON[i-1].AG || sheet1_workbookJSON[i-2].AG || sheet1_workbookJSON[i-3].AG,
+                                                        AH: sheet1_workbookJSON[i-1].AH || sheet1_workbookJSON[i-2].AH || sheet1_workbookJSON[i-3].AH,
+                                                        AI: sheet1_workbookJSON[i-1].AI || sheet1_workbookJSON[i-2].AI || sheet1_workbookJSON[i-3].AI,
+                                                        AJ: sheet1_workbookJSON[i-1].AJ || sheet1_workbookJSON[i-2].AJ || sheet1_workbookJSON[i-3].AJ,
+                                                        AK: sheet1_workbookJSON[i-1].AK || sheet1_workbookJSON[i-2].AK || sheet1_workbookJSON[i-3].AK,
+                                                        AL: sheet1_workbookJSON[i-1].AL || sheet1_workbookJSON[i-2].AL || sheet1_workbookJSON[i-3].AL,
+                                                        AM: sheet1_workbookJSON[i-1].AM || sheet1_workbookJSON[i-2].AM || sheet1_workbookJSON[i-3].AM,
+                                                        AN: sheet1_workbookJSON[i-1].AN || sheet1_workbookJSON[i-2].AN || sheet1_workbookJSON[i-3].AN,
+                                                        AO: sheet1_workbookJSON[i-1].AO || sheet1_workbookJSON[i-2].AO || sheet1_workbookJSON[i-3].AO,
+                                                        AP: sheet1_workbookJSON[i-1].AP || sheet1_workbookJSON[i-2].AP || sheet1_workbookJSON[i-3].AP,
+                                                        AQ: sheet1_workbookJSON[i-1].AQ || sheet1_workbookJSON[i-2].AQ || sheet1_workbookJSON[i-3].AQ,
+                                                        AR: sheet1_workbookJSON[i-1].AR || sheet1_workbookJSON[i-2].AR || sheet1_workbookJSON[i-3].AR,
+                                                        AS: sheet1_workbookJSON[i-1].AS || sheet1_workbookJSON[i-2].AS || sheet1_workbookJSON[i-3].AS,
+                                                        AT: sheet1_workbookJSON[i-1].AT || sheet1_workbookJSON[i-2].AT || sheet1_workbookJSON[i-3].AT,
+                                                        AU: sheet1_workbookJSON[i-1].AU || sheet1_workbookJSON[i-2].AU || sheet1_workbookJSON[i-3].AU,
+                                                        AV: sheet1_workbookJSON[i-1].AV || sheet1_workbookJSON[i-2].AV || sheet1_workbookJSON[i-3].AV,
+                                                        AW: sheet1_workbookJSON[i-1].AW || sheet1_workbookJSON[i-2].AW || sheet1_workbookJSON[i-3].AW,
+                                                        AX: sheet1_workbookJSON[i-1].AX || sheet1_workbookJSON[i-2].AX || sheet1_workbookJSON[i-3].AX,
+                                                        AY: sheet1_workbookJSON[i-1].AY || sheet1_workbookJSON[i-2].AY || sheet1_workbookJSON[i-3].AY,
+                                                        AZ: sheet1_workbookJSON[i-1].AZ || sheet1_workbookJSON[i-2].AZ || sheet1_workbookJSON[i-3].AZ,
+                                                        BA: sheet1_workbookJSON[i-1].BA || sheet1_workbookJSON[i-2].BA || sheet1_workbookJSON[i-3].BA,
+                                                        BB: sheet1_workbookJSON[i].BB || null
+                                                    });
+                                                }
+
+                                            }
+
+                                            // clean sheet 2 obj
+                                            for(let i=1;i<sheet2_workbookJSON.length;i++){
+                                                if(sheet2_workbookJSON[i][0] !== null){
+
+                                                    for(let j=1;j<sheet2_workbookJSON[i].length;j++){
+                                                        cleaned_tzs_sheet2.push({
+                                                            A: sheet2_workbookJSON[i][0] || null,
+                                                            B: sheet2_workbookJSON[i][j] || null
+                                                        });
+                                                    }
+
+                                                }
+                                            }
+
+                                            function coaInsertTZS(){
+                                                return new Promise(function(resolve, reject){
+                                                    
+                                                    for(let i=0;i<cleaned_tzs_sheet1.length;i++){
+                                                        mysql.pool.getConnection(function(err, connection){
+                                                            if(err){return reject()}
+
+                                                            connection.query({ // pallet no not included in db.
+                                                                sql: 'INSERT INTO tbl_tzs_coa SET supplier_id=?, delivery_date=?, order_no=?, upload_time=?, username=?, ingot_lot_id=?, box_id=?, location_id=?,wafer_pcs=?,block_length=?,totalCrystal_length=?,seedBlock=?,MCLT_top=?,MCLT_tail=?,RES_top=?,RES_tail=?,Oi_top=?,Oi_tail=?,Cs_top=?,Cs_tail=?,Dia_ave=?,Dia_std=?,Dia_min=?,Dia_max=?,Flat_ave=?,Flat_std=?,Flat_min=?,Flat_max=?,Flat_taper1=?,Flat_taper2=?,Flat_taper_min=?,Flat_taper_max=?,Corner_ave=?,Corner_std=?,Corner_min=?,Corner_max=?,Center_ave=?,Center_std=?,Center_min=?,Center_max=?,TTV_ave=?,TTV_std=?,TTV_min=?,TTV_max=?,RA_ave=?,RA_std=?,RA_min=?,RA_max=?,RZ_ave=?,RZ_std=?,RZ_min=?,RZ_max=?,Ver_ave=?,Ver_std=?,Ver_min=?,Ver_max=?,Copper_content=?,Iron_content=?,AcceptReject=?',
+                                                                values: [credentials.supplier_id, credentials.delivery_date, credentials.order_no, new Date(), verified_username, cleaned_tzs_sheet1[i].A, cleaned_tzs_sheet1[i].B,  cleaned_tzs_sheet1[i].C, cleaned_tzs_sheet1[i].D, cleaned_tzs_sheet1[i].E, cleaned_tzs_sheet1[i].F, cleaned_tzs_sheet1[i].G, cleaned_tzs_sheet1[i].H, cleaned_tzs_sheet1[i].I, cleaned_tzs_sheet1[i].J, cleaned_tzs_sheet1[i].K, cleaned_tzs_sheet1[i].L, cleaned_tzs_sheet1[i].M, cleaned_tzs_sheet1[i].N, cleaned_tzs_sheet1[i].O, cleaned_tzs_sheet1[i].P, cleaned_tzs_sheet1[i].Q, cleaned_tzs_sheet1[i].R, cleaned_tzs_sheet1[i].S, cleaned_tzs_sheet1[i].T, cleaned_tzs_sheet1[i].U, cleaned_tzs_sheet1[i].V, cleaned_tzs_sheet1[i].W, cleaned_tzs_sheet1[i].X, cleaned_tzs_sheet1[i].Y, cleaned_tzs_sheet1[i].Z, cleaned_tzs_sheet1[i].AA, cleaned_tzs_sheet1[i].AB, cleaned_tzs_sheet1[i].AC, cleaned_tzs_sheet1[i].AD, cleaned_tzs_sheet1[i].AE, cleaned_tzs_sheet1[i].AF, cleaned_tzs_sheet1[i].AG, cleaned_tzs_sheet1[i].AH, cleaned_tzs_sheet1[i].AI, cleaned_tzs_sheet1[i].AJ, cleaned_tzs_sheet1[i].AK, cleaned_tzs_sheet1[i].AL, cleaned_tzs_sheet1[i].AM, cleaned_tzs_sheet1[i].AN, cleaned_tzs_sheet1[i].AO, cleaned_tzs_sheet1[i].AP, cleaned_tzs_sheet1[i].AQ, cleaned_tzs_sheet1[i].AR, cleaned_tzs_sheet1[i].AS, cleaned_tzs_sheet1[i].AT, cleaned_tzs_sheet1[i].AU, cleaned_tzs_sheet1[i].AV, cleaned_tzs_sheet1[i].AW, cleaned_tzs_sheet1[i].AX, cleaned_tzs_sheet1[i].AY, cleaned_tzs_sheet1[i].AZ, cleaned_tzs_sheet1[i].BA, cleaned_tzs_sheet1[i].BB ]
+                                                            },  function(err, results){
+                                                                if(err){return reject()};
+
+                                                                resolve();
+                                                            });
+
+                                                            connection.release();
+
+                                                        });
+                                                    }
+
+                                                });
+                                            }
+
+                                            function ingotInsertTZS(){
+                                                return new Promise(function(resolve, reject){
+
+                                                    for(let i=0;i<cleaned_tzs_sheet2.length;i++){
+                                                        mysql.pool.getConnection(function(err, connection){
+                                                            if(err){return reject()};
+
+                                                            connection.query({
+                                                                sql: 'INSERT INTO tbl_ingot_lot_barcodes SET supplier_id=?, delivery_date=?, order_no=?, upload_time=?, username=?,ingot_lot_id=?, bundle_barcode=?',
+                                                                values: [credentials.supplier_id, credentials.delivery_date, credentials.order_no, new Date(), verified_username, cleaned_tzs_sheet2[i].A, cleaned_tzs_sheet2[i].B]
+                                                            },  function(err, results){
+                                                                if(err){return reject()};
+
+                                                                resolve();
+                                                            });
+
+                                                            connection.release();
+
+
+                                                        });
+
+
+                                                    }
+
+
+                                                });
+                                            }
+
+                                            return coaInsertTZS().then(function(){
+                                                return ingotInsertTZS().then(function(){
+
+                                                    res.send({auth:'Uploading... <br> Be patient. Large files need more time to build.'});
+
+                                                },  function(err){
+                                                    res.send({err: 'error at ingot insert tzs'});
+                                                });
+                                            },  function(err){
+                                                res.send({err: 'error at coa insert tzs'});
+                                            });
+
+                                        } else {
+                                            res.send({err: 'Invalid format.'});
+                                        }
+
                                     } else {
                                         res.send({err: 'File does not matched to supplier.'});
                                     }
