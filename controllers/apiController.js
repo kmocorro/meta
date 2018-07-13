@@ -780,7 +780,7 @@ module.exports = function(app){
                                                         B: sheet1_workbookJSON[i].B || null,
                                                         C: sheet1_workbookJSON[i].C || null,
                                                         D: sheet1_workbookJSON[i].D || null,
-                                                        E: sheet1_workbookJSON[i].E || sheet1_workbookJSON[i-2].E || sheet1_workbookJSON[i-3].E,
+                                                        E: sheet1_workbookJSON[i-1].E || sheet1_workbookJSON[i-2].E || sheet1_workbookJSON[i-3].E,
                                                         F: sheet1_workbookJSON[i-1].F || sheet1_workbookJSON[i-2].F || sheet1_workbookJSON[i-3].F,
                                                         G: sheet1_workbookJSON[i-1].G || sheet1_workbookJSON[i-2].G || sheet1_workbookJSON[i-3].G,
                                                         H: sheet1_workbookJSON[i-1].H || sheet1_workbookJSON[i-2].H || sheet1_workbookJSON[i-3].H,
