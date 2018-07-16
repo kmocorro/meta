@@ -167,7 +167,7 @@ module.exports = function(app){
                     return new Promise(function(resolve, reject){
 
                         connection.query({
-                            sql: 'SELECT * FROM tbl_coa_box ORDER BY id DESC LIMIT 50'
+                            sql: 'SELECT * FROM tbl_coa_box ORDER BY id DESC LIMIT 10'
                         },  function(err, results){
                             if(err){return reject()};
 
@@ -176,7 +176,7 @@ module.exports = function(app){
                                 let recent_activity_obj = [];
                                 let kitting_settings_obj = [];
                                 
-                                for(let i=0;i<results.slice(-5).length;i++){
+                                for(let i=0;i<results.slice(-8).length;i++){
                                     if(results[i].box_id){
 
                                         recent_activity_obj.push({
@@ -188,7 +188,7 @@ module.exports = function(app){
                                         });
                                     }
                                 }
-
+                                /**
                                 for(let i=0;i<results.length;i++){
                                     if(results[i].box_id){
 
@@ -200,11 +200,11 @@ module.exports = function(app){
                                             username: results[i].username
                                         });
                                     }
-                                }
+                                } */
 
                                 let data = {
                                     recent : recent_activity_obj,
-                                    settings: kitting_settings_obj
+                                    //settings: kitting_settings_obj
                                 }
 
                                 resolve(data);

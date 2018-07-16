@@ -100,9 +100,11 @@
                                 <li class="active">
                                     <a href="#upload" data-toggle="tab">Upload</a>
                                 </li>
+                                <!--
                                 <li class="">
                                     <a href="#settings" data-toggle="tab">Settings</a>
                                 </li>
+                                -->
                             </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="upload">
@@ -143,7 +145,7 @@
                                         </div>
                                         <div class="col-md-8">
                                             <h4 class="coa-body-form">Recent activity</h4>
-                                            <ul class="timeline timeline-invers">
+                                            <ul class="timeline timeline">
                                                 <li class="time-label">
                                                     <span class="bg-red">
                                                         <%= todayDate %>
@@ -155,11 +157,14 @@
                                                         </i>
                                                         <div class="timeline-item">
                                                             <span class="time">
-                                                                <i class="fa fa-clock-o"></i> <%= data.recent[i].upload_date %>
+                                                                <i class="fa fa-clock-o"></i> <%= data.recent[i].upload_date %>&nbsp;
+                                                                <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>" class="btn btn-default btn-flat btn-xs">edit</a>
+                                                                <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>" class=" btn btn-default btn-flat btn-xs">&nbsp;<i class="fa fa-close"></i></a>
                                                             </span>
                                                             <h3 class="timeline-header"><%= data.recent[i].runcard %> has been tagged to <%= data.recent[i].box_id %></h3>
                                                             <div class="timeline-body"> Transaction id: <%= data.recent[i].id %>, uploaded by <%= data.recent[i].username %>. </div>
-                                                            <div class="timeline-footer"></div>
+                                                            <div class="timeline-footer">
+                                                            </div>
                                                         </div>
                                                     </li>
                                                 <% } %>
@@ -168,40 +173,9 @@
                                                 </li>
                                             </ul>
                                         </div>
-                                    </div>
-                                </div>
-                                <div class="tab-pane" id="settings">
-                                    <div class="row">
-                                        <div class="col-md-11 col-centered table-responsive no-padding">
-                                            <h4 class="coa-body-form">Box ID & Runcard Details</h4>
-                                            <table class="table table-striped">
-                                                <tbody>
-                                                    <thead>
-                                                    <tr>
-                                                        <th>ID</th>
-                                                        <th>Upload Date</th>
-                                                        <th>Box Id</th>
-                                                        <th>Runcard</th>
-                                                        <th>Username</th>
-                                                        <th>Danger zone</th>
-                                                    </tr>
-                                                    </thead>
-                                                    <% for(let i=0; i<data.settings.length; i++) { %>
-                                                    <tr>
-                                                        <td><%= data.settings[i].id %></td>
-                                                        <td><%= data.settings[i].upload_date %></td>
-                                                        <td><%= data.settings[i].box_id %></td>
-                                                        <td><%= data.settings[i].runcard %></td>
-                                                        <td><%= data.settings[i].username %></td>
-                                                        <td><a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.settings[i].id %>">edit</a>  /  <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.settings[i].id %>">delete</a></td>
-                                                    </tr>
-                                                    <% } %>
-                                                </tbody>
-                                            </table>
-                                        </div>
                                         <!---->
-                                        <% for(let i=0; i<data.settings.length; i++) { %>
-                                        <div class="modal modal-default" id="modaldelete<%= data.settings[i].id %>">
+                                        <% for(let i=0; i<data.recent.length; i++) { %>
+                                        <div class="modal modal-default" id="modaldelete<%= data.recent[i].id %>">
                                             <div class="modal-dialog modal-settings">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
@@ -224,25 +198,25 @@
                                                                 </tr>
                                                                 </thead>
                                                                 <tr>
-                                                                    <td><%= data.settings[i].id %></td>
-                                                                    <td><%= data.settings[i].upload_date %></td>
-                                                                    <td><%= data.settings[i].box_id %></td>
-                                                                    <td><%= data.settings[i].runcard %></td>
-                                                                    <td><%= data.settings[i].username %></td>
+                                                                    <td><%= data.recent[i].id %></td>
+                                                                    <td><%= data.recent[i].upload_date %></td>
+                                                                    <td><%= data.recent[i].box_id %></td>
+                                                                    <td><%= data.recent[i].runcard %></td>
+                                                                    <td><%= data.recent[i].username %></td>
                                                                 </tr>
                                                             </tbody>
                                                         </table>
                                                     </div>
                                                     <div class="modal-footer">
-                                                        <form id="deletecoadetails<%= data.settings[i].id %>">
+                                                        <form id="deletecoadetails<%= data.recent[i].id %>">
                                                             <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
-                                                            <input type="hidden" name="deleteById" value="<%= data.settings[i].id %>">
-                                                            <input type="hidden" name="deleteByUsername" value="<%= data.settings[i].username %>">
-                                                            <div id="responseDivModal<%= data.settings[i].id %>">
+                                                            <input type="hidden" name="deleteById" value="<%= data.recent[i].id %>">
+                                                            <input type="hidden" name="deleteByUsername" value="<%= data.recent[i].username %>">
+                                                            <div id="responseDivModal<%= data.recent[i].id %>">
                                                                 <!-- response here-->
                                                             </div>
-                                                            <div id="toHideButtonIfSuccess<%= data.settings[i].id %>">
-                                                                <button type="submit" id="deletebykitting<%= data.settings[i].id %>" class="btn btn-primary btn-block btn-danger btn-flat">Yes, Delete</button>
+                                                            <div id="toHideButtonIfSuccess<%= data.recent[i].id %>">
+                                                                <button type="submit" id="deletebykitting<%= data.recent[i].id %>" class="btn btn-primary btn-block btn-danger btn-flat">Yes, Delete</button>
                                                             </div>
                                                         </form>
                                                     </div>
@@ -251,34 +225,34 @@
                                         </div>
                                         <% } %>
                                         <!---->
-                                        <% for(let i=0; i<data.settings.length; i++) { %>
-                                        <div class="modal modal-default" id="modalwarning<%= data.settings[i].id %>">
+                                        <% for(let i=0; i<data.recent.length; i++) { %>
+                                        <div class="modal modal-default" id="modalwarning<%= data.recent[i].id %>">
                                             <div class="modal-dialog modal-settings">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
-                                                        <h4 class="modal-title">Edit ID <%= data.settings[i].id %></h4>
+                                                        <h4 class="modal-title">Edit ID <%= data.recent[i].id %></h4>
                                                     </div>
-                                                    <form id="editcoadetails<%= data.settings[i].id %>">
+                                                    <form id="editcoadetails<%= data.recent[i].id %>">
                                                         <div class="modal-body">
-                                                            <p>You can only <span class="label label-warning">EDIT</span> these fields.</p>
+                                                            <p>You can only EDIT these fields.</p>
                                                                 <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
-                                                                <input type="hidden" name="edit_id" value="<%= data.settings[i].id %>">
-                                                                <input type="hidden" name="edit_username" value="<%= data.settings[i].username %>">
+                                                                <input type="hidden" name="edit_id" value="<%= data.recent[i].id %>">
+                                                                <input type="hidden" name="edit_username" value="<%= data.recent[i].username %>">
                                                                 <label class="coa-form-label">Box ID:</label>
-                                                                <input type="text" class="form-control form-kitting-interface" id="edit_boxid<%= data.settings[i].id %>" required name="edit_boxid" placeholder="<%= data.settings[i].box_id %>">
+                                                                <input type="text" class="form-control form-kitting-interface" id="edit_boxid<%= data.recent[i].id %>" required name="edit_boxid" placeholder="<%= data.recent[i].box_id %>" value="<%= data.recent[i].box_id %>">
                                                                 <br>
                                                                 <label class="coa-form-label">Runcard:</label>
-                                                                <input type="text" class="form-control form-kitting-interface" id="edit_runcard<%= data.settings[i].id %>" required name="edit_runcard" placeholder="<%= data.settings[i].runcard %>">
+                                                                <input type="text" class="form-control form-kitting-interface" id="edit_runcard<%= data.recent[i].id %>" required name="edit_runcard" placeholder="<%= data.recent[i].runcard %>" value="<%= data.recent[i].runcard %>">
                                                         </div>
                                                         <div class="modal-footer">
-                                                            <div id="responseDivEditModal<%= data.settings[i].id %>">
+                                                            <div id="responseDivEditModal<%= data.recent[i].id %>">
                                                                 <!-- response here-->
                                                             </div>
-                                                            <div id="toHideButtonEditIfSuccess<%= data.settings[i].id %>">
-                                                                <button type="submit" id="editbykitting<%= data.settings[i].id %>" class="btn btn-primary btn-block btn-warning btn-flat">Edit</button>
+                                                            <div id="toHideButtonEditIfSuccess<%= data.recent[i].id %>">
+                                                                <button type="submit" id="editbykitting<%= data.recent[i].id %>" class="btn btn-primary btn-block btn-warning btn-flat">Edit</button>
                                                             </div>
                                                         </div>
                                                     </form>
@@ -288,6 +262,7 @@
                                         <% } %>
                                     </div>
                                 </div>
+                                
                             </div>
                         </div>
                     </div>
@@ -362,7 +337,7 @@
                             responseDiv.innerHTML = resFromServer.auth;
 
                             
-                            setInterval(function(){
+                            setTimeout(function(){
                                 window.location.href="";
                             }, 50);
 
@@ -378,7 +353,7 @@
                                 responseDiv.className = classes.join(" "); 
                                 responseDiv.innerHTML = resFromServer.auth;
                                 
-                                setInterval(function(){
+                                setTimeout(function(){
                                     window.location.href="";
                                 }, 50);
                             }
@@ -491,19 +466,19 @@
 <script>
     window.addEventListener('load', function(){
         
-        <% for(let i=0; i<data.settings.length; i++) { %>
-            function goDelete<%= data.settings[i].id %>(){
+        <% for(let i=0; i<data.recent.length; i++) { %>
+            function goDelete<%= data.recent[i].id %>(){
 
-                let xhr<%= data.settings[i].id %> = new XMLHttpRequest();
-                let fd_delete<%= data.settings[i].id %> = new FormData(form<%= data.settings[i].id %>); // bind form data object and form element
+                let xhr<%= data.recent[i].id %> = new XMLHttpRequest();
+                let fd_delete<%= data.recent[i].id %> = new FormData(form<%= data.recent[i].id %>); // bind form data object and form element
                 
-                xhr<%= data.settings[i].id %>.addEventListener('load', function(event){
+                xhr<%= data.recent[i].id %>.addEventListener('load', function(event){
                     console.log(event.target.response);
                     let resFromServer = JSON.parse(event.target.response);
-                    document.getElementById('responseDivModal<%= data.settings[i].id %>').style.display='block';
+                    document.getElementById('responseDivModal<%= data.recent[i].id %>').style.display='block';
 
                     function resDiv(){
-                        let responseDiv = document.getElementById('responseDivModal<%= data.settings[i].id %>');
+                        let responseDiv = document.getElementById('responseDivModal<%= data.recent[i].id %>');
                         
                         if(resFromServer.err){
 
@@ -530,12 +505,12 @@
                                 responseDiv.classList.add("responseDivSuccess");
                                 responseDiv.innerHTML = resFromServer.auth;
 
-                                let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.settings[i].id %>');
+                                let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.recent[i].id %>');
                                     hideDiv.style.display = "none";
 
                                 setTimeout(function(){
-                                    window.location.reload();
-                                }, 500);
+                                    window.location.href="/coa/kitting";
+                                }, 100);
                                 
                             } else {
                                 // For IE9
@@ -549,12 +524,12 @@
                                     responseDiv.className = classes.join(" "); 
                                     responseDiv.innerHTML = resFromServer.auth;
 
-                                    let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.settings[i].id %>');
+                                    let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.recent[i].id %>');
                                         hideDiv.style.display = "none";
 
                                     setTimeout(function(){
-                                        window.location.reload();
-                                    }, 500);
+                                        window.location.href="/coa/kitting";
+                                    }, 100);
                                     
                                 }
                             }
@@ -566,22 +541,22 @@
                     resDiv();
                 });
 
-                xhr<%= data.settings[i].id %>.addEventListener('error', function(event){
+                xhr<%= data.recent[i].id %>.addEventListener('error', function(event){
                     alert('Something went wrong.');
                 });
 
-                xhr<%= data.settings[i].id %>.open('POST', '/api/kittingdelete');
-                xhr<%= data.settings[i].id %>.send(fd_delete<%= data.settings[i].id %>);
+                xhr<%= data.recent[i].id %>.open('POST', '/api/kittingdelete');
+                xhr<%= data.recent[i].id %>.send(fd_delete<%= data.recent[i].id %>);
 
             }
 
             // access FORM element
-            let form<%= data.settings[i].id %> = document.getElementById('deletecoadetails<%= data.settings[i].id %>');
+            let form<%= data.recent[i].id %> = document.getElementById('deletecoadetails<%= data.recent[i].id %>');
             // take over submit event
-            form<%= data.settings[i].id %>.addEventListener('submit', function(event){
+            form<%= data.recent[i].id %>.addEventListener('submit', function(event){
                 event.preventDefault();
-                goDelete<%= data.settings[i].id %>();
-                document.getElementById('deletebykitting<%= data.settings[i].id %>').setAttribute("disabled", "disabled");
+                goDelete<%= data.recent[i].id %>();
+                document.getElementById('deletebykitting<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
             });
 
         <% } %>
@@ -593,19 +568,19 @@
 <script>
     window.addEventListener('load', function(){
         
-        <% for(let i=0; i<data.settings.length; i++) { %>
-            function goEdit<%= data.settings[i].id %>(){
+        <% for(let i=0; i<data.recent.length; i++) { %>
+            function goEdit<%= data.recent[i].id %>(){
 
-                let xhr<%= data.settings[i].id %> = new XMLHttpRequest();
-                let fd_delete<%= data.settings[i].id %> = new FormData(form<%= data.settings[i].id %>); // bind form data object and form element
+                let xhr<%= data.recent[i].id %> = new XMLHttpRequest();
+                let fd_delete<%= data.recent[i].id %> = new FormData(form<%= data.recent[i].id %>); // bind form data object and form element
                 
-                xhr<%= data.settings[i].id %>.addEventListener('load', function(event){
+                xhr<%= data.recent[i].id %>.addEventListener('load', function(event){
                     console.log(event.target.response);
                     let resFromServer = JSON.parse(event.target.response);
-                    document.getElementById('responseDivEditModal<%= data.settings[i].id %>').style.display='block';
+                    document.getElementById('responseDivEditModal<%= data.recent[i].id %>').style.display='block';
 
                     function resDiv(){
-                        let responseDiv = document.getElementById('responseDivEditModal<%= data.settings[i].id %>');
+                        let responseDiv = document.getElementById('responseDivEditModal<%= data.recent[i].id %>');
                         
                         if(resFromServer.err){
 
@@ -632,12 +607,11 @@
                                 responseDiv.classList.add("responseDivSuccess");
                                 responseDiv.innerHTML = resFromServer.auth;
 
-                                let hideDiv = document.getElementById('toHideButtonEditIfSuccess<%= data.settings[i].id %>');
+                                let hideDiv = document.getElementById('toHideButtonEditIfSuccess<%= data.recent[i].id %>');
                                     hideDiv.style.display = "none";
 
-                                setTimeout(function(){
-                                    window.location.reload();
-                                }, 500);
+                                
+                                window.location.href="/coa/kitting";
                                 
                             } else {
                                 // For IE9
@@ -651,12 +625,11 @@
                                     responseDiv.className = classes.join(" "); 
                                     responseDiv.innerHTML = resFromServer.auth;
 
-                                    let hideDiv = document.getElementById('toHideButtonEditIfSuccess<%= data.settings[i].id %>');
+                                    let hideDiv = document.getElementById('toHideButtonEditIfSuccess<%= data.recent[i].id %>');
                                         hideDiv.style.display = "none";
 
-                                    setTimeout(function(){
-                                        window.location.reload();
-                                    }, 500);
+                                    
+                                    window.location.href="/coa/kitting";
                                     
                                 }
                             }
@@ -668,24 +641,24 @@
                     resDiv();
                 });
 
-                xhr<%= data.settings[i].id %>.addEventListener('error', function(event){
+                xhr<%= data.recent[i].id %>.addEventListener('error', function(event){
                     alert('Something went wrong.');
                 });
 
-                xhr<%= data.settings[i].id %>.open('POST', '/api/kittingedit');
-                xhr<%= data.settings[i].id %>.send(fd_delete<%= data.settings[i].id %>);
+                xhr<%= data.recent[i].id %>.open('POST', '/api/kittingedit');
+                xhr<%= data.recent[i].id %>.send(fd_delete<%= data.recent[i].id %>);
 
             }
 
             // access FORM element
-            let form<%= data.settings[i].id %> = document.getElementById('editcoadetails<%= data.settings[i].id %>');
+            let form<%= data.recent[i].id %> = document.getElementById('editcoadetails<%= data.recent[i].id %>');
             // take over submit event
-            form<%= data.settings[i].id %>.addEventListener('submit', function(event){
+            form<%= data.recent[i].id %>.addEventListener('submit', function(event){
                 event.preventDefault();
-                goEdit<%= data.settings[i].id %>();
-                document.getElementById('editbykitting<%= data.settings[i].id %>').setAttribute("disabled", "disabled");
-                document.getElementById('edit_boxid<%= data.settings[i].id %>').setAttribute("disabled", "disabled");
-                document.getElementById('edit_runcard<%= data.settings[i].id %>').setAttribute("disabled", "disabled");
+                goEdit<%= data.recent[i].id %>();
+                document.getElementById('editbykitting<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
+                document.getElementById('edit_boxid<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
+                document.getElementById('edit_runcard<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
             });
 
         <% } %>
