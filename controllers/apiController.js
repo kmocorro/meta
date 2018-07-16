@@ -36,7 +36,6 @@ module.exports = function(app){
     });
 
     /**redirect */
-
     app.get('/kitting', function(req, res){
         res.redirect('/coa/kitting');
     });
@@ -1264,4 +1263,47 @@ module.exports = function(app){
 
     });
 
+    /** delete COA file by invoice number */
+    app.post('/api/qadelete', verifyToken, function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){ return res.send({err: 'Invalid action. Try again'})};
+
+            if(req.userID && req.claims){
+                if(fields){
+
+                    console.log(fields);
+
+                } else {
+                    res.send({err: 'Invalid form. Try again'});
+                }
+            } else {
+                res.send({err: 'Invalid token. Please refresh page.'});
+            }
+
+        });
+
+    });
+
+    /** edit COA file invoice and delivery date */
+    app.post('/api/qaedit', verifyToken, function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){ return res.send({err: 'Invalid action. Try again.'})};
+
+            if(req.userID && req.claim){
+                if(fields){
+
+
+                } else {
+                    res.send({err: 'Invalid form. Try again'});
+                }
+            } else {
+                res.send({err: 'Invalid token. Please refresh page.'});
+            }
+
+        });
+    });
 }

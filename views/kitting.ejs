@@ -158,8 +158,17 @@
                                                         <div class="timeline-item">
                                                             <span class="time">
                                                                 <i class="fa fa-clock-o"></i> <%= data.recent[i].upload_date %>&nbsp;
-                                                                <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>" class="btn btn-default btn-flat btn-xs">edit</a>
-                                                                <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>" class=" btn btn-default btn-flat btn-xs">&nbsp;<i class="fa fa-close"></i></a>
+                                                                <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                                    <span class="fa fa-ellipsis-v"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu coa-dropdown" role="menu">
+                                                                    <li>
+                                                                        <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>">Edit</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>">Remove</a>
+                                                                    </li>
+                                                                </ul>
                                                             </span>
                                                             <h3 class="timeline-header"><%= data.recent[i].runcard %> has been tagged to <%= data.recent[i].box_id %></h3>
                                                             <div class="timeline-body"> Transaction id: <%= data.recent[i].id %>, uploaded by <%= data.recent[i].username %>. </div>
@@ -383,6 +392,8 @@
             event.preventDefault();
             //document.getElementById('responseDiv').style.display="none";
             goUpload();
+            document.getElementById('submitkitting').setAttribute("disabled", "disabled");
+
         });
 
 

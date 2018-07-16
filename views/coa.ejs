@@ -171,6 +171,19 @@
                                                     <div class="timeline-item">
                                                         <span class="time">
                                                             <i class="fa fa-clock-o"></i> <%= data.recent[i].date %>
+                                                            <!-- hide for now as we dont have means to delete/edit using primary key / invoice without using special characters 
+                                                            <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                                <span class="fa fa-ellipsis-v"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu coa-dropdown" role="menu">
+                                                                <li>
+                                                                    <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].invoice %>">Edit</a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].invoice %>">Remove</a>
+                                                                </li>
+                                                            </ul>
+                                                            -->
                                                         </span>
                                                         <h3 class="timeline-header"><%= data.recent[i].invoice %> has been uploaded</h3>
                                                         <div class="timeline-body">Delivery date: <%= data.recent[i].delivery_date %> | Supplier: <%= data.recent[i].supplier %> | uploaded by <%= data.recent[i].username %></div>
@@ -183,6 +196,99 @@
                                                 </li>
                                             </ul>
                                         </div>
+                                        <!---->
+                                        <% for(let i=0; i<data.recent.length; i++) { %>
+                                        <div class="modal modal-default" id="modaldelete<%= data.recent[i].invoice %>">
+                                            <div class="modal-dialog modal-settings">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        <h4 class="modal-title">Think twice! You cannot undo this action.</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to <span class="label label-danger">DELETE</span> this CoA details?</p>
+                                                        <table class="table table-striped">
+                                                            <tbody>
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>Upload Date</th>
+                                                                    <th>Delivery Date</th>
+                                                                    <th>Invoice</th>
+                                                                    <th>Supplier</th>
+                                                                    <th>Username</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tr>
+                                                                    <td><%= data.recent[i].date %></td>
+                                                                    <td><%= data.recent[i].delivery_date %></td>
+                                                                    <td><%= data.recent[i].invoice %></td>
+                                                                    <td><%= data.recent[i].supplier %></td>
+                                                                    <td><%= data.recent[i].username %></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <form id="deletecoadetails<%= data.recent[i].invoice %>">
+                                                            <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                            <input type="hidden" name="deleteByInvoice" value="<%= data.recent[i].invoice %>">
+                                                            <input type="hidden" name="deleteByUsername" value="<%= data.recent[i].username %>">
+                                                            <div id="responseDivModal<%= data.recent[i].invoice %>">
+                                                                <!-- response here-->
+                                                            </div>
+                                                            <div id="toHideButtonIfSuccess<%= data.recent[i].invoice %>">
+                                                                <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</a>
+                                                                <button type="submit" id="deletebyqa<%= data.recent[i].invoice %>" class="btn btn-danger btn-flat">Yes, Delete</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                        <!---->
+                                        <% for(let i=0; i<data.recent.length; i++) { %>
+                                        <div class="modal modal-default" id="modalwarning<%= data.recent[i].invoice %>">
+                                            <div class="modal-dialog modal-settings">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        <h4 class="modal-title">Edit invoice <%= data.recent[i].invoice %> created by <%= data.recent[i].username %> </h4>
+                                                    </div>
+                                                    <form id="editcoadetails<%= data.recent[i].invoice %>">
+                                                        <div class="modal-body">
+                                                                <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                                <input type="hidden" name="edit_invoice" value="<%= data.recent[i].invoice %>">
+                                                                <input type="hidden" name="edit_username" value="<%= data.recent[i].username %>">
+                                                                <label class="coa-modal-label">Delivery date:</label>
+                                                                <div class="input-group date">
+                                                                    <div class="input-group-addon form-coa-date-interface ">
+                                                                        <i class="fa fa-calendar"></i>
+                                                                    </div>
+                                                                    <input type="text" autocomplete="off" id="modalDatepicker<%= data.recent[i].invoice %>" class="form-control form-coa-interface" id="edit_delivery_date<%= data.recent[i].delivery_date %>" required name="edit_delivery_date" placeholder="<%= data.recent[i].delivery_date %>" value="<%= data.recent[i].delivery_date %>">
+                                                                </div>
+                                                                <br>
+                                                                <label class="coa-modal-label">Invoice:</label>
+                                                                <input type="text" class="form-control form-coa-interface" id="edit_invoice<%= data.recent[i].invoice %>" required name="edit_invoice" placeholder="<%= data.recent[i].invoice %>" value="<%= data.recent[i].invoice %>">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <div id="responseDivEditModal<%= data.recent[i].invoice %>">
+                                                                <!-- response here-->
+                                                            </div>
+                                                            <div id="toHideButtonEditIfSuccess<%= data.recent[i].invoice %>">
+                                                                <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</a>
+                                                                <button type="submit" id="editbykitting<%= data.recent[i].invoice %>" class="btn btn-warning btn-flat">Submit Changes</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
                                     </div>
                                 </div>
                                 <div class="tab-pane" id="settings">
@@ -243,6 +349,12 @@
             autoclose: true
         });
 
+        // Modal Datepicker
+        <% for(let i=0; i<data.recent.length; i++) { %>
+        $('#modalDatepicker<%= data.recent[i].invoice %>').datepicker({
+            autoclose: true
+        });
+        <% } %>
     });
 </script>
 <!-- Upload script -->
@@ -356,5 +468,108 @@
 
     });
 </script>
+<!-- Delete script 
+<script>
+    window.addEventListener('load', function(){
+        
+        <% for(let i=0; i<data.recent.length; i++) { %>
+            function goDelete<%= data.recent[i].invoice %>(){
+
+                let xhr<%= data.recent[i].invoice %> = new XMLHttpRequest();
+                let fd_delete<%= data.recent[i].invoice %> = new FormData(form<%= data.recent[i].invoice %>); // bind form data object and form element
+                
+                xhr<%= data.recent[i].invoice %>.addEventListener('load', function(event){
+                    console.log(event.target.response);
+                    let resFromServer = JSON.parse(event.target.response);
+                    document.getElementById('responseDivModal<%= data.recent[i].invoice %>').style.display='block';
+
+                    function resDiv(){
+                        let responseDiv = document.getElementById('responseDivModal<%= data.recent[i].invoice %>');
+                        
+                        if(resFromServer.err){
+
+                            if (responseDiv.classList) { 
+                                responseDiv.classList.add("responseDivErr");
+                                responseDiv.innerHTML = resFromServer.err
+                            } else {
+                                // For IE9
+                                var classes = responseDiv.className.split(" ");
+                                var i = classes.indexOf("responseDivErr");
+
+                                if (i >= 0) {
+                                    classes.splice(i, 1);
+                                } else { 
+                                    classes.push("responseDivErr");
+                                    responseDiv.className = classes.join(" "); 
+                                    responseDiv.innerHTML = resFromServer.err
+                                }
+                            }
+
+                        } else {
+
+                            if (responseDiv.classList) { 
+                                responseDiv.classList.add("responseDivSuccess");
+                                responseDiv.innerHTML = resFromServer.auth;
+
+                                let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.recent[i].invoice %>');
+                                    hideDiv.style.display = "none";
+
+                                setTimeout(function(){
+                                    window.location.href="/coa/qa";
+                                }, 100);
+                                
+                            } else {
+                                // For IE9
+                                var classes = responseDiv.className.split(" ");
+                                var i = classes.indexOf("responseDivSuccess");
+
+                                if (i >= 0) {
+                                    classes.splice(i, 1);
+                                } else { 
+                                    classes.push("responseDivSuccess");
+                                    responseDiv.className = classes.join(" "); 
+                                    responseDiv.innerHTML = resFromServer.auth;
+
+                                    let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.recent[i].invoice %>');
+                                        hideDiv.style.display = "none";
+
+                                    setTimeout(function(){
+                                        window.location.href="/coa/qa";
+                                    }, 100);
+                                    
+                                }
+                            }
+                        }
+
+                        
+                    }
+
+                    resDiv();
+                });
+
+                xhr<%= data.recent[i].invoice %>.addEventListener('error', function(event){
+                    alert('Something went wrong.');
+                });
+
+                xhr<%= data.recent[i].invoice %>.open('POST', '/api/qadelete');
+                xhr<%= data.recent[i].invoice %>.send(fd_delete<%= data.recent[i].invoice %>);
+
+            }
+
+            // access FORM element
+            let form<%= data.recent[i].invoice %> = document.getElementById('deletecoadetails<%= data.recent[i].invoice %>');
+            // take over submit event
+            form<%= data.recent[i].invoice %>.addEventListener('submit', function(event){
+                event.preventDefault();
+                goDelete<%= data.recent[i].invoice %>();
+                document.getElementById('deletebyqa<%= data.recent[i].invoice %>').setAttribute("disabled", "disabled");
+            });
+
+        <% } %>
+
+
+    });
+</script>
+-->
 </body>
 </html>
