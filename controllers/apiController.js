@@ -234,7 +234,95 @@ module.exports = function(app){
         } else {
             res.render('login');
         }
-    })
+    });
+
+    /** engineering activity upload */
+    app.get('/activity', verifyToken, function(req, res){
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
+
+        let authenticity_token = jwt.sign({
+            id: uuidv4(),
+            claim: {
+                signup: 'valid'
+            }
+        }, config.secret);
+
+        if(req.userID && req.claim){
+
+            mysql.pool.getConnection(function(err, connection){
+                if(err){return res.send({err: 'Cannot connect to database'})};
+
+                function activity(){
+                    return new Promise(function(resolve, reject){
+
+                        connection.query({
+                            sql: 'SELECT * FROM tbl_rlogs ORDER BY id DESC LIMIT 8'
+                        },  function(err, results){
+                            if(err){return reject()};
+
+                            if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+
+                                let recent_activity_obj = [];
+                                
+                                for(let i=0;i<results.length;i++){
+                                    if(results[i].box_id){
+
+                                        recent_activity_obj.push({
+                                            id: results[i].id,
+                                            upload_date: moment(results[i].upload_date).calendar(),
+                                            activity_title: results[i].activity_title,
+                                            activity_details: results[i].activity_details,
+                                            activity_type: results[i].activity_type,
+                                            mrb_no: results[i].mrb_no,
+                                            tdn_no: results[i].tdn_no,
+                                            ec_no: results[i].ec_no,
+                                            startDate: results[i].startDate,
+                                            endDate: results[i].endDate,
+                                            process_name: results[i].process_name,
+                                            comments: results[i].comments,
+                                            username: results[i].name,
+                                            duration: results[i].duration
+                                        });
+                                    }
+                                }
+
+                                let data = {
+                                    recent : recent_activity_obj
+                                }
+
+                                resolve(data);
+
+                            } else {
+                                reject();
+                            }
+
+                        });
+
+                        connection.release();
+
+                    });
+
+                }
+
+                activity().then(function(data){
+                    let todayDate = moment(new Date()).format('lll');
+
+                    res.render('activity', { username: req.claim.username, department: req.claim.department, authenticity_token,  data, todayDate});
+                },  function(err){
+                    res.send({err: err});
+                });
+                
+
+            });
+            
+        } else {
+            res.render('login');
+        }
+
+
+    });
 
     /** submit coa form + file */
     app.post('/api/coa', verifyToken, function(req, res){
@@ -1097,6 +1185,22 @@ module.exports = function(app){
         });
     });
 
+    /** submit activity */
+    app.post('/api/activity', verifyToken, function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){return res.send({err: 'Invalid form. Try again'})};
+
+            if(fields){
+                console.log(fields);
+            }
+
+        });
+
+
+    });
+
     /** delete coa boxid and runcard details */
     app.post('/api/kittingdelete', verifyToken, function(req, res){
         let form = new formidable.IncomingForm();
@@ -1306,4 +1410,8 @@ module.exports = function(app){
 
         });
     });
+
+    
+
+
 }
