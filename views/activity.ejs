@@ -123,42 +123,30 @@
                                                             <div class="input-group-addon">
                                                                 <i class="fa fa-calendar"></i>
                                                             </div>
-                                                            <input type="text" class="form-control" id="daterange_picker">
+                                                            <input type="text" class="form-control daterangepicker-dropdown" id="daterange_picker">
                                                         </div>
                                                     </div>
                                                     <label class="coa-form-label">Activity Name:</label>
                                                     <div class="form-group has-feedback">
-                                                        <input type="text" name="activity_title" id="activity_title" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        <input type="text" name="activity_title" id="activity_title" class="form-control form-activity-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <label class="coa-form-label">TDN #:</label>
-                                                            <div class="form-group ">
-                                                                <input type="text" name="tdn_no" id="tdn_no" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label class="coa-form-label">MRB #:</label>
-                                                            <div class="form-group ">
-                                                                <input type="text" name="mrb_no" id="mrb_no" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                                            </div>
-                                                        </div>
+                                                    <label class="coa-form-label">TDN #:</label>
+                                                    <div class="form-group ">
+                                                        <input type="text" name="tdn_no" id="tdn_no" class="form-control form-activity-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
-                                                    <div class="row">
-                                                        <div class="col-md-6">
-                                                            <label class="coa-form-label">EC #:</label>
-                                                            <div class="form-group">
-                                                                <input type="text" name="ec_no" id="ec_no" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-6">
-                                                            <label class="coa-form-label">Type:</label>
-                                                            <div class="form-group">
-                                                                <select class="form-control select2 select2-hidden-accessible" name="activity_type" style="width:100%;" tabindex="-1" aria-hidden="true">
-                                                                    <option>STO</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
+                                                    <label class="coa-form-label">MRB #:</label>
+                                                    <div class="form-group ">
+                                                        <input type="text" name="mrb_no" id="mrb_no" class="form-control form-activity-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    </div>
+                                                    <label class="coa-form-label">EC #:</label>
+                                                    <div class="form-group">
+                                                        <input type="text" name="ec_no" id="ec_no" class="form-control form-activity-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    </div>
+                                                    <label class="coa-form-label">Type:</label>
+                                                    <div class="form-group">
+                                                        <select class="form-control select2 select2-hidden-accessible" name="activity_type" style="width:100%;" tabindex="-1" aria-hidden="true">
+                                                            <option>STO</option>
+                                                        </select>
                                                     </div>
                                                     <label class="coa-form-label">Process:</label>
                                                     <div class="form-group has-feedback">
