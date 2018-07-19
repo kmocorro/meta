@@ -117,7 +117,7 @@
                                                 <div id="toHideIfSuccess">
                                                     <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
                                                     <h4 class="coa-body-form">Activities & experiments</h4>
-                                                    <label class="coa-form-label">Datetime range:</label>
+                                                    <label class="coa-form-label">Datetime range:<span class="text-danger">*</span></label>
                                                     <div class="form-group">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
@@ -126,23 +126,23 @@
                                                             <input type="text" name="daterange" class="form-control daterangepicker-dropdown" id="daterange_picker">
                                                         </div>
                                                     </div>
-                                                    <label class="coa-form-label">Activity Name:</label>
+                                                    <label class="coa-form-label">Activity Name:<span class="text-danger">*</span></label>
                                                     <div class="form-group has-feedback">
                                                         <input type="text" name="activity_title" id="activity_title" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
-                                                    <label class="coa-form-label">TDN #:</label>
+                                                    <label class="coa-form-label">TDN #: <small><span class="form-sub-text">leave blank if not applicable</span></small></label>
                                                     <div class="form-group ">
                                                         <input type="text" name="tdn_no" id="tdn_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
-                                                    <label class="coa-form-label">MRB #:</label>
+                                                    <label class="coa-form-label">MRB #: <small><span class="form-sub-text">leave blank if not applicable</span></small></label>
                                                     <div class="form-group ">
                                                         <input type="text" name="mrb_no" id="mrb_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
-                                                    <label class="coa-form-label">EC #:</label>
+                                                    <label class="coa-form-label">EC #: <small><span class="form-sub-text">leave blank if not applicable</span></small></label>
                                                     <div class="form-group">
                                                         <input type="text" name="ec_no" id="ec_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
-                                                    <label class="coa-form-label">Type:</label>
+                                                    <label class="coa-form-label">Type:<span class="text-danger">*</span></label>
                                                     <div class="form-group">
                                                         <select class="form-control select2 select2-hidden-accessible" name="activity_type" style="width:100%;" tabindex="-1" aria-hidden="true">
                                                             <option>STO</option>
@@ -150,7 +150,7 @@
                                                             <option>FTO</option>
                                                         </select>
                                                     </div>
-                                                    <label class="coa-form-label">Process:</label>
+                                                    <label class="coa-form-label">Process:<span class="text-danger">*</span></label>
                                                     <div class="form-group has-feedback">
                                                         <select class="form-control select2 select2-hidden-accessible" name="process_name" style="width:100%;" tabindex="-1" aria-hidden="true">
                                                             <% for(let i=0; i<process_list.length;i++) { %>
@@ -158,7 +158,7 @@
                                                             <% } %>
                                                         </select>
                                                     </div>
-                                                    <label class="coa-form-label">Description:</label>
+                                                    <label class="coa-form-label">Description:<span class="text-danger">*</span></label>
                                                     <div class="form-group has-feedback">
                                                         <textarea rows="2" maxlength="160" name="activity_details" id="activity_details" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';"></textarea>
                                                     </div>
@@ -166,7 +166,7 @@
                                                     <div class="row">
                                                         <div class="col-xs-7">
                                                             <div class="coa-sub-link">
-                                                                 By clicking "Submit", you indicate that all fields are true and correct. Leave it blank if not applicable.
+                                                                 By clicking "Submit", you indicate that all fields are true and correct.
                                                             </div>
                                                         </div>
                                                         <div class="col-xs-5">
@@ -205,7 +205,7 @@
                                                                     </ul>
                                                                 </span>
                                                                 <h3 class="timeline-header"><%= data.recent[i].activity_title %> ends <%= data.recent[i].timeLeft %> </h3>
-                                                                <div class="timeline-body"><%= data.recent[i].activity_details %>  </div>
+                                                                <div class="timeline-body"><%= data.recent[i].activity_details %>. | Starts in <%= data.recent[i].startDate %> until <%= data.recent[i].endDate %> </div>
                                                                 <div class="timeline-footer">
                                                                 <span class="footer-timeline"><%= data.recent[i].activity_type %> - <%= data.recent[i].process_name %> - <%= data.recent[i].tdn_no %> - <%= data.recent[i].mrb_no %> - <%= data.recent[i].ec_no %> - uploaded by <%= data.recent[i].username %> </i> 
                                                                 </div>
