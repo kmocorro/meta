@@ -344,8 +344,6 @@ module.exports = function(app){
 
                                 let process_list = [];
 
-                                console.log(results);
-
                                 for(let i=0;i<results.length;i++){
                                     if(results[i].id){
                                         process_list.push(
@@ -1642,7 +1640,7 @@ module.exports = function(app){
             if(req.userID && req.claims){
                 if(fields){
 
-                    console.log(fields);
+                   // console.log(fields);
 
                 } else {
                     res.send({err: 'Invalid form. Try again'});
@@ -1687,7 +1685,7 @@ module.exports = function(app){
 
                 if(fields){
 
-                    console.log(fields);
+                  //  console.log(fields);
 
                     let data_editor = req.claim.username;
                     let data_owner = fields.deleteByUsername;
@@ -1789,9 +1787,9 @@ module.exports = function(app){
                         start_date: init_startdate,
                         end_date: init_enddate, 
                         activity_title: fields.edit_activity_title,
-                        tdn_no: fields.edit_tdn_no,
-                        mrb_no: fields.edit_mrb_no,
-                        ec_no: fields.edit_ec_no,
+                        tdn_no: fields.edit_tdn_no || null,
+                        mrb_no: fields.edit_mrb_no || null,
+                        ec_no: fields.edit_ec_no || null,
                         activity_type: fields.edit_activity_type,
                         process_name: fields.edit_process_name,
                         activity_details: fields.edit_activity_details,
