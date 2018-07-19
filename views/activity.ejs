@@ -54,7 +54,7 @@
                                     </li>
                                     <li class="divider"></li>
                                     <li>
-                                        <a href="#">Engineering Activity</a>
+                                        <a href="/activity">Engineering Activity</a>
                                     </li>
                                 </ul>
                             </li>
@@ -117,53 +117,56 @@
                                                 <div id="toHideIfSuccess">
                                                     <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
                                                     <h4 class="coa-body-form">Activities & experiments</h4>
-                                                    <label class="coa-form-label">Date range:</label>
-                                                    <div class="form-group has-feedback">
+                                                    <label class="coa-form-label">Datetime range:</label>
+                                                    <div class="form-group">
                                                         <div class="input-group">
                                                             <div class="input-group-addon">
                                                                 <i class="fa fa-calendar"></i>
                                                             </div>
-                                                            <input type="text" class="form-control daterangepicker-dropdown" id="daterange_picker">
+                                                            <input type="text" name="daterange" class="form-control daterangepicker-dropdown" id="daterange_picker">
                                                         </div>
                                                     </div>
                                                     <label class="coa-form-label">Activity Name:</label>
                                                     <div class="form-group has-feedback">
-                                                        <input type="text" name="activity_title" id="activity_title" class="form-control form-activity-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        <input type="text" name="activity_title" id="activity_title" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
                                                     <label class="coa-form-label">TDN #:</label>
                                                     <div class="form-group ">
-                                                        <input type="text" name="tdn_no" id="tdn_no" class="form-control form-activity-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        <input type="text" name="tdn_no" id="tdn_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
                                                     <label class="coa-form-label">MRB #:</label>
                                                     <div class="form-group ">
-                                                        <input type="text" name="mrb_no" id="mrb_no" class="form-control form-activity-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        <input type="text" name="mrb_no" id="mrb_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
                                                     <label class="coa-form-label">EC #:</label>
                                                     <div class="form-group">
-                                                        <input type="text" name="ec_no" id="ec_no" class="form-control form-activity-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        <input type="text" name="ec_no" id="ec_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
                                                     </div>
                                                     <label class="coa-form-label">Type:</label>
                                                     <div class="form-group">
                                                         <select class="form-control select2 select2-hidden-accessible" name="activity_type" style="width:100%;" tabindex="-1" aria-hidden="true">
                                                             <option>STO</option>
+                                                            <option>COL</option>
+                                                            <option>FTO</option>
                                                         </select>
                                                     </div>
                                                     <label class="coa-form-label">Process:</label>
                                                     <div class="form-group has-feedback">
                                                         <select class="form-control select2 select2-hidden-accessible" name="process_name" style="width:100%;" tabindex="-1" aria-hidden="true">
-                                                            <option>DAMAGE</option>
-                                                            <option>POLY</option>
+                                                            <% for(let i=0; i<process_list.length;i++) { %>
+                                                                <option><%=  process_list[i] %></option>
+                                                            <% } %>
                                                         </select>
                                                     </div>
                                                     <label class="coa-form-label">Description:</label>
                                                     <div class="form-group has-feedback">
-                                                        <textarea rows="2" name="activity_details" id="activity_details" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';"></textarea>
+                                                        <textarea rows="2" maxlength="160" name="activity_details" id="activity_details" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';"></textarea>
                                                     </div>
                                                     <br>
                                                     <div class="row">
                                                         <div class="col-xs-7">
                                                             <div class="coa-sub-link">
-                                                                 By clicking "Submit", you indicate that all fields are true and correct.
+                                                                 By clicking "Submit", you indicate that all fields are true and correct. Enter "NA" if not applicable.
                                                             </div>
                                                         </div>
                                                         <div class="col-xs-5">
@@ -177,35 +180,38 @@
                                             <h4 class="coa-body-form">Recent activity</h4>
                                             <ul class="timeline timeline">
                                                 <li class="time-label">
-                                                    <span class="bg-red">
+                                                    <span class="bg-white">
                                                         <%= todayDate %>
                                                     </span>
                                                 </li>
                                                 <% for(let i=0; i<data.recent.length; i++) { %>
-                                                    <li>
-                                                        <i class="fa fa-cloud-upload bg-blue">
-                                                        </i>
-                                                        <div class="timeline-item">
-                                                            <span class="time">
-                                                                <i class="fa fa-clock-o"></i> <%= data.recent[i].upload_date %>&nbsp;
-                                                                <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
-                                                                    <span class="fa fa-ellipsis-v"></span>
-                                                                </button>
-                                                                <ul class="dropdown-menu coa-dropdown" role="menu">
-                                                                    <li>
-                                                                        <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>">Edit</a>
-                                                                    </li>
-                                                                    <li>
-                                                                        <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>">Remove</a>
-                                                                    </li>
-                                                                </ul>
-                                                            </span>
-                                                            <h3 class="timeline-header"><%= data.recent[i].runcard %> has been tagged to <%= data.recent[i].box_id %></h3>
-                                                            <div class="timeline-body"> Transaction id: <%= data.recent[i].id %>, uploaded by <%= data.recent[i].username %>. </div>
-                                                            <div class="timeline-footer">
+                                                    <% if(data.recent[i].id) { %>
+                                                        <li>
+                                                            <i class="fa fa-cloud-upload bg-gray">
+                                                            </i>
+                                                            <div class="timeline-item">
+                                                                <span class="time">
+                                                                    <i class="fa fa-clock-o"></i> <%= data.recent[i].upload_date %>&nbsp;
+                                                                    <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                                        <span class="fa fa-ellipsis-v"></span>
+                                                                    </button>
+                                                                    <ul class="dropdown-menu coa-dropdown" role="menu">
+                                                                        <li>
+                                                                            <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>">Edit</a>
+                                                                        </li>
+                                                                        <li>
+                                                                            <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>">Remove</a>
+                                                                        </li>
+                                                                    </ul>
+                                                                </span>
+                                                                <h3 class="timeline-header"><%= data.recent[i].activity_title %> ends <%= data.recent[i].timeLeft %> </h3>
+                                                                <div class="timeline-body"><%= data.recent[i].activity_details %>  </div>
+                                                                <div class="timeline-footer">
+                                                                <span class="footer-timeline"><%= data.recent[i].activity_type %> - <%= data.recent[i].process_name %> - <%= data.recent[i].tdn_no %> - <%= data.recent[i].mrb_no %> - <%= data.recent[i].ec_no %> - uploaded by <%= data.recent[i].username %> </i> 
+                                                                </div>
                                                             </div>
-                                                        </div>
-                                                    </li>
+                                                        </li>
+                                                    <% } %>
                                                 <% } %>
                                                 <li>
                                                     <i class="fa fa-clock-o bg-gray"></i>
@@ -214,91 +220,114 @@
                                         </div>
                                         <!---->
                                         <% for(let i=0; i<data.recent.length; i++) { %>
-                                        <div class="modal modal-default" id="modaldelete<%= data.recent[i].id %>">
-                                            <div class="modal-dialog modal-settings">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                        <h4 class="modal-title">Think twice! You cannot undo this action.</h4>
+                                            <% if(data.recent[i].id) { %>
+                                            <div class="modal modal-default" id="modaldelete<%= data.recent[i].id %>">
+                                                <div class="modal-dialog modal-settings">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                            <h3 class="modal-title">Think twice! You cannot undo this action.</h3>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <h4>Are you sure you want to delete <span class="label label-danger"><%= data.recent[i].activity_title %></span> activity?</h4>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <form id="deleteactivitydetails<%= data.recent[i].id %>">
+                                                                <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                                <input type="hidden" name="deleteById" value="<%= data.recent[i].id %>">
+                                                                <input type="hidden" name="deleteByUsername" value="<%= data.recent[i].username %>">
+                                                                <div id="responseDivModal<%= data.recent[i].id %>">
+                                                                    <!-- response here-->
+                                                                </div>
+                                                                <div id="toHideButtonIfSuccess<%= data.recent[i].id %>">
+                                                                    <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</a>
+                                                                    <button type="submit" id="deletebyactivity<%= data.recent[i].id %>" class="btn btn-danger btn-flat">Yes, Delete</button>
+                                                                </div>
+                                                            </form>
+                                                        </div>
                                                     </div>
-                                                    <div class="modal-body">
-                                                        <p>Are you sure you want to <span class="label label-danger">DELETE</span> this CoA details?</p>
-                                                        <table class="table table-striped">
-                                                            <tbody>
-                                                                <thead>
-                                                                <tr>
-                                                                    <th>ID</th>
-                                                                    <th>Upload Date</th>
-                                                                    <th>Box Id</th>
-                                                                    <th>Runcard</th>
-                                                                    <th>Username</th>
-                                                                </tr>
-                                                                </thead>
-                                                                <tr>
-                                                                    <td><%= data.recent[i].id %></td>
-                                                                    <td><%= data.recent[i].upload_date %></td>
-                                                                    <td><%= data.recent[i].box_id %></td>
-                                                                    <td><%= data.recent[i].runcard %></td>
-                                                                    <td><%= data.recent[i].username %></td>
-                                                                </tr>
-                                                            </tbody>
-                                                        </table>
-                                                    </div>
-                                                    <div class="modal-footer">
-                                                        <form id="deletecoadetails<%= data.recent[i].id %>">
-                                                            <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
-                                                            <input type="hidden" name="deleteById" value="<%= data.recent[i].id %>">
-                                                            <input type="hidden" name="deleteByUsername" value="<%= data.recent[i].username %>">
-                                                            <div id="responseDivModal<%= data.recent[i].id %>">
-                                                                <!-- response here-->
+                                                </div>
+                                            </div>
+                                            <% } %>
+                                        <% } %>
+                                        <!---->
+                                        <% for(let i=0; i<data.recent.length; i++) { %>
+                                            <% if(data.recent[i].id) { %>
+                                            <div class="modal modal-default" id="modalwarning<%= data.recent[i].id %>">
+                                                <div class="modal-dialog modal-settings">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                            <h4 class="modal-title">Edit transaction id <%= data.recent[i].id %> created by <%= data.recent[i].username %> </h4>
+                                                        </div>
+                                                        <form id="editactivitydetails<%= data.recent[i].id %>">
+                                                            <div class="modal-body">
+                                                                    <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                                    <input type="hidden" name="edit_id" value="<%= data.recent[i].id %>">
+                                                                    <input type="hidden" name="edit_username" value="<%= data.recent[i].username %>">
+                                                                    <label class="coa-modal-label">Datetime range:</label>
+                                                                    <div class="form-group">
+                                                                        <div class="input-group">
+                                                                            <div class="input-group-addon">
+                                                                                <i class="fa fa-calendar"></i>
+                                                                            </div>
+                                                                            <input type="text" name="edit_daterange" class="form-control daterangepicker-dropdown" id="daterange_picker<%= data.recent[i].id %>">
+                                                                        </div>
+                                                                    </div>
+                                                                    <label class="coa-modal-label">Activity:</label>
+                                                                    <div class="form-group has-feedback">
+                                                                        <input type="text" name="edit_activity_title" id="activity_title<%= data.recent[i].id %>" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_title %>" >
+                                                                    </div>
+                                                                    <label class="coa-modal-label">TDN #:</label>
+                                                                    <div class="form-group ">
+                                                                        <input type="text" name="edit_tdn_no" id="tdn_no<%= data.recent[i].id %>" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].tdn_no %>">
+                                                                    </div>
+                                                                    <label class="coa-modal-label">MRB #:</label>
+                                                                    <div class="form-group ">
+                                                                        <input type="text" name="edit_mrb_no" id="mrb_no<%= data.recent[i].id %>" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].mrb_no %>">
+                                                                    </div>
+                                                                    <label class="coa-modal-label">EC #:</label>
+                                                                    <div class="form-group">
+                                                                        <input type="text" name="edit_ec_no" id="ec_no<%= data.recent[i].id %>" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].ec_no %>">
+                                                                    </div>
+                                                                    <label class="coa-modal-label">Type:</label>
+                                                                    <div class="form-group">
+                                                                        <select class="form-control select2 select2-hidden-accessible" name="edit_activity_type" style="width:100%;" tabindex="-1" aria-hidden="true" value="<%= data.recent[i].activity_type %>">
+                                                                            <option>STO</option>
+                                                                            <option>COL</option>
+                                                                            <option>FTO</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <label class="coa-modal-label">Process</label>
+                                                                    <div class="form-group has-feedback">
+                                                                        <select class="form-control select2 select2-hidden-accessible" name="edit_process_name" style="width:100%;" tabindex="-1" aria-hidden="true" value="<%= data.recent[i].process_name %>">
+                                                                            <option>DAMAGE</option>
+                                                                            <option>POLY</option>
+                                                                        </select>
+                                                                    </div>
+                                                                    <label class="coa-modal-label">Description</label>
+                                                                    <div class="form-group has-feedback">
+                                                                            <input type="text" name="edit_activity_details" id="ec_no<%= data.recent[i].id %>" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_details %>">
+                                                                    </div>
                                                             </div>
-                                                            <div id="toHideButtonIfSuccess<%= data.recent[i].id %>">
-                                                                <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</a>
-                                                                <button type="submit" id="deletebykitting<%= data.recent[i].id %>" class="btn btn-danger btn-flat">Yes, Delete</button>
+                                                            <div class="modal-footer">
+                                                                <div id="responseDivEditModal<%= data.recent[i].id %>">
+                                                                    <!-- response here-->
+                                                                </div>
+                                                                <div id="toHideButtonEditIfSuccess<%= data.recent[i].id %>">
+                                                                    <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</a>
+                                                                    <button type="submit" id="editbyactivity<%= data.recent[i].id %>" class="btn btn-warning btn-flat">Submit Changes</button>
+                                                                </div>
                                                             </div>
                                                         </form>
                                                     </div>
                                                 </div>
                                             </div>
-                                        </div>
-                                        <% } %>
-                                        <!---->
-                                        <% for(let i=0; i<data.recent.length; i++) { %>
-                                        <div class="modal modal-default" id="modalwarning<%= data.recent[i].id %>">
-                                            <div class="modal-dialog modal-settings">
-                                                <div class="modal-content">
-                                                    <div class="modal-header">
-                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                            <span aria-hidden="true">&times;</span>
-                                                        </button>
-                                                        <h4 class="modal-title">Edit transaction id <%= data.recent[i].id %> created by <%= data.recent[i].username %> </h4>
-                                                    </div>
-                                                    <form id="editcoadetails<%= data.recent[i].id %>">
-                                                        <div class="modal-body">
-                                                                <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
-                                                                <input type="hidden" name="edit_id" value="<%= data.recent[i].id %>">
-                                                                <input type="hidden" name="edit_username" value="<%= data.recent[i].username %>">
-                                                                <label class="coa-modal-label">Box ID:</label>
-                                                                <input type="text" class="form-control form-kitting-interface" id="edit_boxid<%= data.recent[i].id %>" required name="edit_boxid" placeholder="<%= data.recent[i].box_id %>" value="<%= data.recent[i].box_id %>">
-                                                                <br>
-                                                                <label class="coa-modal-label">Runcard:</label>
-                                                                <input type="text" class="form-control form-kitting-interface" id="edit_runcard<%= data.recent[i].id %>" required name="edit_runcard" placeholder="<%= data.recent[i].runcard %>" value="<%= data.recent[i].runcard %>">
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <div id="responseDivEditModal<%= data.recent[i].id %>">
-                                                                <!-- response here-->
-                                                            </div>
-                                                            <div id="toHideButtonEditIfSuccess<%= data.recent[i].id %>">
-                                                                <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</a>
-                                                                <button type="submit" id="editbykitting<%= data.recent[i].id %>" class="btn btn-warning btn-flat">Submit Changes</button>
-                                                            </div>
-                                                        </div>
-                                                    </form>
-                                                </div>
-                                            </div>
-                                        </div>
+                                            <% } %>
                                         <% } %>
                                     </div>
                                 </div>
@@ -329,8 +358,47 @@
         $('.select2').select2();
 
         // Daterange_picker
-        $('#daterange_picker').daterangepicker({ timePicker: true, timePickerIncrement: 30, format: 'MM/DD/YYYY h:mm A' });
+        $('#daterange_picker').daterangepicker({ 
+            timePicker: true, 
+            timePickerIncrement: 30, 
+            locale: {
+                format: 'YYYY-MM-DD h:mm A'
+            }
+        });
 
+        $('#daterange_picker').on('apply.daterangepicker', function(ev, picker) {
+            $(this).val(picker.startDate.format('YYYY-MM-DD h:mm A') + ' - ' + picker.endDate.format('YYYY-MM-DD h:mm A'));
+        });
+
+        $('#daterange_picker').on('cancel.daterangepicker', function(ev, picker) {
+            $(this).val('');
+        });
+
+        // Modal Daterange_picker
+        <% for(let i=0; i<data.recent.length; i++) { %>
+            <% if(data.recent[i].id) { %>
+                $('#daterange_picker<%= data.recent[i].id %>').html('<%= data.recent[i].startDate %>' + ' - ' + '<%= data.recent[i].endDate %>');
+
+                $('#daterange_picker<%= data.recent[i].id %>').daterangepicker({
+                    startDate: '<%= data.recent[i].startDate %>',
+                    endDate: '<%= data.recent[i].endDate %>',
+                    timePicker: true, 
+                    timePickerIncrement: 30, 
+                    locale: {
+                        format: 'YYYY-MM-DD h:mm A',
+                    }
+                });
+
+                $('#daterange_picker<%= data.recent[i].id %>').on('apply.daterangepicker', function(ev, picker) {
+                    $(this).val(picker.startDate.format('YYYY-MM-DD h:mm A') + ' - ' + picker.endDate.format('YYYY-MM-DD h:mm A'));
+                });
+
+                $('#daterange_picker<%= data.recent[i].id %>').on('cancel.daterangepicker', function(ev, picker) {
+                    $(this).val('');
+                });
+
+            <% } %>
+        <% } %>
 
     });
 </script>
@@ -352,6 +420,8 @@
                     let responseDiv = document.getElementById('responseDiv');
                     
                     if(resFromServer.err){
+
+                        document.getElementById('submitactivity').removeAttribute("disabled");
 
                         if (responseDiv.classList) { 
                             responseDiv.classList.add("responseDivErr");
@@ -378,7 +448,7 @@
 
                             
                             setTimeout(function(){
-                                window.location.href="/coa/kitting";
+                                window.location.href="/activity";
                             }, 50);
 
                         } else {
@@ -394,7 +464,7 @@
                                 responseDiv.innerHTML = resFromServer.auth;
                                 
                                 setTimeout(function(){
-                                    window.location.href="/coa/kitting";
+                                    window.location.href="/activity";
                                 }, 50);
                             }
                         }
@@ -434,98 +504,100 @@
     window.addEventListener('load', function(){
         
         <% for(let i=0; i<data.recent.length; i++) { %>
-            function goDelete<%= data.recent[i].id %>(){
+            <% if(data.recent[i].id) { %>
+                function goDelete<%= data.recent[i].id %>(){
 
-                let xhr<%= data.recent[i].id %> = new XMLHttpRequest();
-                let fd_delete<%= data.recent[i].id %> = new FormData(form<%= data.recent[i].id %>); // bind form data object and form element
-                
-                xhr<%= data.recent[i].id %>.addEventListener('load', function(event){
-                    console.log(event.target.response);
-                    let resFromServer = JSON.parse(event.target.response);
-                    document.getElementById('responseDivModal<%= data.recent[i].id %>').style.display='block';
+                    let xhr<%= data.recent[i].id %> = new XMLHttpRequest();
+                    let fd_delete<%= data.recent[i].id %> = new FormData(form<%= data.recent[i].id %>); // bind form data object and form element
+                    
+                    xhr<%= data.recent[i].id %>.addEventListener('load', function(event){
+                        console.log(event.target.response);
+                        let resFromServer = JSON.parse(event.target.response);
+                        document.getElementById('responseDivModal<%= data.recent[i].id %>').style.display='block';
 
-                    function resDiv(){
-                        let responseDiv = document.getElementById('responseDivModal<%= data.recent[i].id %>');
-                        
-                        if(resFromServer.err){
+                        function resDiv(){
+                            let responseDiv = document.getElementById('responseDivModal<%= data.recent[i].id %>');
+                            
+                            if(resFromServer.err){
 
-                            if (responseDiv.classList) { 
-                                responseDiv.classList.add("responseDivErr");
-                                responseDiv.innerHTML = resFromServer.err
-                            } else {
-                                // For IE9
-                                var classes = responseDiv.className.split(" ");
-                                var i = classes.indexOf("responseDivErr");
-
-                                if (i >= 0) {
-                                    classes.splice(i, 1);
-                                } else { 
-                                    classes.push("responseDivErr");
-                                    responseDiv.className = classes.join(" "); 
+                                if (responseDiv.classList) { 
+                                    responseDiv.classList.add("responseDivErr");
                                     responseDiv.innerHTML = resFromServer.err
+                                } else {
+                                    // For IE9
+                                    var classes = responseDiv.className.split(" ");
+                                    var i = classes.indexOf("responseDivErr");
+
+                                    if (i >= 0) {
+                                        classes.splice(i, 1);
+                                    } else { 
+                                        classes.push("responseDivErr");
+                                        responseDiv.className = classes.join(" "); 
+                                        responseDiv.innerHTML = resFromServer.err
+                                    }
                                 }
-                            }
 
-                        } else {
-
-                            if (responseDiv.classList) { 
-                                responseDiv.classList.add("responseDivSuccess");
-                                responseDiv.innerHTML = resFromServer.auth;
-
-                                let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.recent[i].id %>');
-                                    hideDiv.style.display = "none";
-
-                                setTimeout(function(){
-                                    window.location.href="/coa/kitting";
-                                }, 100);
-                                
                             } else {
-                                // For IE9
-                                var classes = responseDiv.className.split(" ");
-                                var i = classes.indexOf("responseDivSuccess");
 
-                                if (i >= 0) {
-                                    classes.splice(i, 1);
-                                } else { 
-                                    classes.push("responseDivSuccess");
-                                    responseDiv.className = classes.join(" "); 
+                                if (responseDiv.classList) { 
+                                    responseDiv.classList.add("responseDivSuccess");
                                     responseDiv.innerHTML = resFromServer.auth;
 
                                     let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.recent[i].id %>');
                                         hideDiv.style.display = "none";
 
                                     setTimeout(function(){
-                                        window.location.href="/coa/kitting";
+                                        window.location.href="/activity";
                                     }, 100);
                                     
+                                } else {
+                                    // For IE9
+                                    var classes = responseDiv.className.split(" ");
+                                    var i = classes.indexOf("responseDivSuccess");
+
+                                    if (i >= 0) {
+                                        classes.splice(i, 1);
+                                    } else { 
+                                        classes.push("responseDivSuccess");
+                                        responseDiv.className = classes.join(" "); 
+                                        responseDiv.innerHTML = resFromServer.auth;
+
+                                        let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.recent[i].id %>');
+                                            hideDiv.style.display = "none";
+
+                                        setTimeout(function(){
+                                            window.location.href="/activity";
+                                        }, 100);
+                                        
+                                    }
                                 }
                             }
+
+                            
                         }
 
-                        
-                    }
+                        resDiv();
+                    });
 
-                    resDiv();
+                    xhr<%= data.recent[i].id %>.addEventListener('error', function(event){
+                        alert('Something went wrong.');
+                    });
+
+                    xhr<%= data.recent[i].id %>.open('POST', '/api/activitydelete');
+                    xhr<%= data.recent[i].id %>.send(fd_delete<%= data.recent[i].id %>);
+
+                }
+
+                // access FORM element
+                let form<%= data.recent[i].id %> = document.getElementById('deleteactivitydetails<%= data.recent[i].id %>');
+                // take over submit event
+                form<%= data.recent[i].id %>.addEventListener('submit', function(event){
+                    event.preventDefault();
+                    goDelete<%= data.recent[i].id %>();
+                    document.getElementById('deletebyactivity<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
                 });
 
-                xhr<%= data.recent[i].id %>.addEventListener('error', function(event){
-                    alert('Something went wrong.');
-                });
-
-                xhr<%= data.recent[i].id %>.open('POST', '/api/kittingdelete');
-                xhr<%= data.recent[i].id %>.send(fd_delete<%= data.recent[i].id %>);
-
-            }
-
-            // access FORM element
-            let form<%= data.recent[i].id %> = document.getElementById('deletecoadetails<%= data.recent[i].id %>');
-            // take over submit event
-            form<%= data.recent[i].id %>.addEventListener('submit', function(event){
-                event.preventDefault();
-                goDelete<%= data.recent[i].id %>();
-                document.getElementById('deletebykitting<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
-            });
-
+            <% } %>
         <% } %>
 
 
@@ -536,102 +608,107 @@
     window.addEventListener('load', function(){
         
         <% for(let i=0; i<data.recent.length; i++) { %>
-            function goEdit<%= data.recent[i].id %>(){
+            <% if(data.recent[i].id) { %>
+                function goEdit<%= data.recent[i].id %>(){
 
-                let xhr<%= data.recent[i].id %> = new XMLHttpRequest();
-                let fd_delete<%= data.recent[i].id %> = new FormData(form<%= data.recent[i].id %>); // bind form data object and form element
-                
-                xhr<%= data.recent[i].id %>.addEventListener('load', function(event){
-                    console.log(event.target.response);
-                    let resFromServer = JSON.parse(event.target.response);
-                    document.getElementById('responseDivEditModal<%= data.recent[i].id %>').style.display='block';
+                    let xhr<%= data.recent[i].id %> = new XMLHttpRequest();
+                    let fd_delete<%= data.recent[i].id %> = new FormData(form<%= data.recent[i].id %>); // bind form data object and form element
+                    
+                    xhr<%= data.recent[i].id %>.addEventListener('load', function(event){
+                        console.log(event.target.response);
+                        let resFromServer = JSON.parse(event.target.response);
+                        document.getElementById('responseDivEditModal<%= data.recent[i].id %>').style.display='block';
 
-                    function resDiv(){
-                        let responseDiv = document.getElementById('responseDivEditModal<%= data.recent[i].id %>');
-                        
-                        if(resFromServer.err){
+                        function resDiv(){
+                            let responseDiv = document.getElementById('responseDivEditModal<%= data.recent[i].id %>');
+                            
+                            if(resFromServer.err){
 
-                            if (responseDiv.classList) { 
-                                responseDiv.classList.add("responseDivErr");
-                                responseDiv.innerHTML = resFromServer.err
-                            } else {
-                                // For IE9
-                                var classes = responseDiv.className.split(" ");
-                                var i = classes.indexOf("responseDivErr");
+                                document.getElementById('editbyactivity<%= data.recent[i].id %>').removeAttribute("disabled");
 
-                                if (i >= 0) {
-                                    classes.splice(i, 1);
-                                } else { 
-                                    classes.push("responseDivErr");
-                                    responseDiv.className = classes.join(" "); 
+                                if (responseDiv.classList) { 
+                                    responseDiv.classList.add("responseDivErr");
                                     responseDiv.innerHTML = resFromServer.err
+                                } else {
+                                    // For IE9
+                                    var classes = responseDiv.className.split(" ");
+                                    var i = classes.indexOf("responseDivErr");
+
+                                    if (i >= 0) {
+                                        classes.splice(i, 1);
+                                    } else { 
+                                        classes.push("responseDivErr");
+                                        responseDiv.className = classes.join(" "); 
+                                        responseDiv.innerHTML = resFromServer.err
+                                    }
                                 }
-                            }
 
-                        } else {
-
-                            if (responseDiv.classList) { 
-                                responseDiv.classList.add("responseDivSuccess");
-                                responseDiv.innerHTML = resFromServer.auth;
-
-                                let hideDiv = document.getElementById('toHideButtonEditIfSuccess<%= data.recent[i].id %>');
-                                    hideDiv.style.display = "none";
-
-                                
-                                window.location.href="/coa/kitting";
-                                
                             } else {
-                                // For IE9
-                                var classes = responseDiv.className.split(" ");
-                                var i = classes.indexOf("responseDivSuccess");
 
-                                if (i >= 0) {
-                                    classes.splice(i, 1);
-                                } else { 
-                                    classes.push("responseDivSuccess");
-                                    responseDiv.className = classes.join(" "); 
+                                if (responseDiv.classList) { 
+                                    responseDiv.classList.add("responseDivSuccess");
                                     responseDiv.innerHTML = resFromServer.auth;
 
                                     let hideDiv = document.getElementById('toHideButtonEditIfSuccess<%= data.recent[i].id %>');
                                         hideDiv.style.display = "none";
 
                                     
-                                    window.location.href="/coa/kitting";
+                                    window.location.href="/activity";
                                     
+                                } else {
+                                    // For IE9
+                                    var classes = responseDiv.className.split(" ");
+                                    var i = classes.indexOf("responseDivSuccess");
+
+                                    if (i >= 0) {
+                                        classes.splice(i, 1);
+                                    } else { 
+                                        classes.push("responseDivSuccess");
+                                        responseDiv.className = classes.join(" "); 
+                                        responseDiv.innerHTML = resFromServer.auth;
+
+                                        let hideDiv = document.getElementById('toHideButtonEditIfSuccess<%= data.recent[i].id %>');
+                                            hideDiv.style.display = "none";
+
+                                        
+                                        window.location.href="/activity";
+                                        
+                                    }
                                 }
                             }
+
+                            
                         }
 
-                        
-                    }
+                        resDiv();
+                    });
 
-                    resDiv();
+                    xhr<%= data.recent[i].id %>.addEventListener('error', function(event){
+                        alert('Something went wrong.');
+                    });
+
+                    xhr<%= data.recent[i].id %>.open('POST', '/api/activityedit');
+                    xhr<%= data.recent[i].id %>.send(fd_delete<%= data.recent[i].id %>);
+
+                }
+
+                // access FORM element
+                let form<%= data.recent[i].id %> = document.getElementById('editactivitydetails<%= data.recent[i].id %>');
+                // take over submit event
+                form<%= data.recent[i].id %>.addEventListener('submit', function(event){
+                    event.preventDefault();
+                    goEdit<%= data.recent[i].id %>();
+                    document.getElementById('editbyactivity<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
+
+
                 });
 
-                xhr<%= data.recent[i].id %>.addEventListener('error', function(event){
-                    alert('Something went wrong.');
-                });
-
-                xhr<%= data.recent[i].id %>.open('POST', '/api/kittingedit');
-                xhr<%= data.recent[i].id %>.send(fd_delete<%= data.recent[i].id %>);
-
-            }
-
-            // access FORM element
-            let form<%= data.recent[i].id %> = document.getElementById('editcoadetails<%= data.recent[i].id %>');
-            // take over submit event
-            form<%= data.recent[i].id %>.addEventListener('submit', function(event){
-                event.preventDefault();
-                goEdit<%= data.recent[i].id %>();
-                document.getElementById('editbykitting<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
-                document.getElementById('edit_boxid<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
-                document.getElementById('edit_runcard<%= data.recent[i].id %>').setAttribute("disabled", "disabled");
-            });
-
+            <% } %>
         <% } %>
 
-
     });
+
+
 </script>
 </body>
 </html>

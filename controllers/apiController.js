@@ -267,23 +267,24 @@ module.exports = function(app){
                                 let recent_activity_obj = [];
                                 
                                 for(let i=0;i<results.length;i++){
-                                    if(results[i].box_id){
+                                    if(results[i].id){
 
                                         recent_activity_obj.push({
                                             id: results[i].id,
-                                            upload_date: moment(results[i].upload_date).calendar(),
-                                            activity_title: results[i].activity_title,
-                                            activity_details: results[i].activity_details,
-                                            activity_type: results[i].activity_type,
-                                            mrb_no: results[i].mrb_no,
-                                            tdn_no: results[i].tdn_no,
-                                            ec_no: results[i].ec_no,
-                                            startDate: results[i].startDate,
-                                            endDate: results[i].endDate,
-                                            process_name: results[i].process_name,
-                                            comments: results[i].comments,
-                                            username: results[i].name,
-                                            duration: results[i].duration
+                                            upload_date: moment(results[i].upload_date).calendar() || null, 
+                                            activity_title: results[i].activity_title || null,
+                                            activity_details: results[i].activity_details || null,
+                                            activity_type: results[i].activity_type || null,
+                                            mrb_no: results[i].mrb_no || null,
+                                            tdn_no: results[i].tdn_no || null,
+                                            ec_no: results[i].ec_no || null,
+                                            startDate: moment(results[i].startDate).format('YYYY-MM-DD h:mm A') || null,
+                                            endDate: moment(results[i].endDate).format('YYYY-MM-DD h:mm A') || null,
+                                            process_name: results[i].process_name || null,
+                                            comments: results[i].comments || null,
+                                            username: results[i].name || null,
+                                            duration: results[i].duration || null,
+                                            timeLeft: moment( results[i].endDate).endOf('day').fromNow() || null
                                         });
                                     }
                                 }
@@ -295,7 +296,32 @@ module.exports = function(app){
                                 resolve(data);
 
                             } else {
-                                reject();
+
+                                let recent_activity_obj = [];
+
+                                recent_activity_obj.push({
+                                    id: null,
+                                    upload_date: null, 
+                                    activity_title: null,
+                                    activity_details: null,
+                                    activity_type: null,
+                                    mrb_no:  null,
+                                    tdn_no:  null,
+                                    ec_no: null,
+                                    startDate: null,
+                                    endDate: null,
+                                    process_name: null,
+                                    comments: null,
+                                    username: null,
+                                    duration: null,
+                                    timeLeft: null
+                                });
+
+                                let data = {
+                                    recent : recent_activity_obj
+                                }
+
+                                reject(data);
                             }
 
                         });
@@ -306,12 +332,50 @@ module.exports = function(app){
 
                 }
 
-                activity().then(function(data){
-                    let todayDate = moment(new Date()).format('lll');
+                function processList(){
+                    return new Promise(function(resolve, reject){
 
-                    res.render('activity', { username: req.claim.username, department: req.claim.department, authenticity_token,  data, todayDate});
-                },  function(err){
-                    res.send({err: err});
+                        connection.query({
+                            sql: 'SELECT * FROM tbl_process_list'
+                        },  function(err, results){
+                            if(err){return reject()};
+
+                            if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+
+                                let process_list = [];
+
+                                console.log(results);
+
+                                for(let i=0;i<results.length;i++){
+                                    if(results[i].id){
+                                        process_list.push(
+                                            results[i].process
+                                        );
+                                    }
+                                }
+
+                                resolve(process_list);
+
+                            }
+
+
+                        });
+
+                    });
+                }
+
+                return processList().then(function(process_list){
+                    return activity().then(function(data){
+
+                            let todayDate = moment(new Date()).format('lll');
+                            res.render('activity', { username: req.claim.username, department: req.claim.department, authenticity_token,  data, todayDate, process_list});
+
+                        },  function(data){
+                            let todayDate = moment(new Date()).format('lll');
+                            res.render('activity', { username: req.claim.username, department: req.claim.department, authenticity_token, data, todayDate, process_list});
+                        });
+                    },  function(){
+                        res.send({err: 'Process list Error.'});
                 });
                 
 
@@ -1193,7 +1257,208 @@ module.exports = function(app){
             if(err){return res.send({err: 'Invalid form. Try again'})};
 
             if(fields){
-                console.log(fields);
+
+                let init_startdate = moment( new Date(fields.daterange.split(' - ')[0])).format();
+                let init_enddate = moment( new Date(fields.daterange.split(' - ')[1])).format();
+
+                let ms = moment(init_enddate).diff(moment(init_startdate));
+                let d = moment.duration(ms);
+                let s = Math.floor(d.asHours()) + moment.utc(ms).format(":mm");
+                let duration_result = (s).toString();
+
+                let credentials = {
+                    uid: req.userID,
+                    upload_date: new Date(),
+                    token : fields.authenticity_token,
+                    start_date: init_startdate,
+                    end_date: init_enddate, 
+                    activity_title: fields.activity_title,
+                    tdn_no: fields.tdn_no,
+                    mrb_no: fields.mrb_no,
+                    ec_no: fields.ec_no,
+                    activity_type: fields.activity_type,
+                    process_name: fields.process_name,
+                    activity_details: fields.activity_details,
+                    duration: duration_result
+                }
+
+                //  verify token
+                function verifyLinkToken(){
+                    return new Promise(function(resolve, reject){
+
+                        jwt.verify(credentials.token, config.secret, function(err, decoded){
+                            if(err){ return reject(err)};
+
+                            resolve();
+
+                        });
+
+                    });
+                }
+
+                // load database
+                mysql.pool.getConnection(function(err, connection){
+                    if(err){return res.send({err: 'Cannot connect to database'})};
+
+                    function checkUser(){ // resolve username
+                        return new Promise(function(resolve, reject){
+
+                            connection.query({
+                                sql: 'SELECT * FROM deepmes_auth_login WHERE id=?',
+                                values: [credentials.uid]
+                            },  function(err, results){
+                                if(err){return reject(err)};
+
+                                if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                    let verified_username = results[0].username;
+                                    resolve(verified_username);
+                                } else {
+                                    reject();
+                                }
+                            });
+
+                        });
+                    }
+
+                    function isActivityExists(){
+                        return new Promise(function(resolve, reject){
+
+                            connection.query({
+                                sql: 'SELECT * FROM tbl_rlogs WHERE activity_title = ?',
+                                values: [credentials.activity_title]
+                            },  function(err, results){
+                                if(err){return reject(err)};
+
+                                if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                    let activityTaken = 'Activity name already exists.';
+                                    reject(activityTaken);
+                                } else {
+                                    resolve();
+                                }
+
+                            });
+
+                        });
+                    }
+
+                    function isTDNExists(){ 
+                        return new Promise(function(resolve, reject){
+
+                            connection.query({
+                                sql: 'SELECT * FROM tbl_rlogs WHERE tdn_no = ?',
+                                values: [credentials.tdn_no]
+                            },  function(err, results){
+                                if(err){return reject(err)};
+
+                                if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                    let tdnTaken = 'TDN number already exists.';
+                                    reject(tdnTaken);
+                                } else {
+                                    resolve();
+                                }
+
+                            });
+
+                        });
+                    }
+
+                    function isMRBExists(){
+                        return new Promise(function(resolve, reject){
+
+                            connection.query({
+                                sql: 'SELECT * FROM tbl_rlogs WHERE mrb_no = ?',
+                                values: [credentials.mrb_no]
+                            },  function(err, results){
+                                if(err){return reject(err)};
+
+                                if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                    let mrbTaken = 'MRB number already exists.';
+                                    reject(mrbTaken);
+                                } else {
+                                    resolve();
+                                }
+
+                            });
+
+                        });
+                    }
+
+                    function isECExists(){
+                        return new Promise(function(resolve, reject){
+
+                            connection.query({
+                                sql: 'SELECT * FROM tbl_rlogs WHERE ec_no = ?',
+                                values: [credentials.ec_no]
+                            },  function(err, results){
+                                if(err){return reject(err)};
+
+                                if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                    let ecTaken = 'EC numver already exists.';
+                                    reject(ecTaken);
+                                } else {
+                                    resolve();
+                                }
+
+                            });
+
+                        });
+                    }
+
+                    // invoker
+                    verifyLinkToken().then(function(){
+                        return checkUser().then(function(verified_username){
+                            return isActivityExists().then(function(){
+                                return isTDNExists().then(function(){
+                                    return isMRBExists().then(function(){
+                                        return isECExists().then(function(){
+
+                                            function uploadActivity(){
+                                                return new Promise(function(resolve, reject){
+                                                    
+                                                    connection.query({
+                                                        sql: 'INSERT INTO tbl_rlogs SET upload_date=?, activity_title=?, activity_details=?, activity_type=?, tdn_no=?, mrb_no=?, ec_no=?, startDate=?, endDate=?, process_name=?, name=?, id_user=?, duration=?',
+                                                        values:[credentials.upload_date, credentials.activity_title, credentials.activity_details, credentials.activity_type, credentials.tdn_no, credentials.mrb_no, credentials.ec_no, credentials.start_date, credentials.end_date, credentials.process_name, verified_username, credentials.uid, credentials.duration]
+                                                    },  function(err, results){
+                                                        if(err){return reject(err)};
+                                                        resolve();
+                                                    });
+
+                                                });
+                                            }
+                                            
+                                            return uploadActivity().then(function(){
+
+                                                res.send({auth: 'Uploaded Successfully.'});
+                                                connection.release();
+
+                                            },  function(err){
+                                                res.send({err: 'Error inserting to database.'});
+                                            });
+
+
+                                        },  function(err){
+                                            res.send({err: err});
+                                        })
+                                    },  function(err){
+                                        res.send({err: err});   
+                                    })
+                                },  function(err){
+                                    res.send({err: err});   
+                                });
+                            },  function(err){
+                                res.send({err: err});
+                            });
+                        },  function(err){
+                            res.send({err: err});
+                        });
+                    }, function(err){
+                        res.send({err: err});
+                    });
+
+                
+                });
+                
+                
             }
 
         });
@@ -1411,7 +1676,291 @@ module.exports = function(app){
         });
     });
 
+    /** delete activity */
+    app.post('/api/activitydelete', verifyToken, function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){ return res.send({err: 'Invalid action. Try again'})};
+
+            if(req.userID && req.claim){
+
+                if(fields){
+
+                    console.log(fields);
+
+                    let data_editor = req.claim.username;
+                    let data_owner = fields.deleteByUsername;
+                    let data_token = fields.authenticity_token;
+                    let data_id = fields.deleteById;
+
+                    if(data_editor == data_owner){ // valid requestor of form?
+
+                        //  verify token
+                        function verifyLinkToken(){
+                            return new Promise(function(resolve, reject){
+
+                                jwt.verify(data_token, config.secret, function(err, decoded){
+                                    if(err){ return reject(err)};
+
+                                    resolve();
+
+                                });
+
+                            });
+                        }
+
+                        mysql.pool.getConnection(function(err, connection){
+                            if(err){return res.send({err: 'Cannot connect to database.'})};
+
+                            function deleteData(){
+                                return new Promise(function(resolve, reject){
+
+                                    connection.query({
+                                        sql: 'DELETE FROM tbl_rlogs WHERE id=?',
+                                        values: [data_id]
+                                    },  function(err, results){
+                                        if(err){return reject()};
+                                        resolve();
+                                    });
+
+                                });
+                            }
+
+                            verifyLinkToken().then(function(){
+                                return deleteData().then(function(){
+
+                                    connection.release();
+                                    res.send({auth: 'Deleted successfully.'});
+
+
+                                },  function(err){
+                                    res.send({err:'Error delete query.'});
+                                });
+
+                            },  function(err){
+                                res.send({err:'Invalid token. Please refresh page.'});
+                            });
+                        
+                        });
+
+                    } else {
+                        
+                        res.send({err: 'Unauthorized. <br> Only <i>' + data_owner + '</i> can delete transaction id ' + data_id +'.'});
+
+                    }
+
+
+                }
+
+            }
+
+        });
+        
+
+    });
     
+    /** edit activity */
+    app.post('/api/activityedit', verifyToken, function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){return res.send({err: 'Invalid form. Try again'})};
+
+            if(req.userID && req.claim){
+
+                if(fields){
+
+                    let data_editor = req.claim.username;
+                    let data_owner = fields.edit_username;
+
+                    let init_startdate = moment( new Date(fields.edit_daterange.split(' - ')[0])).format();
+                    let init_enddate = moment( new Date(fields.edit_daterange.split(' - ')[1])).format();
+
+                    let ms = moment(init_enddate).diff(moment(init_startdate));
+                    let d = moment.duration(ms);
+                    let s = Math.floor(d.asHours()) + moment.utc(ms).format(":mm");
+                    let duration_result = (s).toString();
+
+                    let activity_update = {
+                        edit_id : fields.edit_id,
+                        edit_date: new Date(),
+                        token : fields.authenticity_token,
+                        start_date: init_startdate,
+                        end_date: init_enddate, 
+                        activity_title: fields.edit_activity_title,
+                        tdn_no: fields.edit_tdn_no,
+                        mrb_no: fields.edit_mrb_no,
+                        ec_no: fields.edit_ec_no,
+                        activity_type: fields.edit_activity_type,
+                        process_name: fields.edit_process_name,
+                        activity_details: fields.edit_activity_details,
+                        duration: duration_result
+                    }
+
+                    if(data_editor == data_owner){ // valid requestor of form?
+
+                        //  verify token
+                        function verifyLinkToken(){
+                            return new Promise(function(resolve, reject){
+
+                                jwt.verify(activity_update.token, config.secret, function(err, decoded){
+                                    if(err){ return reject(err)};
+
+                                    resolve();
+
+                                });
+
+                            });
+                        }
+
+                        mysql.pool.getConnection(function(err, connection){
+                            if(err){ return res.send({err: 'Cannot connect to database'})};
+
+                            function isActivityExists(){
+                                return new Promise(function(resolve, reject){
+        
+                                    connection.query({
+                                        sql: 'SELECT * FROM tbl_rlogs WHERE activity_title = ? AND id <> ?',
+                                        values: [activity_update.activity_title, activity_update.edit_id]
+                                    },  function(err, results){
+                                        if(err){return reject(err)};
+        
+                                        if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                            let activityTaken = 'Activity name already exists.';
+                                            reject(activityTaken);
+                                        } else {
+                                            resolve();
+                                        }
+        
+                                    });
+        
+                                });
+                            }
+        
+                            function isTDNExists(){ 
+                                return new Promise(function(resolve, reject){
+        
+                                    connection.query({
+                                        sql: 'SELECT * FROM tbl_rlogs WHERE tdn_no = ? AND id <> ?',
+                                        values: [activity_update.tdn_no, activity_update.edit_id]
+                                    },  function(err, results){
+                                        if(err){return reject(err)};
+        
+                                        if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                            let tdnTaken = 'TDN number already exists.';
+                                            reject(tdnTaken);
+                                        } else {
+                                            resolve();
+                                        }
+        
+                                    });
+        
+                                });
+                            }
+        
+                            function isMRBExists(){
+                                return new Promise(function(resolve, reject){
+        
+                                    connection.query({
+                                        sql: 'SELECT * FROM tbl_rlogs WHERE mrb_no = ? AND id <> ?',
+                                        values: [activity_update.mrb_no, activity_update.edit_id]
+                                    },  function(err, results){
+                                        if(err){return reject(err)};
+        
+                                        if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                            let mrbTaken = 'MRB number already exists.';
+                                            reject(mrbTaken);
+                                        } else {
+                                            resolve();
+                                        }
+        
+                                    });
+        
+                                });
+                            }
+        
+                            function isECExists(){
+                                return new Promise(function(resolve, reject){
+        
+                                    connection.query({
+                                        sql: 'SELECT * FROM tbl_rlogs WHERE ec_no = ? AND id <> ?',
+                                        values: [activity_update.ec_no, activity_update.edit_id]
+                                    },  function(err, results){
+                                        if(err){return reject(err)};
+        
+                                        if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                            let ecTaken = 'EC numver already exists.';
+                                            reject(ecTaken);
+                                        } else {
+                                            resolve();
+                                        }
+        
+                                    });
+        
+                                });
+                            }
+                            verifyLinkToken().then(function(){
+                                return isActivityExists().then(function(){
+                                    return isTDNExists().then(function(){
+                                        return isMRBExists().then(function(){
+                                            return isECExists().then(function(){
+
+                                                function editData(){
+                                                    return new Promise(function(resolve, reject){
+                                                        
+                                                        connection.query({
+                                                            sql: 'UPDATE tbl_rlogs SET upload_date=?, activity_title=?, activity_details=?, activity_type=?, tdn_no=?, mrb_no=?, ec_no=?, startDate=?, endDate=?, process_name=?, duration=?  WHERE id=?',
+                                                            values: [activity_update.edit_date, activity_update.activity_title, activity_update.activity_details, activity_update.activity_type, activity_update.tdn_no, activity_update.mrb_no, activity_update.ec_no, activity_update.start_date, activity_update.end_date, activity_update.process_name, activity_update.duration, activity_update.edit_id]
+                                                        },  function(err, results){
+                                                            if(err){return reject()};
+                                                            resolve();
+                                                        });
+                                                    
+                                                    });
+                                                }
+
+                                                return editData().then(function(){
+                                                    
+                                                    connection.release();
+                                                    res.send({auth: 'Updated successfully.'});
+
+                                                },  function(err){
+                                                    res.send({err: 'Error update to database.'});
+                                                });
+                                            },  function(err){
+                                                res.send({err: 'EC already exists.'});
+                                            });
+                                        },  function(err){
+                                            res.send({err: 'MRB already exists.'});
+                                        });
+                                    },  function(err){
+                                        res.send({err: 'TDN already exists.'});
+                                    });
+                                },  function(err){
+                                    res.send({err: 'Activity already exists.'});
+                                });
+                            },  function(err){
+                                res.send({err: 'Invalid token. Please refresh page.'});
+                            });
+
+                        });
+
+                    } else {
+                        
+                        res.send({err: 'Unauthorized. <br> Only <i>' + data_owner + '</i> can edit transaction id ' + activity_update.edit_id +'.'});
+
+                    }
+
+                }
+
+            }
+
+
+        });
+
+
+    });
 
 
 }
