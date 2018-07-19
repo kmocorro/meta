@@ -205,9 +205,22 @@
                                                                     </ul>
                                                                 </span>
                                                                 <h3 class="timeline-header"><%= data.recent[i].activity_title %> ends <%= data.recent[i].timeLeft %> </h3>
-                                                                <div class="timeline-body"><%= data.recent[i].activity_details %>. | Starts in <%= data.recent[i].startDate %> until <%= data.recent[i].endDate %> </div>
+                                                                <div class="timeline-body"><%= data.recent[i].activity_details %>. </div>
                                                                 <div class="timeline-footer">
-                                                                <span class="footer-timeline"><%= data.recent[i].activity_type %> - <%= data.recent[i].process_name %> - <%= data.recent[i].tdn_no %> - <%= data.recent[i].mrb_no %> - <%= data.recent[i].ec_no %> - uploaded by <%= data.recent[i].username %> </i> 
+                                                                <span class="footer-timeline">
+                                                                    <div style="overflow-x:auto;">
+                                                                        <table>
+                                                                            <tr style="font-size:12px;" >
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].startDate %> until <%= data.recent[i].endDate %></td>
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].activity_type %></td>
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].process_name %></td>
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].tdn_no  || '-' %></td>
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].mrb_no || '-' %></td>
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].ec_no || '-' %></td>
+                                                                                <td style="padding:0 5px 0;"> @<%= data.recent[i].username %></td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         </li>
