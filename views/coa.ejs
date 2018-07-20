@@ -93,7 +93,7 @@
                                 </ul>
                             </li>
                             <li>
-                                <a href="/#"><span class="link-nav coa-header">Reports </span></a>
+                                <!--<a href="/#"><span class="link-nav coa-header">Reports </span></a>-->
                             </li>
                         </ul>
                     </div>
@@ -135,7 +135,7 @@
                                     <a href="#upload" data-toggle="tab">Upload</a>
                                 </li>
                                 <li class="">
-                                    <a href="#tableau-coa" data-toggle="tab">Tableau</a>
+                                    <a href="#reports-coa" data-toggle="tab">Reports</a>
                                 </li>
                                 <li class="">
                                     <a href="#settings" data-toggle="tab">Logs</a>
@@ -196,11 +196,6 @@
                                         <div class="col-md-8">
                                             <h4 class="coa-body-form">Recent activity</h4>
                                             <ul class="timeline timeline-invers">
-                                                <li class="time-label">
-                                                    <span class="bg-white">
-                                                        <%= todayDate %>
-                                                    </span>
-                                                </li>
                                                 <% for(let i=0; i<data.recent.length; i++) { %>
                                                 <li>
                                                     <i class="fa fa-cloud-upload bg-gray">
@@ -357,7 +352,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane" id="tableau-coa">
+                                <div class="tab-pane" id="reports-coa">
                                     <div class="row">
                                         <div class="col-md-11 col-centered table-responsive no-padding">
                                             <div id="alerta" class="alert tableau-dismiss alert-dismissable">
