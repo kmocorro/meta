@@ -52,7 +52,6 @@
                                     <li>
                                         <a href="/coa/kitting">CoA - Kitting</a>
                                     </li>
-                                    <li class="divider"></li>
                                     <li>
                                         <a href="/activity">Engineering Activity</a>
                                     </li>
@@ -85,27 +84,13 @@
         <div class="content-wrapper coa-body">
             <div class="col-md-8 col-centered">
                 <section class="content-header">
-                    <h1 class="coa-body-header">Engineering Activity</h1>
-                    <ol class="breadcrumb">
-                        <li><a href="/">Home</a></li>
-                        <li class="active">Engineering Activity</li>
-                    </ol>
+                    <h1 class="coa-body-header">Activity</h1>
                 </section>
             </div>
             <section class="content">
                 <div class="row">
                     <div class="col-md-8 col-centered">
                         <div class="nav-tabs-custom">
-                            <ul class="nav nav-tabs">
-                                <li class="active">
-                                    <a href="#upload" data-toggle="tab">Upload</a>
-                                </li>
-                                <!--
-                                <li class="">
-                                    <a href="#settings" data-toggle="tab">Settings</a>
-                                </li>
-                                -->
-                            </ul>
                             <div class="tab-content">
                                 <div class="tab-pane active" id="upload">
                                     <div class="row">
@@ -177,13 +162,8 @@
                                             </form>
                                         </div>
                                         <div class="col-md-8">
-                                            <h4 class="coa-body-form">Recent activity</h4>
+                                            <h4 class="coa-body-form">Contribution activity</h4>
                                             <ul class="timeline timeline">
-                                                <li class="time-label">
-                                                    <span class="bg-white">
-                                                        <%= todayDate %>
-                                                    </span>
-                                                </li>
                                                 <% for(let i=0; i<data.recent.length; i++) { %>
                                                     <% if(data.recent[i].id) { %>
                                                         <li>
@@ -191,37 +171,46 @@
                                                             </i>
                                                             <div class="timeline-item">
                                                                 <span class="time">
-                                                                    <i class="fa fa-clock-o"></i> <%= data.recent[i].upload_date %>&nbsp;
+                                                                    ends <%= data.recent[i].timeLeft %>&nbsp;
                                                                     <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
-                                                                        <span class="fa fa-ellipsis-v"></span>
+                                                                        <span class="fa fa-ellipsis-v" style="color:slategray"></span>
                                                                     </button>
                                                                     <ul class="dropdown-menu coa-dropdown" role="menu">
                                                                         <li>
-                                                                            <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>">Edit</a>
+                                                                            <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>">Edit activity</a>
                                                                         </li>
+                                                                        <li class="divider"></li>
                                                                         <li>
-                                                                            <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>">Remove</a>
+                                                                            <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>">Delete activity</a>
                                                                         </li>
                                                                     </ul>
                                                                 </span>
-                                                                <h3 class="timeline-header"><%= data.recent[i].activity_title %> ends <%= data.recent[i].timeLeft %> </h3>
-                                                                <div class="timeline-body"><%= data.recent[i].activity_details %>. </div>
+                                                                <h3 class=" recent-activity-timeline-header timeline-header"><%= data.recent[i].activity_title %></h3>
+                                                                <div class="timeline-body recent-activity-timeline-body"><%= data.recent[i].activity_details %>. </div>
                                                                 <div class="timeline-footer">
                                                                 <span class="footer-timeline">
                                                                     <div style="overflow-x:auto;">
                                                                         <table>
                                                                             <tr style="font-size:12px;" >
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].startDate %> until <%= data.recent[i].endDate %></td>
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].upload_date %></td>
                                                                                 <td style="padding:0 5px 0;"><%= data.recent[i].activity_type %></td>
                                                                                 <td style="padding:0 5px 0;"><%= data.recent[i].process_name %></td>
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].tdn_no  || '-' %></td>
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].mrb_no || '-' %></td>
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].ec_no || '-' %></td>
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].tdn_no  || '' %></td>
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].mrb_no || '' %></td>
+                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].ec_no || '' %></td>
                                                                                 <td style="padding:0 5px 0;"> @<%= data.recent[i].username %></td>
                                                                             </tr>
                                                                         </table>
                                                                     </div>
                                                                 </div>
+                                                            </div>
+                                                        </li>
+                                                    <% } else { %>
+                                                        <li>
+                                                            <i class="fa fa-meh-o bg-gray">
+                                                            </i>
+                                                            <div class="timeline-item">
+                                                                <h3 class=" recent-activity-timeline-header timeline-header">You don't have any posts yet.</h3>
                                                             </div>
                                                         </li>
                                                     <% } %>
@@ -318,8 +307,9 @@
                                                                     <label class="coa-modal-label">Process</label>
                                                                     <div class="form-group has-feedback">
                                                                         <select class="form-control select2 select2-hidden-accessible" name="edit_process_name" style="width:100%;" tabindex="-1" aria-hidden="true" value="<%= data.recent[i].process_name %>">
-                                                                            <option>DAMAGE</option>
-                                                                            <option>POLY</option>
+                                                                            <% for(let i=0; i<process_list.length;i++) { %>
+                                                                                <option><%=  process_list[i] %></option>
+                                                                            <% } %>
                                                                         </select>
                                                                     </div>
                                                                     <label class="coa-modal-label">Description</label>

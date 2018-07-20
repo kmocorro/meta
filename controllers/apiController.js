@@ -258,7 +258,8 @@ module.exports = function(app){
                     return new Promise(function(resolve, reject){
 
                         connection.query({
-                            sql: 'SELECT * FROM tbl_rlogs ORDER BY id DESC LIMIT 8'
+                            sql: 'SELECT * FROM tbl_rlogs WHERE id_user = ? ORDER BY id DESC LIMIT 10',
+                            values: [req.userID]
                         },  function(err, results){
                             if(err){return reject()};
 
@@ -326,8 +327,6 @@ module.exports = function(app){
 
                         });
 
-                        connection.release();
-
                     });
 
                 }
@@ -368,9 +367,13 @@ module.exports = function(app){
                             let todayDate = moment(new Date()).format('lll');
                             res.render('activity', { username: req.claim.username, department: req.claim.department, authenticity_token,  data, todayDate, process_list});
 
+                            connection.release();
+
                         },  function(data){
                             let todayDate = moment(new Date()).format('lll');
                             res.render('activity', { username: req.claim.username, department: req.claim.department, authenticity_token, data, todayDate, process_list});
+                            
+                            connection.release();
                         });
                     },  function(){
                         res.send({err: 'Process list Error.'});
