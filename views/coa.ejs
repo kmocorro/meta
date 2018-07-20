@@ -21,6 +21,41 @@
     <link rel="stylesheet" href="../assets/dist/css/AdminLTE.min.css">
     <link rel="stylesheet" href="../assets/dist/css/fab4meta.css">
 
+    <!--Tableau-->
+    <script type="text/javascript" src="http://tableau.sunpowercorp.com/javascripts/api/tableau-2.min.js"></script>
+    <script type="text/javascript">
+    
+
+        function initViz() {
+            var containerDiv = document.getElementById("vizContainer"),
+            url = "http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/HourlyJoandBRRwithSiliconParameters/HourlyEOLandSiliconParameters?:iid=1",
+            options = {
+                hideTabs: true,
+                onFirstInteractive: function () {
+                    console.log("Please wait while loadinng vizContainer...................");
+                    $('#alerta').alert("close");
+                }
+            };
+                
+            var viz = new tableau.Viz(containerDiv, url, options); 
+        }
+
+        function initViz2() {
+            var containerDiv2 = document.getElementById("vizContainer2"),
+            url2 = "http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/BinningDistributionperwafersupplier/HourlyBinningDistribution?:iid=19",
+            options2 = {
+                hideTabs: true,
+                onFirstInteractive: function () {
+                    console.log("Please wait while loadinng vizContainer2...................");
+                    $('#alerta').alert("close");
+                }
+            };
+                
+            var viz = new tableau.Viz(containerDiv2, url2, options2); 
+        }
+
+    </script>
+
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
@@ -31,7 +66,7 @@
     <!-- Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
 </head>
-<body class="layout-top-nav">
+<body class="layout-top-nav" onload="initViz();initViz2();">
     <div class="wrapper main-pg">
         <header class="main-header coa-header">
             <nav class="navbar navbar-static-top">
@@ -100,7 +135,10 @@
                                     <a href="#upload" data-toggle="tab">Upload</a>
                                 </li>
                                 <li class="">
-                                    <a href="#settings" data-toggle="tab">Settings</a>
+                                    <a href="#tableau-coa" data-toggle="tab">Tableau</a>
+                                </li>
+                                <li class="">
+                                    <a href="#settings" data-toggle="tab">Logs</a>
                                 </li>
                             </ul>
                             <div class="tab-content">
@@ -319,6 +357,21 @@
                                         </div>
                                     </div>
                                 </div>
+                                <div class="tab-pane" id="tableau-coa">
+                                    <div class="row">
+                                        <div class="col-md-11 col-centered table-responsive no-padding">
+                                            <div id="alerta" class="alert tableau-dismiss alert-dismissable">
+                                                <button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
+                                                <h4>
+                                                    Please wait.
+                                                </h4>
+                                                Login using Tableau Server account when pop-up message appears.
+                                            </div>
+                                            <div id="vizContainer"></div>
+                                            <div id="vizContainer2" style="padding-top:10%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -354,6 +407,7 @@
             autoclose: true
         });
         <% } %>
+
     });
 </script>
 <!-- Upload script -->
