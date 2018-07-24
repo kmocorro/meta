@@ -28,7 +28,96 @@ module.exports = function(app){
         res.header('Pragma', 'no-cache');
 
         if(req.userID && req.claim){
-            res.render('index', {username: req.claim.username, department: req.claim.department});
+
+            mysql.pool.getConnection(function(err, connection){
+                if(err){return res.send({err: 'Cannot connect to database'})};
+
+                function feed(){
+                    return new Promise(function(resolve, reject){
+
+                        connection.query({
+                            sql: 'SELECT * FROM tbl_rlogs ORDER BY id DESC LIMIT 15'
+                        },  function(err, results){
+                            if(err){return reject()};
+
+                            if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                let feed_obj = [];
+
+                                for(let i=0;i<results.length;i++){
+
+                                    feed_obj.push({
+                                        id: results[i].id,
+                                        upload_date: moment(results[i].upload_date).calendar() || null, 
+                                        activity_title: results[i].activity_title || null,
+                                        activity_details: results[i].activity_details.charAt(0).toUpperCase() + results[i].activity_details.slice(1) || null,
+                                        activity_type: results[i].activity_type || null,
+                                        mrb_no: results[i].mrb_no || null,
+                                        tdn_no: results[i].tdn_no || null,
+                                        ec_no: results[i].ec_no || null,
+                                        startDate: moment(results[i].startDate).format('YYYY-MM-DD h:mm A') || null,
+                                        endDate: moment(results[i].endDate).format('YYYY-MM-DD h:mm A') || null,
+                                        process_name: results[i].process_name || null,
+                                        comments: results[i].comments || null,
+                                        username: results[i].name || null,
+                                        duration: results[i].duration || null,
+                                        timeLeft: moment( results[i].endDate).endOf('day').fromNow() || null
+                                    });
+
+                                }
+                                
+                                let data = {
+                                    feed : feed_obj
+                                }
+
+                                resolve(data);
+
+                            } else {
+
+                                let feed_obj = [];
+
+                                feed_obj.push({
+                                    id: null,
+                                    upload_date: null, 
+                                    activity_title: null,
+                                    activity_details: null,
+                                    activity_type: null,
+                                    mrb_no:  null,
+                                    tdn_no:  null,
+                                    ec_no: null,
+                                    startDate: null,
+                                    endDate: null,
+                                    process_name: null,
+                                    comments: null,
+                                    username: null,
+                                    duration: null,
+                                    timeLeft: null
+                                });
+
+                                let data = {
+                                    feed : feed_obj
+                                }
+
+                                reject(data);
+
+                            }
+
+
+                        });
+
+                    });
+                }
+
+                feed().then(function(data){
+
+                    res.render('index', {username: req.claim.username, department: req.claim.department, data});
+                    connection.release();
+
+                },  function(err){
+                    res.send({err: 'Unable to display feed'});
+                });
+
+            });
+
         } else {
             res.redirect('login');
         }
