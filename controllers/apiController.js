@@ -36,7 +36,7 @@ module.exports = function(app){
                     return new Promise(function(resolve, reject){
 
                         connection.query({
-                            sql: 'SELECT * FROM tbl_rlogs ORDER BY id DESC LIMIT 15'
+                            sql: 'SELECT * FROM tbl_rlogs ORDER BY id DESC LIMIT 100'
                         },  function(err, results){
                             if(err){return reject()};
 
@@ -132,7 +132,7 @@ module.exports = function(app){
                     
                     //The var "humanizedGreeting" below will equal (assuming the time is 8pm) "Good evening, James."
                         
-                    var humanizedGreeting = "Good " + getGreetingTime(moment()) + ", " +  req.claim.username + ".";
+                    var humanizedGreeting = "Good " + getGreetingTime(moment()) + ", " +  req.claim.name + ".";
                     
 
                     res.render('index', {username: req.claim.username, greet: humanizedGreeting, department: req.claim.department, data});
