@@ -51,9 +51,6 @@
                                     <li>
                                         <a href="/coa/kitting">CoA - Kitting</a>
                                     </li>
-                                    <li>
-                                        <a href="/activity">Engineering Activity</a>
-                                    </li>
                                 </ul>
                             </li>
                             <li>
@@ -64,13 +61,13 @@
                     <div class="navbar-custom-menu">
                         <ul class="nav navbar-nav">
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="link-nav"><%= username %></span></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="link-nav">@<%= username %></span></a>
                                 <ul class="dropdown-menu" role="menu">
-                                    <!--<li>
-                                        <a href="#">settings</a>
-                                    </li>-->
                                     <li>
-                                        <a href="/logout">logout</a>
+                                        <a href="/activity">My Activity</a>
+                                    </li>
+                                    <li>
+                                        <a href="/logout">Logout</a>
                                     </li>
                                 </ul>
                             </li>
@@ -113,9 +110,9 @@
                                             <td style="padding:0 5px 0;">Posted <%= data.feed[i].upload_date %></td>
                                             <td style="padding:0 5px 0;"><%= data.feed[i].activity_type %></td>
                                             <td style="padding:0 5px 0;"><%= data.feed[i].process_name %></td>
-                                            <td style="padding:0 5px 0;"><%= data.feed[i].tdn_no  || '' %></td>
-                                            <td style="padding:0 5px 0;"><%= data.feed[i].mrb_no || '' %></td>
-                                            <td style="padding:0 5px 0;"><%= data.feed[i].ec_no || '' %></td>
+                                            <td style="padding:0 5px 0;"><%= data.feed[i].tdn_no  || '-' %></td>
+                                            <td style="padding:0 5px 0;"><%= data.feed[i].mrb_no || '-' %></td>
+                                            <td style="padding:0 5px 0;"><%= data.feed[i].ec_no || '-' %></td>
                                             <td style="padding:0 5px 0;">ends <%= data.feed[i].timeLeft %></td>
                                         </tr>
                                     </table>
