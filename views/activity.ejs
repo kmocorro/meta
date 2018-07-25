@@ -281,7 +281,7 @@
                                                                     </div>
                                                                     <label class="coa-modal-label">Activity:</label>
                                                                     <div class="form-group has-feedback">
-                                                                        <input type="text" name="edit_activity_title" id="activity_title<%= data.recent[i].id %>" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_title %>" >
+                                                                        <input type="text" name="edit_activity_title" id="activity_title<%= data.recent[i].id %>" class="form-control" required pattern=".{0}|.{5,20}" onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_title %>" >
                                                                     </div>
                                                                     <label class="coa-modal-label">TDN #:</label>
                                                                     <div class="form-group ">
