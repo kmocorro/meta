@@ -110,13 +110,13 @@ module.exports = function(app){
                 feed().then(function(data){
 
                     function getGreetingTime (m) {
-                        var g = null; //return g
+                        let g = null; //return g
                         
                         if(!m || !m.isValid()) { return; } //if we can't find a valid or filled moment, we return.
                         
-                        var split_afternoon = 12 //24hr time to split the afternoon
-                        var split_evening = 17 //24hr time to split the evening
-                        var currentHour = parseFloat(m.format("HH"));
+                        let split_afternoon = 12 //24hr time to split the afternoon
+                        let split_evening = 17 //24hr time to split the evening
+                        let currentHour = parseFloat(m.format("HH"));
                         
                         if(currentHour >= split_afternoon && currentHour <= split_evening) {
                             g = "afternoon";
@@ -130,9 +130,9 @@ module.exports = function(app){
                     }
                     
                     
-                    //The var "humanizedGreeting" below will equal (assuming the time is 8pm) "Good evening, James."
+                    //The let "humanizedGreeting" below will equal (assuming the time is 8pm) "Good evening, James."
                         
-                    var humanizedGreeting = "Good " + getGreetingTime(moment()) + ", " +  req.claim.name + ".";
+                    let humanizedGreeting = "Good " + getGreetingTime(moment()) + ", " +  req.claim.name + ".";
                     
 
                     res.render('index', {username: req.claim.username, greet: humanizedGreeting, department: req.claim.department, data});
@@ -1229,7 +1229,7 @@ module.exports = function(app){
             if(err){ return res.send({err: 'Invalid form. Try again'})};
 
             if(fields){
-                let cleaned_tags = []; // expose in lexical environment for credentials variable
+                let cleaned_tags = []; // expose in lexical environment for credentials letiable
 
                 let uncleaned_tags = [
                     fields.runcard1 || null,
