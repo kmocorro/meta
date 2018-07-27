@@ -298,16 +298,31 @@
                                                                     <label class="coa-modal-label">Type:</label>
                                                                     <div class="form-group">
                                                                         <select class="form-control select2 select2-hidden-accessible" name="edit_activity_type" style="width:100%;" tabindex="-1" aria-hidden="true" value="<%= data.recent[i].activity_type %>">
-                                                                            <option>STO</option>
-                                                                            <option>COL</option>
-                                                                            <option>FTO</option>
+                                                                            <% if(data.recent[i].activity_type == 'STO') { %>
+                                                                                <option value="STO" selected>STO</option>
+                                                                                <option value="COL" >COL</option>
+                                                                                <option value="FTO" >FTO</option>
+                                                                            <% } else if( data.recent[i].activity_type == 'COL') { %>
+                                                                                <option value="STO" >STO</option>
+                                                                                <option value="COL" selected>COL</option>
+                                                                                <option value="FTO" >FTO</option>
+                                                                            <% } else if( data.recent[i].activity_type == 'FTO') { %>
+                                                                                <option value="STO" >STO</option>
+                                                                                <option value="COL" >COL</option>
+                                                                                <option value="FTO" selected>FTO</option>
+                                                                            <% } %>
                                                                         </select>
                                                                     </div>
                                                                     <label class="coa-modal-label">Process</label>
                                                                     <div class="form-group has-feedback">
                                                                         <select class="form-control select2 select2-hidden-accessible" name="edit_process_name" style="width:100%;" tabindex="-1" aria-hidden="true" value="<%= data.recent[i].process_name %>">
-                                                                            <% for(let i=0; i<process_list.length;i++) { %>
-                                                                                <option><%=  process_list[i] %></option>
+                                                                            <% for(let j=0; j<process_list.length;j++) { %>
+                                                                                <% if(data.recent[i].process_name ==  process_list[j] ) { %>
+                                                                                    <option value="<%=  process_list[j] %>" selected><%=  process_list[j] %></option>
+                                                                                    <% for(let k=0; k<process_list.length;k++) { %>
+                                                                                    <option value="<%=  process_list[k] %>"><%=  process_list[k] %></option>
+                                                                                    <% } %>
+                                                                                <% } %>
                                                                             <% } %>
                                                                         </select>
                                                                     </div>
