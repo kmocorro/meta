@@ -152,7 +152,7 @@ module.exports = function(app){
 
     /**redirect */
     app.get('/kitting', function(req, res){
-        res.redirect('/coa');
+        res.redirect('/coa', {username: ''});
     });
 
     app.get('/coauploader', function(req, res){
@@ -294,6 +294,17 @@ module.exports = function(app){
 
     });
 
+    /** Reports page */
+    app.get('/reports', verifyToken, function(req, res){
+
+        if(req.userID && req.claim){
+            res.render('reports', {username: req.claim.username});
+        } else {
+            res.render('reports', {username: ''});
+        }
+
+    });
+    
     /** redirect -- coa */
     app.get('/coa/qa', verifyToken, function(req, res){
         res.redirect('/coa');
