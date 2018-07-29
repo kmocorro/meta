@@ -152,11 +152,11 @@ module.exports = function(app){
 
     /**redirect */
     app.get('/kitting', function(req, res){
-        res.redirect('/coa/kitting');
+        res.redirect('/coa');
     });
 
     app.get('/coauploader', function(req, res){
-        res.redirect('/coa/qa');
+        res.redirect('/coa');
     })
 
     /** Sign up page */
@@ -172,8 +172,8 @@ module.exports = function(app){
         res.render('signup', {authenticity_token});
     });
 
-    /** coa */
-    app.get('/coa/qa', verifyToken, function(req, res){
+    /** COA - MAIN */
+    app.get('/coa', verifyToken, function(req, res){
         res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
         res.header('Expires', '-1');
         res.header('Pragma', 'no-cache');
@@ -194,16 +194,15 @@ module.exports = function(app){
                     return new Promise(function(resolve, reject){
 
                         connection.query({
-                            sql: 'SELECT B.supplier_name, A.order_no, A.username, A.upload_time, A.delivery_date FROM (SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_ingot_lot_barcodes GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_achl_ingot_v2 GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_ferrotec_ingot GROUP BY order_no) A JOIN (SELECT supplier_id, supplier_name FROM tbl_supplier_list) B ON A.supplier_id = B.supplier_id ORDER BY A.upload_time DESC'
+                            sql: 'SELECT B.supplier_name, A.order_no, A.username, A.upload_time, A.delivery_date FROM (SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_ingot_lot_barcodes GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_achl_ingot_v2 GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_ferrotec_ingot GROUP BY order_no) A JOIN (SELECT supplier_id, supplier_name FROM tbl_supplier_list) B ON A.supplier_id = B.supplier_id ORDER BY A.upload_time DESC LIMIT 8'
                         },  function(err, results){
                             if(err){return reject()};
 
                             if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
 
                                 let recentActivity = [];
-                                let uploadHistory = [];
 
-                                for(let i=0; i<results.slice(-5).length;i++){
+                                for(let i=0; i<results.length;i++){
                                     recentActivity.push({
                                         supplier: results[i].supplier_name,
                                         date: moment(results[i].upload_time).format('llll'),
@@ -213,24 +212,10 @@ module.exports = function(app){
                                     });
                                 }
 
-                                for(let i=0; i<results.length;i++){
-                                    uploadHistory.push({
-                                        supplier: results[i].supplier_name,
-                                        date: moment(results[i].upload_time).format('llll'),
-                                        delivery_date: moment(results[i].delivery_date).format('llll'),
-                                        invoice: results[i].order_no,
-                                        username: results[i].username
-                                    });
-                                }
+                                let qa =  recentActivity;
 
-                                let data = {
-                                    recent : recentActivity,
-                                    settings: uploadHistory
-                                }
-
-                                resolve(data);
+                                resolve(qa);
                                 
-
                             } else {
                                 reject();
                             }
@@ -239,43 +224,6 @@ module.exports = function(app){
 
                     });
                 }
-
-                coaQA().then(function(data){
-                    
-                    let todayDate = moment(new Date()).format('lll');
-
-                    connection.release();
-                    res.render('coa', {username: req.claim.username, department: req.claim.department, data, authenticity_token, todayDate});
-
-                },  function(err){
-                    res.send({err: 'Invalid query.'});
-                });
-
-            });
-
-        } else {
-            res.render('login');
-        }
-
-    });
-
-    /** kiting boxid upload */
-    app.get('/coa/kitting', verifyToken, function(req, res){
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
-
-        let authenticity_token = jwt.sign({
-            id: uuidv4(),
-            claim: {
-                signup: 'valid'
-            }
-        }, config.secret);
-
-        if(req.userID && req.claim){
-
-            mysql.pool.getConnection(function(err, connection){
-                if(err){return res.send({err: 'Cannot connect to database'})};
 
                 function coaKitting(){
                     return new Promise(function(resolve, reject){
@@ -288,7 +236,6 @@ module.exports = function(app){
                             if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
 
                                 let recent_activity_obj = [];
-                                let kitting_settings_obj = [];
                                 
                                 for(let i=0;i<results.length;i++){
                                     if(results[i].box_id){
@@ -302,26 +249,10 @@ module.exports = function(app){
                                         });
                                     }
                                 }
-                                /**
-                                for(let i=0;i<results.length;i++){
-                                    if(results[i].box_id){
 
-                                        kitting_settings_obj.push({
-                                            id: results[i].id,
-                                            upload_date: moment(results[i].upload_date).format('lll'),
-                                            box_id: results[i].box_id,
-                                            runcard: results[i].runcard,
-                                            username: results[i].username
-                                        });
-                                    }
-                                } */
+                                let kitting = recent_activity_obj;
 
-                                let data = {
-                                    recent : recent_activity_obj,
-                                    //settings: kitting_settings_obj
-                                }
-
-                                resolve(data);
+                                resolve(kitting);
 
                             } else {
                                 reject();
@@ -329,26 +260,48 @@ module.exports = function(app){
 
                         });
 
-                        connection.release();
-
                     });
 
                 }
 
-                coaKitting().then(function(data){
-                    let todayDate = moment(new Date()).format('lll');
+                coaQA().then(function(qa){
+                    return coaKitting().then(function(kitting){
 
-                    res.render('kitting', { username: req.claim.username, department: req.claim.department, authenticity_token,  data, todayDate});
+                        let todayDate = moment(new Date()).format('lll');
+
+                        let data = {
+                            kitting: kitting,
+                            qa: qa
+                        }
+
+                        connection.release();
+                        res.render('coa-main', {username: req.claim.username, department: req.claim.department, data, authenticity_token, todayDate});
+
+
+                    },  function(err){
+                        res.send({err: err});
+                    });
+
                 },  function(err){
-                    res.send({err: err});
+                    res.send({err: 'Invalid query.'});
                 });
-                
 
             });
 
         } else {
             res.render('login');
         }
+
+    });
+
+    /** redirect -- coa */
+    app.get('/coa/qa', verifyToken, function(req, res){
+        res.redirect('/coa');
+    });
+
+    /** redirect -- kiting boxid upload */
+    app.get('/coa/kitting', verifyToken, function(req, res){
+        res.redirect('/coa');
     });
 
     /** engineering activity upload */

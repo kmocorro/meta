@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Certificate of Analysis - META </title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.7 -->
+    <link rel="stylesheet" href="../assets/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../assets/bower_components/font-awesome/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../assets/bower_components/Ionicons/css/ionicons.min.css">
+    <!-- Datepicker -->
+    <link rel="stylesheet" href="../assets/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="../assets/bower_components/select2/dist/css/select2.min.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="../assets/dist/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="../assets/dist/css/AdminLTE.min.css">
+    <link rel="stylesheet" href="../assets/dist/css/fab4meta.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <!-- Google Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700,300italic,400italic,600italic">
+</head>
+<body class="layout-top-nav">
+    <div class="wrapper main-pg">
+        <header class="main-header site-header">
+            <nav class="navbar navbar-static-top">
+                <div class="col-md-8 col-centered">
+                    <div class="navbar-header">
+                        <p class="navbar-minimal">META</p>
+                        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"><i class="fa fa-bars"></i>
+                        </button>
+                    </div>
+                    <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
+                        <ul class="nav navbar-nav">
+                            <li>
+                                <a href="/"><span class="link-nav">Home </span></a>
+                            </li>
+                            <li>
+                                <a href="/#"><span class="link-nav">Reports </span></a>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><span class="link-nav">Prototypes </span><span class="caret caret-style"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a href="/coa">Certificate of Analysis</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="navbar-custom-menu">
+                        <ul class="nav navbar-nav">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="link-nav">@<%= username %></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a href="/activity"><i class="fa fa-quote-left"></i> My Activity</a>
+                                    </li>
+                                    <li>
+                                        <a href="/logout"><i class="fa fa-sign-out"></i> Logout</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </nav>
+        </header>
+        <div class="content-wrapper coa-body coa-area">
+            <div class="col-md-8 col-centered">
+                <section class="content-header">
+                    <h1 class="coa-body-header">Certificate of Analysis</h1>
+                </section>
+            </div>
+            <section class="content">
+                <div class="row">
+                    <div class="col-md-8 col-centered">
+                        <div class="nav-tabs-custom">
+                            <ul class="nav nav-tabs nav-tab-design">
+                                <li class="active">
+                                    <a href="#kitting" data-toggle="tab">Kitting</a>
+                                </li>
+                                <li class="">
+                                    <a href="#qa" data-toggle="tab">QA File</a>
+                                </li>
+                                <li class="">
+                                    <a href="#download" data-toggle="tab">Download</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content">
+                                <div class="tab-pane active" id="kitting">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div id="responseDiv">
+                                                <!-- response here-->
+                                            </div>
+                                            <form id="uploadboxid">
+                                                <div id="toHideIfSuccess">
+                                                    <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                    <h4 class="coa-body-form">CoA Box ID & Runcard</h4>
+                                                    <label class="coa-form-label">Box ID:</label>
+                                                    <div class="form-group has-feedback">
+                                                        <input type="text" autofocus="on" name="boxid" id="boxid" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    </div>
+                                                    <label class="coa-form-label">Tag Runcard</label>
+                                                    <div class="form-group has-feedback">
+                                                        <section id="multiRow">
+                                                            <div id="initRow">
+                                                                <input name="multifield" id="runcardno" class="form-control form-kitting-interface" onchange="document.getElementById('responseDiv').style.display = 'none';" style="display:inline; width:94%;">
+                                                            </div>
+                                                        </section>
+                                                    </div>
+                                                    <br>
+                                                    <div class="row">
+                                                        <div class="col-xs-7">
+                                                            <div class="coa-sub-link">
+                                                                By tagging "4 runcards" consecutively, this form will automatically be submitted.
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-5">
+                                                            <button type="submit" id="submitkitting" class="btn btn-primary btn-block btn-success btn-flat">Submit</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h4 class="coa-body-form">Recent activity</h4>
+                                            <ul class="timeline timeline">
+                                                <% for(let i=0; i<data.kitting.length; i++) { %>
+                                                    <li>
+                                                        <i class="fa fa-cloud-upload bg-gray">
+                                                        </i>
+                                                        <div class="timeline-item">
+                                                            <span class="time">
+                                                                <i class="fa fa-clock-o"></i> <%= data.kitting[i].upload_date %>&nbsp;
+                                                                <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                                    <span class="fa fa-ellipsis-v"></span>
+                                                                </button>
+                                                                <ul class="dropdown-menu coa-dropdown" role="menu">
+                                                                    <li>
+                                                                        <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.kitting[i].id %>">Edit</a>
+                                                                    </li>
+                                                                    <li>
+                                                                        <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.kitting[i].id %>">Remove</a>
+                                                                    </li>
+                                                                </ul>
+                                                            </span>
+                                                            <h3 class="timeline-header"><%= data.kitting[i].runcard %> has been tagged to <%= data.kitting[i].box_id %></h3>
+                                                            <div class="timeline-body"> Transaction id: <%= data.kitting[i].id %>, uploaded by <%= data.kitting[i].username %>. </div>
+                                                            <div class="timeline-footer">
+                                                            </div>
+                                                        </div>
+                                                    </li>
+                                                <% } %>
+                                                <li>
+                                                    <i class="fa fa-clock-o bg-gray"></i>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!---->
+                                        <% for(let i=0; i<data.kitting.length; i++) { %>
+                                        <div class="modal modal-default" id="modaldelete<%= data.kitting[i].id %>">
+                                            <div class="modal-dialog modal-settings">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        <h4 class="modal-title">Think twice! You cannot undo this action.</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to <span class="label label-danger">DELETE</span> this CoA details?</p>
+                                                        <table class="table table-striped">
+                                                            <tbody>
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>ID</th>
+                                                                    <th>Upload Date</th>
+                                                                    <th>Box Id</th>
+                                                                    <th>Runcard</th>
+                                                                    <th>Username</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tr>
+                                                                    <td><%= data.kitting[i].id %></td>
+                                                                    <td><%= data.kitting[i].upload_date %></td>
+                                                                    <td><%= data.kitting[i].box_id %></td>
+                                                                    <td><%= data.kitting[i].runcard %></td>
+                                                                    <td><%= data.kitting[i].username %></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <form id="deletecoadetails<%= data.kitting[i].id %>">
+                                                            <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                            <input type="hidden" name="deleteById" value="<%= data.kitting[i].id %>">
+                                                            <input type="hidden" name="deleteByUsername" value="<%= data.kitting[i].username %>">
+                                                            <div id="responseDivModal<%= data.kitting[i].id %>">
+                                                                <!-- response here-->
+                                                            </div>
+                                                            <div id="toHideButtonIfSuccess<%= data.kitting[i].id %>">
+                                                                <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</button>
+                                                                <button type="submit" id="deletebykitting<%= data.kitting[i].id %>" class="btn btn-danger btn-flat">Yes, Delete</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                        <!---->
+                                        <% for(let i=0; i<data.kitting.length; i++) { %>
+                                        <div class="modal modal-default" id="modalwarning<%= data.kitting[i].id %>">
+                                            <div class="modal-dialog modal-settings">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        <h4 class="modal-title">Edit transaction id <%= data.kitting[i].id %> created by <%= data.kitting[i].username %> </h4>
+                                                    </div>
+                                                    <form id="editcoadetails<%= data.kitting[i].id %>">
+                                                        <div class="modal-body">
+                                                                <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                                <input type="hidden" name="edit_id" value="<%= data.kitting[i].id %>">
+                                                                <input type="hidden" name="edit_username" value="<%= data.kitting[i].username %>">
+                                                                <label class="coa-modal-label">Box ID:</label>
+                                                                <input type="text" class="form-control form-kitting-interface" id="edit_boxid<%= data.kitting[i].id %>" required name="edit_boxid" placeholder="<%= data.kitting[i].box_id %>" value="<%= data.kitting[i].box_id %>">
+                                                                <br>
+                                                                <label class="coa-modal-label">Runcard:</label>
+                                                                <input type="text" class="form-control form-kitting-interface" id="edit_runcard<%= data.kitting[i].id %>" required name="edit_runcard" placeholder="<%= data.kitting[i].runcard %>" value="<%= data.kitting[i].runcard %>">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <div id="responseDivEditModal<%= data.kitting[i].id %>">
+                                                                <!-- response here-->
+                                                            </div>
+                                                            <div id="toHideButtonEditIfSuccess<%= data.kitting[i].id %>">
+                                                                <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</button>
+                                                                <button type="submit" id="editbykitting<%= data.kitting[i].id %>" class="btn btn-warning btn-flat">Submit Changes</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="qa">
+                                    <div class="row">
+                                        <div class="col-md-4">
+                                            <div id="responseDiv">
+                                                <!-- response here-->
+                                            </div>
+                                            <form id="uploadcoa">
+                                                <div id="toHideIfSuccess">
+                                                    <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                    <h4 class="coa-body-form">Upload CoA File</h4>
+                                                    <label class="coa-form-label">Excel file:</label>
+                                                    <div class="form-group has-feedback">
+                                                        <input type="file" name="coafile" id="coafile" required style="width:100%" >
+                                                    </div>
+                                                    <label class="coa-form-label">Invoice:</label>
+                                                    <div class="form-group has-feedback">
+                                                        <input type="text" autocomplete="off" name="invoice" id="invoice" class="form-control form-coa-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    </div>
+                                                    <label class="coa-form-label">Delivery Date:</label>
+                                                    <div class="form-group has-feedback">
+                                                        <div class="input-group date">
+                                                            <div class="input-group-addon form-coa-date-interface ">
+                                                                <i class="fa fa-calendar"></i>
+                                                            </div>
+                                                            <input type="text" autocomplete="off" name="datepicker" id="datepicker" class="form-control form-coa-interface pull-right" required>
+                                                        </div>
+                                                    </div>
+                                                    <label class="coa-form-label">Supplier:</label>
+                                                    <div class="form-group has-feedback">
+                                                        <select class="form-control select2 select2-hidden-accessible  form-coa-interface" style="width:100%" tabindex="-1" aria-hidden="true" required name="supplier" id="supplier" >
+                                                            <option selected="selected" value="1007">ACC</option>
+                                                            <option value="1003">FERROTEC</option>
+                                                            <option value="1001" >TZS</option>
+                                                            <option disabled>NORSUN</option>
+                                                            <option disabled>LONGI</option>
+                                                        </select>
+                                                    </div>
+                                                    <br>
+                                                    <div class="row">
+                                                        <div class="col-xs-7">
+                                                            <div class="coa-sub-link">
+                                                                By clicking "Submit", you indicate that all fields are true and correct.
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-5">
+                                                            <button type="submit" id="submitcoafile" class="btn btn-primary btn-block btn-success btn-flat">Submit</button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="col-md-8">
+                                            <h4 class="coa-body-form">Recent activity</h4>
+                                            <ul class="timeline timeline-invers">
+                                                <% for(let i=0; i<data.qa.length; i++) { %>
+                                                <li>
+                                                    <i class="fa fa-cloud-upload bg-gray">
+                                                    </i>
+                                                    <div class="timeline-item">
+                                                        <span class="time">
+                                                            <i class="fa fa-clock-o"></i> <%= data.qa[i].date %>
+                                                            <!-- hide for now as we dont have means to delete/edit using primary key / invoice without using special characters 
+                                                            <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                                <span class="fa fa-ellipsis-v"></span>
+                                                            </button>
+                                                            <ul class="dropdown-menu coa-dropdown" role="menu">
+                                                                <li>
+                                                                    <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.qa[i].invoice %>">Edit</a>
+                                                                </li>
+                                                                <li>
+                                                                    <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.qa[i].invoice %>">Remove</a>
+                                                                </li>
+                                                            </ul>
+                                                            -->
+                                                        </span>
+                                                        <h3 class="timeline-header"><%= data.qa[i].invoice %> has been uploaded</h3>
+                                                        <div class="timeline-body">Delivery date: <%= data.qa[i].delivery_date %> | Supplier: <%= data.qa[i].supplier %> | uploaded by <%= data.qa[i].username %></div>
+                                                        <div class="timeline-footer"></div>
+                                                    </div>
+                                                </li>
+                                                <% } %>
+                                                <li>
+                                                    <i class="fa fa-clock-o bg-gray"></i>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <!---->
+                                        <% for(let i=0; i<data.qa.length; i++) { %>
+                                        <div class="modal modal-default" id="modaldelete<%= data.qa[i].invoice %>">
+                                            <div class="modal-dialog modal-settings">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        <h4 class="modal-title">Think twice! You cannot undo this action.</h4>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <p>Are you sure you want to <span class="label label-danger">DELETE</span> this CoA details?</p>
+                                                        <table class="table table-striped">
+                                                            <tbody>
+                                                                <thead>
+                                                                <tr>
+                                                                    <th>Upload Date</th>
+                                                                    <th>Delivery Date</th>
+                                                                    <th>Invoice</th>
+                                                                    <th>Supplier</th>
+                                                                    <th>Username</th>
+                                                                </tr>
+                                                                </thead>
+                                                                <tr>
+                                                                    <td><%= data.qa[i].date %></td>
+                                                                    <td><%= data.qa[i].delivery_date %></td>
+                                                                    <td><%= data.qa[i].invoice %></td>
+                                                                    <td><%= data.qa[i].supplier %></td>
+                                                                    <td><%= data.qa[i].username %></td>
+                                                                </tr>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <form id="deletecoadetails<%= data.qa[i].invoice %>">
+                                                            <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                            <input type="hidden" name="deleteByInvoice" value="<%= data.qa[i].invoice %>">
+                                                            <input type="hidden" name="deleteByUsername" value="<%= data.qa[i].username %>">
+                                                            <div id="responseDivModal<%= data.qa[i].invoice %>">
+                                                                <!-- response here-->
+                                                            </div>
+                                                            <div id="toHideButtonIfSuccess<%= data.qa[i].invoice %>">
+                                                                <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</button>
+                                                                <button type="submit" id="deletebyqa<%= data.qa[i].invoice %>" class="btn btn-danger btn-flat">Yes, Delete</button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                        <!---->
+                                        <% for(let i=0; i<data.qa.length; i++) { %>
+                                        <div class="modal modal-default" id="modalwarning<%= data.qa[i].invoice %>">
+                                            <div class="modal-dialog modal-settings">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                        <h4 class="modal-title">Edit invoice <%= data.qa[i].invoice %> created by <%= data.qa[i].username %> </h4>
+                                                    </div>
+                                                    <form id="editcoadetails<%= data.qa[i].invoice %>">
+                                                        <div class="modal-body">
+                                                                <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                                <input type="hidden" name="edit_invoice" value="<%= data.qa[i].invoice %>">
+                                                                <input type="hidden" name="edit_username" value="<%= data.qa[i].username %>">
+                                                                <label class="coa-modal-label">Delivery date:</label>
+                                                                <div class="input-group date">
+                                                                    <div class="input-group-addon form-coa-date-interface ">
+                                                                        <i class="fa fa-calendar"></i>
+                                                                    </div>
+                                                                    <input type="text" autocomplete="off" id="modalDatepicker<%= data.qa[i].invoice %>" class="form-control form-coa-interface" id="edit_delivery_date<%= data.qa[i].delivery_date %>" required name="edit_delivery_date" placeholder="<%= data.qa[i].delivery_date %>" value="<%= data.qa[i].delivery_date %>">
+                                                                </div>
+                                                                <br>
+                                                                <label class="coa-modal-label">Invoice:</label>
+                                                                <input type="text" class="form-control form-coa-interface" id="edit_invoice<%= data.qa[i].invoice %>" required name="edit_invoice" placeholder="<%= data.qa[i].invoice %>" value="<%= data.qa[i].invoice %>">
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <div id="responseDivEditModal<%= data.qa[i].invoice %>">
+                                                                <!-- response here-->
+                                                            </div>
+                                                            <div id="toHideButtonEditIfSuccess<%= data.qa[i].invoice %>">
+                                                                <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</button>
+                                                                <button type="submit" id="editbykitting<%= data.qa[i].invoice %>" class="btn btn-warning btn-flat">Submit Changes</button>
+                                                            </div>
+                                                        </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <% } %>
+                                    </div>
+                                </div>
+                                <div class="tab-pane" id="download">
+                                    <div class="row">
+                                        <div class="col-md-11 col-centered table-responsive no-padding">
+                                            <div id="alerta" class="alert tableau-dismiss alert-dismissable">
+                                                <button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
+                                                <h4>
+                                                   This will be available soon.
+                                                </h4>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+<script src="https://apis.google.com/js/platform.js?onload=onLoad" async defer></script>
+<!-- jQuery 3 -->
+<script src="../assets/bower_components/jquery/dist/jquery.min.js"></script>
+<!-- Bootstrap 3.3.7 -->
+<script src="../assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- Date Picker -->
+<script src="../assets/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<!-- Select2-->
+<script src="../assets/bower_components/select2/dist/js/select2.full.min.js"></script>
+<!-- KITTING Script-->
+<script>
+    $(function(){
+
+        // Select2 initialize
+        $('.select2').select2();
+
+        // Datepicker
+        $('#datepicker').datepicker({
+            autoclose: true
+        });
+
+    });
+</script>
+<!-- KITTING Upload script -->
+<script>
+    window.addEventListener('load', function(){
+
+        function goUpload(){
+
+            let xhr = new XMLHttpRequest();
+            let fd = new FormData(form); // bind form data object and form element
+            
+            xhr.addEventListener('load', function(event){
+                console.log(event.target.response);
+                let resFromServer = JSON.parse(event.target.response);
+                document.getElementById('responseDiv').style.display='block';
+
+                function resDiv(){
+                    let responseDiv = document.getElementById('responseDiv');
+                    
+                    if(resFromServer.err){
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("responseDivErr");
+                            responseDiv.innerHTML = resFromServer.err
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("responseDivErr");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("responseDivErr");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.err
+                            }
+                        }
+
+                    } else {
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("responseDivSuccess");
+                            responseDiv.innerHTML = resFromServer.auth;
+
+                            
+                            setTimeout(function(){
+                                window.location.href="/coa";
+                            }, 50);
+
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("responseDivSuccess");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("responseDivSuccess");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.auth;
+                                
+                                setTimeout(function(){
+                                    window.location.href="/coa";
+                                }, 50);
+                            }
+                        }
+                    }
+
+                    
+                }
+
+                resDiv();
+            });
+
+            xhr.addEventListener('error', function(event){
+                alert('Something went wrong.');
+            });
+
+            xhr.open('POST', '/api/coakitting');
+            xhr.send(fd);
+
+        }
+
+        // access FORM element
+        let form = document.getElementById('uploadboxid');
+        // take over submit event
+        form.addEventListener('submit', function(event){
+            event.preventDefault();
+            //document.getElementById('responseDiv').style.display="none";
+            goUpload();
+            document.getElementById('submitkitting').setAttribute("disabled", "disabled");
+
+        });
+
+
+    });
+</script>
+<!-- KITTING Tag runcard script-->
+<script>
+    $('document').ready(function(){
+
+        $('#boxid').keydown(function(e){
+            if(e.keyCode == 13){
+                if($('#boxid').val()){
+                    $('#runcardno').focus();
+                    return false;
+                }
+            }
+        });
+
+        function addRow(section, clone){
+
+            let newRow = clone.removeAttr('id').addClass('new').insertBefore(initRow);
+            let deleteRow = $('<a class="rowDelete"><i class="fa fa-close"></i></a>');
+
+            newRow
+            .append(deleteRow)
+            .on('click', 'a.rowDelete', function(){
+                removeRow(newRow);
+            })
+            .slideDown(300, function(){
+                $(this).find('input').focus();
+            })
+            .keydown(function(e){
+                if(e.keyCode == 13){
+                    $('#initRow').find('input').focus();
+                    return false;
+                }
+            });
+        }
+
+        function removeRow(newRow){
+            newRow
+            .slideUp(200, function(){
+                $(this)
+                    .next('div:not(#initRow)')
+                    .find('input').focus()
+                    .end()
+                    .remove();
+            });
+        }
+
+        $(function(){
+            let initRow = $('#initRow')
+            let section = initRow.parent('section');
+            let i = 0;
+
+            initRow.on('focus', 'input', function(){
+                i++;
+
+                if(i<5){
+                    let clone = initRow.clone();
+                    clone.attr("id", "runcardno");
+                    clone.find("#runcardno").attr("name", 'runcard'+i);
+                    addRow(section, clone);
+                } else {
+                    
+                    document.getElementsByName('multifield')[0].setAttribute("disabled", "disabled");
+
+                    if($('#boxid').val()){
+                        document.getElementById('submitkitting').click();
+                        document.getElementById('submitkitting').setAttribute("disabled", "disabled");
+                        return 0;
+                    }
+                }
+
+            });
+
+        });
+
+    });
+</script>
+<!-- KITTING Delete Kitting script -->
+<script>
+    window.addEventListener('load', function(){
+        
+        <% for(let i=0; i<data.kitting.length; i++) { %>
+            function goDelete<%= data.kitting[i].id %>(){
+
+                let xhr<%= data.kitting[i].id %> = new XMLHttpRequest();
+                let fd_delete<%= data.kitting[i].id %> = new FormData(form<%= data.kitting[i].id %>); // bind form data object and form element
+                
+                xhr<%= data.kitting[i].id %>.addEventListener('load', function(event){
+                    console.log(event.target.response);
+                    let resFromServer = JSON.parse(event.target.response);
+                    document.getElementById('responseDivModal<%= data.kitting[i].id %>').style.display='block';
+
+                    function resDiv(){
+                        let responseDiv = document.getElementById('responseDivModal<%= data.kitting[i].id %>');
+                        
+                        if(resFromServer.err){
+
+                            if (responseDiv.classList) { 
+                                responseDiv.classList.add("responseDivErr");
+                                responseDiv.innerHTML = resFromServer.err
+                            } else {
+                                // For IE9
+                                var classes = responseDiv.className.split(" ");
+                                var i = classes.indexOf("responseDivErr");
+
+                                if (i >= 0) {
+                                    classes.splice(i, 1);
+                                } else { 
+                                    classes.push("responseDivErr");
+                                    responseDiv.className = classes.join(" "); 
+                                    responseDiv.innerHTML = resFromServer.err
+                                }
+                            }
+
+                        } else {
+
+                            if (responseDiv.classList) { 
+                                responseDiv.classList.add("responseDivSuccess");
+                                responseDiv.innerHTML = resFromServer.auth;
+
+                                let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.kitting[i].id %>');
+                                    hideDiv.style.display = "none";
+
+                                setTimeout(function(){
+                                    window.location.href="/coa";
+                                }, 100);
+                                
+                            } else {
+                                // For IE9
+                                var classes = responseDiv.className.split(" ");
+                                var i = classes.indexOf("responseDivSuccess");
+
+                                if (i >= 0) {
+                                    classes.splice(i, 1);
+                                } else { 
+                                    classes.push("responseDivSuccess");
+                                    responseDiv.className = classes.join(" "); 
+                                    responseDiv.innerHTML = resFromServer.auth;
+
+                                    let hideDiv = document.getElementById('toHideButtonIfSuccess<%= data.kitting[i].id %>');
+                                        hideDiv.style.display = "none";
+
+                                    setTimeout(function(){
+                                        window.location.href="/coa";
+                                    }, 100);
+                                    
+                                }
+                            }
+                        }
+
+                        
+                    }
+
+                    resDiv();
+                });
+
+                xhr<%= data.kitting[i].id %>.addEventListener('error', function(event){
+                    alert('Something went wrong.');
+                });
+
+                xhr<%= data.kitting[i].id %>.open('POST', '/api/kittingdelete');
+                xhr<%= data.kitting[i].id %>.send(fd_delete<%= data.kitting[i].id %>);
+
+            }
+
+            // access FORM element
+            let form<%= data.kitting[i].id %> = document.getElementById('deletecoadetails<%= data.kitting[i].id %>');
+            // take over submit event
+            form<%= data.kitting[i].id %>.addEventListener('submit', function(event){
+                event.preventDefault();
+                goDelete<%= data.kitting[i].id %>();
+                document.getElementById('deletebykitting<%= data.kitting[i].id %>').setAttribute("disabled", "disabled");
+            });
+
+        <% } %>
+
+
+    });
+</script>
+<!-- KITTING Edit Kitting script -->
+<script>
+    window.addEventListener('load', function(){
+        
+        <% for(let i=0; i<data.kitting.length; i++) { %>
+            function goEdit<%= data.kitting[i].id %>(){
+
+                let xhr<%= data.kitting[i].id %> = new XMLHttpRequest();
+                let fd_delete<%= data.kitting[i].id %> = new FormData(form<%= data.kitting[i].id %>); // bind form data object and form element
+                
+                xhr<%= data.kitting[i].id %>.addEventListener('load', function(event){
+                    console.log(event.target.response);
+                    let resFromServer = JSON.parse(event.target.response);
+                    document.getElementById('responseDivEditModal<%= data.kitting[i].id %>').style.display='block';
+
+                    function resDiv(){
+                        let responseDiv = document.getElementById('responseDivEditModal<%= data.kitting[i].id %>');
+                        
+                        if(resFromServer.err){
+
+                            if (responseDiv.classList) { 
+                                responseDiv.classList.add("responseDivErr");
+                                responseDiv.innerHTML = resFromServer.err
+                            } else {
+                                // For IE9
+                                var classes = responseDiv.className.split(" ");
+                                var i = classes.indexOf("responseDivErr");
+
+                                if (i >= 0) {
+                                    classes.splice(i, 1);
+                                } else { 
+                                    classes.push("responseDivErr");
+                                    responseDiv.className = classes.join(" "); 
+                                    responseDiv.innerHTML = resFromServer.err
+                                }
+                            }
+
+                        } else {
+
+                            if (responseDiv.classList) { 
+                                responseDiv.classList.add("responseDivSuccess");
+                                responseDiv.innerHTML = resFromServer.auth;
+
+                                let hideDiv = document.getElementById('toHideButtonEditIfSuccess<%= data.kitting[i].id %>');
+                                    hideDiv.style.display = "none";
+
+                                
+                                window.location.href="/coa";
+                                
+                            } else {
+                                // For IE9
+                                var classes = responseDiv.className.split(" ");
+                                var i = classes.indexOf("responseDivSuccess");
+
+                                if (i >= 0) {
+                                    classes.splice(i, 1);
+                                } else { 
+                                    classes.push("responseDivSuccess");
+                                    responseDiv.className = classes.join(" "); 
+                                    responseDiv.innerHTML = resFromServer.auth;
+
+                                    let hideDiv = document.getElementById('toHideButtonEditIfSuccess<%= data.kitting[i].id %>');
+                                        hideDiv.style.display = "none";
+
+                                    
+                                    window.location.href="/coa";
+                                    
+                                }
+                            }
+                        }
+
+                        
+                    }
+
+                    resDiv();
+                });
+
+                xhr<%= data.kitting[i].id %>.addEventListener('error', function(event){
+                    alert('Something went wrong.');
+                });
+
+                xhr<%= data.kitting[i].id %>.open('POST', '/api/kittingedit');
+                xhr<%= data.kitting[i].id %>.send(fd_delete<%= data.kitting[i].id %>);
+
+            }
+
+            // access FORM element
+            let form<%= data.kitting[i].id %> = document.getElementById('editcoadetails<%= data.kitting[i].id %>');
+            // take over submit event
+            form<%= data.kitting[i].id %>.addEventListener('submit', function(event){
+                event.preventDefault();
+                goEdit<%= data.kitting[i].id %>();
+                document.getElementById('editbykitting<%= data.kitting[i].id %>').setAttribute("disabled", "disabled");
+                document.getElementById('edit_boxid<%= data.kitting[i].id %>').setAttribute("disabled", "disabled");
+                document.getElementById('edit_runcard<%= data.kitting[i].id %>').setAttribute("disabled", "disabled");
+            });
+
+        <% } %>
+
+
+    });
+</script>
+<!-- QA Script-->
+<script>
+    $(function(){
+
+        // Select2 initialize
+        $('.select2').select2();
+
+        // Datepicker
+        $('#datepicker').datepicker({
+            autoclose: true
+        });
+
+        // Modal Datepicker
+        <% for(let i=0; i<data.qa.length; i++) { %>
+        $('#modalDatepicker<%= data.qa[i].invoice %>').datepicker({
+            autoclose: true
+        });
+        <% } %>
+
+    });
+</script>
+<!-- QA Upload script -->
+<script>
+    window.addEventListener('load', function(){
+
+        function goUpload(){
+
+            let xhr = new XMLHttpRequest();
+            let fd = new FormData(form); // bind form data object and form element
+            
+            xhr.addEventListener('load', function(event){
+                console.log(event.target.response);
+                let resFromServer = JSON.parse(event.target.response);
+                document.getElementById('responseDiv').style.display='block';
+                function resDiv(){
+                    let responseDiv = document.getElementById('responseDiv');
+                    
+                    if(resFromServer.err){
+                        document.getElementById('coafile').removeAttribute("disabled");
+                        document.getElementById('datepicker').removeAttribute("disabled");
+                        document.getElementById('invoice').removeAttribute("disabled");
+                        document.getElementById('supplier').removeAttribute("disabled");
+                        document.getElementById('submitcoafile').removeAttribute("disabled");
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("responseDivErr");
+                            responseDiv.innerHTML = resFromServer.err
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("responseDivErr");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("responseDivErr");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.err
+                            }
+                        }
+
+                    } else {
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("responseDivUploading");
+                            responseDiv.innerHTML = resFromServer.auth;
+                            
+                            let hideDiv = document.getElementById('toHideIfSuccess');
+                                hideDiv.style.display = "none";
+                            
+                                
+                                setTimeout(function(){
+                                window.location.href="/coa";
+                                }, 500);
+                                
+                               
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("responseDivUploading");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("responseDivUploading");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.auth;
+                                
+                                let hideDiv = document.getElementById('toHideIfSuccess');
+                                    hideDiv.style.display = "none";
+
+                                
+                                setTimeout(function(){
+                                window.location.href="/coa";
+                                }, 500);
+                                
+                            }
+                        }
+                    }
+
+                    
+                }
+
+                resDiv();
+            });
+
+            xhr.addEventListener('error', function(event){
+                alert('Something went wrong.');
+            });
+
+            xhr.open('POST', '/api/coa');
+            xhr.send(fd);
+
+        }
+
+        // access FORM element
+        let form = document.getElementById('uploadcoa');
+        // take over submit event
+        form.addEventListener('submit', function(event){
+            event.preventDefault();
+            document.getElementById('responseDiv').style.display="none";
+            goUpload();
+            document.getElementById('coafile').setAttribute("disabled", "disabled");
+            document.getElementById('datepicker').setAttribute("disabled", "disabled");
+            document.getElementById('invoice').setAttribute("disabled", "disabled");
+            document.getElementById('supplier').setAttribute("disabled", "disabled");
+            document.getElementById('submitcoafile').setAttribute("disabled", "disabled");
+        });
+
+
+    });
+</script>
+</body>
+</html>

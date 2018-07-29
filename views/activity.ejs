@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>META Fab4 Manufacturing & Engineering Tool App </title>
+    <title>My Activity - META </title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -68,10 +68,10 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><span class="link-nav">@<%= username %></span></a>
                                 <ul class="dropdown-menu" role="menu">
                                     <li>
-                                        <a href="/activity">My Activity</a>
+                                        <a href="/activity"><i class="fa fa-quote-left"></i> My Activity</a>
                                     </li>
                                     <li>
-                                        <a href="/logout">Logout</a>
+                                        <a href="/logout"><i class="fa fa-sign-out"></i> Logout</a>
                                     </li>
                                 </ul>
                             </li>
@@ -154,7 +154,7 @@
                                                             </div>
                                                         </div>
                                                         <div class="col-xs-5">
-                                                            <button type="submit" id="submitactivity" class="btn btn-primary btn-block btn-success btn-flat">Submit</button>
+                                                            <button type="submit" id="submitactivity" class="btn btn-primary btn-block btn-flat">Post</button>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -176,11 +176,11 @@
                                                                     </button>
                                                                     <ul class="dropdown-menu coa-dropdown" role="menu">
                                                                         <li>
-                                                                            <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>">Edit activity</a>
+                                                                            <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>"><i class="fa fa-pencil"></i>Edit activity</a>
                                                                         </li>
                                                                         <li class="divider"></li>
                                                                         <li>
-                                                                            <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>">Delete activity</a>
+                                                                            <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>"><i class="fa fa-remove"></i>Delete activity</a>
                                                                         </li>
                                                                     </ul>
                                                                 </span>
@@ -281,7 +281,7 @@
                                                                     </div>
                                                                     <label class="coa-modal-label">Activity:</label>
                                                                     <div class="form-group has-feedback">
-                                                                        <input type="text" name="edit_activity_title" id="activity_title<%= data.recent[i].id %>" class="form-control" required pattern=".{0}|.{5,20}" onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_title %>" >
+                                                                        <input type="text" name="edit_activity_title" id="activity_title<%= data.recent[i].id %>" class="form-control" required pattern=".{0}|.{5,20}" title="Activity name should be atleast 5 to 20 characters."  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_title %>" >
                                                                     </div>
                                                                     <label class="coa-modal-label">TDN #:</label>
                                                                     <div class="form-group ">
@@ -328,7 +328,7 @@
                                                                     </div>
                                                                     <label class="coa-modal-label">Description</label>
                                                                     <div class="form-group has-feedback">
-                                                                            <input type="text" name="edit_activity_details" id="ec_no<%= data.recent[i].id %>" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_details %>">
+                                                                            <input type="text" name="edit_activity_details" id="ec_no<%= data.recent[i].id %>" class="form-control" required pattern=".{0}|.{10,160}" title="Description should be atleast 10 to 160 characters."  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_details %>">
                                                                     </div>
                                                             </div>
                                                             <div class="modal-footer">
