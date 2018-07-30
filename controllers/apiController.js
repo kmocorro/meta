@@ -194,7 +194,7 @@ module.exports = function(app){
                     return new Promise(function(resolve, reject){
 
                         connection.query({
-                            sql: 'SELECT B.supplier_name, A.order_no, A.username, A.upload_time, A.delivery_date FROM (SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_ingot_lot_barcodes GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_achl_ingot_v2 GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_ferrotec_ingot GROUP BY order_no) A JOIN (SELECT supplier_id, supplier_name FROM tbl_supplier_list) B ON A.supplier_id = B.supplier_id ORDER BY A.upload_time DESC LIMIT 8'
+                            sql: 'SELECT B.supplier_name, A.order_no, A.username, A.upload_time, A.delivery_date FROM (SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_ingot_lot_barcodes GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_achl_ingot_v2 GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_ferrotec_ingot GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_acmk_ingot GROUP BY order_no UNION SELECT id, supplier_id, upload_time, order_no, delivery_date, username FROM tbl_longi_coa GROUP BY order_no) A JOIN (SELECT supplier_id, supplier_name FROM tbl_supplier_list) B ON A.supplier_id = B.supplier_id ORDER BY A.upload_time DESC LIMIT 8'
                         },  function(err, results){
                             if(err){return reject()};
 
@@ -523,7 +523,10 @@ module.exports = function(app){
                                 sheet2: workbook.SheetNames[1]
                             }
 
-                            
+                            let worksheet4longi = {
+                                sheet1: workbook.SheetNames[2]
+                            }
+
                             //  expected worksheets name per supplier
                             let workbook_checker = {
                                 acc_sheet1: 'COA',
@@ -532,8 +535,10 @@ module.exports = function(app){
                                 ferrotec_sheet2: 'Ingot Lot Barcodes',
                                 tzs_sheet1: 'PROPOSED CofA',
                                 tzs_sheet2: 'Ingot Lot Barcodes',
+                                acmk_sheet1: 'COA',
+                                acmk_sheet2: 'Pallet_ID Carton_ID Lot_ID', // lowercase 'ot' took me an hour WTHecjk.
+                                longi_sheet1: 'COA',
                             }
-    
     
                             if(worksheet.sheet1 == workbook_checker.acc_sheet1 && worksheet.sheet2 == workbook_checker.acc_sheet2){   // is workbook ACC ?
                                 
@@ -561,12 +566,32 @@ module.exports = function(app){
                                 }
 
                                 resolve(supplier_tzs);
+
+                            } else if (worksheet.sheet1 == workbook_checker.acmk_sheet1 && worksheet.sheet2 == workbook_checker.acmk_sheet2){ // is workbook acmk?
+                                
+                                let supplier_acmk ={
+                                    id: '1005',
+                                    name: 'ACMK',
+                                }
+
+                                resolve(supplier_acmk);
                             
-                            } else { // Invalid
+                            } else if (worksheet4longi.sheet1 == workbook_checker.longi_sheet1){ // is workbook LONGI?
+                                
+                                let supplier_longi ={
+                                    id: '1006',
+                                    name: 'LONGI',
+                                }
+
+                                resolve(supplier_longi);
+                             
+                            }  else { // Invalid
     
                                 reject('Invalid CoA file.');
     
                             }
+
+                            
                             
                         });
                     }
@@ -933,7 +958,7 @@ module.exports = function(app){
                                             res.send({err: 'Invalid format.'});
                                         }
 
-                                    } else if (supplier_name.id == credentials.supplier_id && supplier_name.id == '1001') {
+                                    } else if (supplier_name.id == credentials.supplier_id && supplier_name.id == '1001') { // is TZS
 
                                         let sheet1_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['PROPOSED CofA'],{header: 'A'});
                                         let sheet2_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['Ingot Lot Barcodes'],{header: 1 });
@@ -1148,8 +1173,254 @@ module.exports = function(app){
                                             res.send({err: 'Invalid format.'});
                                         }
 
+                                    } else if (supplier_name.id == credentials.supplier_id && supplier_name.id == '1005') { // ACMK
+
+                                        let sheet1_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['COA'],{header: 'A'});
+                                        let sheet2_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['Pallet_ID Carton_ID Lot_ID'],{header: 'A'});
+
+                                        let cleaned_acmk_sheet1 = [];
+                                        let cleaned_acmk_sheet2 = [];
+
+                                        // clean sheet1 obj
+                                        for(let i=10;i<sheet1_workbookJSON.length;i++){ //STARTS in 10th array
+                                            
+                                            cleaned_acmk_sheet1.push({
+                                                B: sheet1_workbookJSON[i].B || null,
+                                                C: sheet1_workbookJSON[i].C || null,
+                                                D: sheet1_workbookJSON[i].D || null,
+                                                E: sheet1_workbookJSON[i].E || null,
+                                                F: sheet1_workbookJSON[i].F || null,
+                                                G: sheet1_workbookJSON[i].G || null,
+                                                H: sheet1_workbookJSON[i].H || null,
+                                                I: sheet1_workbookJSON[i].I || null,
+                                                J: sheet1_workbookJSON[i].J || null,
+                                                K: sheet1_workbookJSON[i].K || null,
+                                                L: sheet1_workbookJSON[i].L || null,
+                                                M: sheet1_workbookJSON[i].M || null,
+                                                N: sheet1_workbookJSON[i].N || null,
+                                                O: sheet1_workbookJSON[i].O || null,
+                                                P: sheet1_workbookJSON[i].P || null,
+                                                Q: sheet1_workbookJSON[i].Q || null,
+                                                R: sheet1_workbookJSON[i].R || null,
+                                                S: sheet1_workbookJSON[i].S || null,
+                                                T: sheet1_workbookJSON[i].T || null,
+                                                U: sheet1_workbookJSON[i].U || null,
+                                                V: sheet1_workbookJSON[i].V || null,
+                                                W: sheet1_workbookJSON[i].W || null,
+                                                X: sheet1_workbookJSON[i].X || null,
+                                                Y: sheet1_workbookJSON[i].Y || null,
+                                                Z: sheet1_workbookJSON[i].Z || null,
+                                                AA: sheet1_workbookJSON[i].AA || null,
+                                                AB: sheet1_workbookJSON[i].AB || null,
+                                                AC: sheet1_workbookJSON[i].AC || null,
+                                                AD: sheet1_workbookJSON[i].AD || null,
+                                                AE: sheet1_workbookJSON[i].AE || null,
+                                                AF: sheet1_workbookJSON[i].AF || null,
+                                                AG: sheet1_workbookJSON[i].AG || null,
+                                                AH: sheet1_workbookJSON[i].AH || null,
+                                                AI: sheet1_workbookJSON[i].AI || null,
+                                                AJ: sheet1_workbookJSON[i].AJ || null,
+                                                AK: sheet1_workbookJSON[i].AK || null,
+                                                AL: sheet1_workbookJSON[i].AL || null,
+                                                AM: sheet1_workbookJSON[i].AM || null,
+                                                AN: sheet1_workbookJSON[i].AN || null,
+                                                AO: sheet1_workbookJSON[i].AO || null,
+                                                AP: sheet1_workbookJSON[i].AP || null,
+                                                AQ: sheet1_workbookJSON[i].AQ || null,
+                                                AR: sheet1_workbookJSON[i].AR || null,
+                                                AS: sheet1_workbookJSON[i].AS || null,
+                                                AT: sheet1_workbookJSON[i].AT || null,
+                                                AU: sheet1_workbookJSON[i].AU || null,
+                                                AV: sheet1_workbookJSON[i].AV || null,
+                                                AW: sheet1_workbookJSON[i].AW || null,
+                                                AX: sheet1_workbookJSON[i].AX || null,
+                                                AY: sheet1_workbookJSON[i].AY || null,
+                                                AZ: sheet1_workbookJSON[i].AZ || null,
+                                                BA: sheet1_workbookJSON[i].BA || null,
+                                                BB: sheet1_workbookJSON[i].BB || null,
+                                                BC: sheet1_workbookJSON[i].BD || null,
+                                            });
+
+                                        }
+                                        
+                                        // clean sheet2 obj
+                                        for(let i=2;i<sheet2_workbookJSON.length;i++){
+                                            cleaned_acmk_sheet2.push({
+                                                A: sheet2_workbookJSON[i].A || null,
+                                                B: sheet2_workbookJSON[i].B || null,
+                                                C: sheet2_workbookJSON[i].C || null,
+                                                D: sheet2_workbookJSON[i].D || null,
+                                                E: sheet2_workbookJSON[i].E || null
+                                            });
+                                        }
+
+                                        function coaInsertACMK(){
+                                            return new Promise(function(resolve, reject){
+
+                                                // insert sheet1 to tbl_acmk_coa
+                                                for(let i=0;i<cleaned_acmk_sheet1.length;i++){
+                                                    mysql.pool.getConnection(function(err, connection){
+                                                        if(err){return reject()}
+
+                                                        connection.query({
+                                                            sql: 'INSERT INTO tbl_acmk_coa SET supplier_id=?, delivery_date=?, order_no=?, upload_time=?, username=?, ingot_lot_id=?, box_id=?, location=?, wafer_qty=?, blocklength=?, totalcrystal=?, seedblock=?, mclt_top=?, mclt_bottom=?, res_top=?, res_bottom=?, oi_top=?, oi_bottom=?, cs_top=?, cs_bottom=?, dia_ave=?, dia_std=?, dia_min=?, dia_max=?, flat_width_ave=?, flat_width_std=?, flat_width_min=?, flat_width_max=?, flat_length_ave=?, flat_length_std=?, flat_length_min=?, flat_length_max=?, corner_length_ave=?, corner_length_std=?, corner_length_min=?, corner_length_max=?, center_thickness_ave=?, center_thickness_std=?, center_thickness_min=?, center_thickness_max=?, ttv_ave=?, ttv_std=?, ttv_min=?, ttv_max=?, ra_ave=?, ra_std=?, ra_min=?, ra_max=?, rz_ave=?, rz_std=?, rz_min=?, rz_max=?, verticality_ave=?, verticality_std=?, verticality_min=?, verticality_max=?, copper_content=?, iron_content=?, acceptreject=?',
+                                                            values: [credentials.supplier_id, credentials.delivery_date, credentials.order_no, new Date(), verified_username, cleaned_acmk_sheet1[i].B, cleaned_acmk_sheet1[i].C, cleaned_acmk_sheet1[i].D, cleaned_acmk_sheet1[i].E, cleaned_acmk_sheet1[i].F, cleaned_acmk_sheet1[i].G, cleaned_acmk_sheet1[i].H, cleaned_acmk_sheet1[i].I, cleaned_acmk_sheet1[i].J, cleaned_acmk_sheet1[i].K, cleaned_acmk_sheet1[i].L, cleaned_acmk_sheet1[i].M, cleaned_acmk_sheet1[i].N, cleaned_acmk_sheet1[i].O, cleaned_acmk_sheet1[i].P, cleaned_acmk_sheet1[i].Q, cleaned_acmk_sheet1[i].R, cleaned_acmk_sheet1[i].S, cleaned_acmk_sheet1[i].T, cleaned_acmk_sheet1[i].U, cleaned_acmk_sheet1[i].V, cleaned_acmk_sheet1[i].W, cleaned_acmk_sheet1[i].X, cleaned_acmk_sheet1[i].Y, cleaned_acmk_sheet1[i].Z, cleaned_acmk_sheet1[i].AA, cleaned_acmk_sheet1[i].AB, cleaned_acmk_sheet1[i].AC, cleaned_acmk_sheet1[i].AD, cleaned_acmk_sheet1[i].AE, cleaned_acmk_sheet1[i].AF, cleaned_acmk_sheet1[i].AG, cleaned_acmk_sheet1[i].AH, cleaned_acmk_sheet1[i].AI, cleaned_acmk_sheet1[i].AJ, cleaned_acmk_sheet1[i].AK, cleaned_acmk_sheet1[i].AL, cleaned_acmk_sheet1[i].AM, cleaned_acmk_sheet1[i].AN, cleaned_acmk_sheet1[i].AO, cleaned_acmk_sheet1[i].AP, cleaned_acmk_sheet1[i].AQ, cleaned_acmk_sheet1[i].AR, cleaned_acmk_sheet1[i].AS, cleaned_acmk_sheet1[i].AT, cleaned_acmk_sheet1[i].AU, cleaned_acmk_sheet1[i].AV, cleaned_acmk_sheet1[i].AW, cleaned_acmk_sheet1[i].AX, cleaned_acmk_sheet1[i].AY, cleaned_acmk_sheet1[i].AZ, cleaned_acmk_sheet1[i].BA, cleaned_acmk_sheet1[i].BB, cleaned_acmk_sheet1[i].BC  ]
+                                                        },  function(err, results){
+                                                            if(err){return reject(err)};
+
+                                                            resolve();
+                                                        });
+
+                                                        connection.release();
+
+                                                    });
+
+                                                }                            
+
+                                            });
+                                        }
+
+                                        function ingotInsertACMK(){
+                                            return new Promise(function(resolve, reject){
+
+                                                // insert sheet2 to tbl_acmk_coa
+                                                for(let i=0;i<cleaned_acmk_sheet2.length;i++){
+
+                                                    mysql.pool.getConnection(function(err, connection){
+                                                        if(err){return reject()};
+
+                                                        connection.query({
+                                                            sql: 'INSERT INTO tbl_acmk_ingot SET supplier_id=?, delivery_date=?, order_no=?, upload_time=?, username=?, pallet_id=?, carton_id=?, lot_id=?, box_id=?, qty=?',
+                                                            values: [credentials.supplier_id, credentials.delivery_date, credentials.order_no, new Date(), verified_username, cleaned_acmk_sheet2[i].A, cleaned_acmk_sheet2[i].B, cleaned_acmk_sheet2[i].C, cleaned_acmk_sheet2[i].D, cleaned_acmk_sheet2[i].E]
+                                                        },  function(err, results){
+                                                            if(err){return reject(err)};
+
+                                                            resolve();
+                                                        });
+
+                                                        connection.release();
+                                                    });
+
+                                                }
+
+                                            });
+                                        }
+
+                                        return coaInsertACMK().then(function(){
+                                            return ingotInsertACMK().then(function(){
+
+                                                res.send({auth:'Uploading... <br> Be patient. Large files need more time to build.'});
+
+                                            },  function(err){
+                                                res.send({err: err + ' Error while uploading sheet2 to database.'});
+                                            });
+
+                                        },  function(err){
+                                            res.send({err: err + ' Error while uploading sheet1 to database.'});
+                                        });
+
+                                    } else if (supplier_name.id == credentials.supplier_id && supplier_name.id == '1006') { // LONGI
+
+                                        let sheet1_workbookJSON = XLSX.utils.sheet_to_json(workbook.Sheets['COA'],{header: 'A'});
+                                        let cleaned_longi_sheet1 = [];
+
+                                        // clean sheet1 obj
+                                        for(let i=3;i<sheet1_workbookJSON.length;i++){ //STARTS in 3rd array
+                                            
+                                            cleaned_longi_sheet1.push({
+                                                A: sheet1_workbookJSON[i].A || null,
+                                                B: sheet1_workbookJSON[i].B || null,
+                                                C: sheet1_workbookJSON[i].C || null,
+                                                D: sheet1_workbookJSON[i].D || null,
+                                                E: sheet1_workbookJSON[i].E || null,
+                                                F: sheet1_workbookJSON[i].F || null,
+                                                G: sheet1_workbookJSON[i].G || null,
+                                                H: sheet1_workbookJSON[i].H || null,
+                                                I: sheet1_workbookJSON[i].I || null,
+                                                J: sheet1_workbookJSON[i].J || null,
+                                                K: sheet1_workbookJSON[i].K || null,
+                                                L: sheet1_workbookJSON[i].L || null,
+                                                M: sheet1_workbookJSON[i].M || null,
+                                                N: sheet1_workbookJSON[i].N || null,
+                                                O: sheet1_workbookJSON[i].O || null,
+                                                P: sheet1_workbookJSON[i].P || null,
+                                                Q: sheet1_workbookJSON[i].Q || null,
+                                                R: sheet1_workbookJSON[i].R || null,
+                                                S: sheet1_workbookJSON[i].S || null,
+                                                T: sheet1_workbookJSON[i].T || null,
+                                                U: sheet1_workbookJSON[i].U || null,
+                                                V: sheet1_workbookJSON[i].V || null,
+                                                W: sheet1_workbookJSON[i].W || null,
+                                                X: sheet1_workbookJSON[i].X || null,
+                                                Y: sheet1_workbookJSON[i].Y || null,
+                                                Z: sheet1_workbookJSON[i].Z || null,
+                                                AA: sheet1_workbookJSON[i].AA || null,
+                                                AB: sheet1_workbookJSON[i].AB || null,
+                                                AC: sheet1_workbookJSON[i].AC || null,
+                                                AD: sheet1_workbookJSON[i].AD || null,
+                                                AE: sheet1_workbookJSON[i].AE || null,
+                                                AF: sheet1_workbookJSON[i].AF || null,
+                                                AG: sheet1_workbookJSON[i].AG || null,
+                                                AH: sheet1_workbookJSON[i].AH || null,
+                                                AI: sheet1_workbookJSON[i].AI || null,
+                                                AJ: sheet1_workbookJSON[i].AJ || null,
+                                                AK: sheet1_workbookJSON[i].AK || null,
+                                                AL: sheet1_workbookJSON[i].AL || null,
+                                                AM: sheet1_workbookJSON[i].AM || null,
+                                                AN: sheet1_workbookJSON[i].AN || null,
+                                                AO: sheet1_workbookJSON[i].AO || null,
+                                                AP: sheet1_workbookJSON[i].AP || null,
+                                                AQ: sheet1_workbookJSON[i].AQ || null,
+                                                AR: sheet1_workbookJSON[i].AR || null,
+                                                AS: sheet1_workbookJSON[i].AS || null,
+                                                AT: sheet1_workbookJSON[i].AT || null,
+                                                AU: sheet1_workbookJSON[i].AU || null,
+                                                AV: sheet1_workbookJSON[i].AV || null,
+                                                AW: sheet1_workbookJSON[i].AW || null,
+                                                AX: sheet1_workbookJSON[i].AX || null,
+                                                AY: sheet1_workbookJSON[i].AY || null,
+                                                AZ: sheet1_workbookJSON[i].AZ || null,
+                                                BA: sheet1_workbookJSON[i].BA || null,
+                                                BB: sheet1_workbookJSON[i].BB || null
+                                            });
+
+                                        }
+
+                                        function coaInsertLONGI(){
+                                            return new Promise(function(resolve, reject){
+
+                                                // insert sheet1 to tbl_longi_coa
+                                                for(let i=0;i<cleaned_longi_sheet1.length;i++){
+                                                    mysql.pool.getConnection(function(err, connection){
+                                                        if(err){return reject()}
+
+                                                        connection.query({
+                                                            sql: 'INSERT INTO tbl_longi_coa SET supplier_id=?, delivery_date=?, order_no=?, upload_time=?, username=?, ingot_lot_id=?, box_id=?, location=?, wafer_qty=?, blocklength=?, totalcrystal=?, seedblock=?, mclt_top=?, mclt_bottom=?, res_top=?, res_bottom=?, oi_top=?, oi_bottom=?, cs_top=?, cs_bottom=?, dia_ave=?, dia_std=?, dia_min=?, dia_max=?, flat_width_ave=?, flat_width_std=?, flat_width_min=?, flat_width_max=?, flat_length_ave=?, flat_length_std=?, flat_length_min=?, flat_length_max=?, corner_length_ave=?, corner_length_std=?, corner_length_min=?, corner_length_max=?, center_thickness_ave=?, center_thickness_std=?, center_thickness_min=?, center_thickness_max=?, ttv_ave=?, ttv_std=?, ttv_min=?, ttv_max=?, ra_ave=?, ra_std=?, ra_min=?, ra_max=?, rz_ave=?, rz_std=?, rz_min=?, rz_max=?, verticality_ave=?, verticality_std=?, verticality_min=?, verticality_max=?, copper_content=?, iron_content=?, acceptreject=?',
+                                                            values: [credentials.supplier_id, credentials.delivery_date, credentials.order_no, new Date(), verified_username, cleaned_longi_sheet1[i].A, cleaned_longi_sheet1[i].B, cleaned_longi_sheet1[i].C, cleaned_longi_sheet1[i].D, cleaned_longi_sheet1[i].E, cleaned_longi_sheet1[i].F, cleaned_longi_sheet1[i].G, cleaned_longi_sheet1[i].H, cleaned_longi_sheet1[i].I, cleaned_longi_sheet1[i].J, cleaned_longi_sheet1[i].K, cleaned_longi_sheet1[i].L, cleaned_longi_sheet1[i].M, cleaned_longi_sheet1[i].N, cleaned_longi_sheet1[i].O, cleaned_longi_sheet1[i].P, cleaned_longi_sheet1[i].Q, cleaned_longi_sheet1[i].R, cleaned_longi_sheet1[i].S, cleaned_longi_sheet1[i].T, cleaned_longi_sheet1[i].U, cleaned_longi_sheet1[i].V, cleaned_longi_sheet1[i].W, cleaned_longi_sheet1[i].X, cleaned_longi_sheet1[i].Y, cleaned_longi_sheet1[i].Z, cleaned_longi_sheet1[i].AA, cleaned_longi_sheet1[i].AB, cleaned_longi_sheet1[i].AC, cleaned_longi_sheet1[i].AD, cleaned_longi_sheet1[i].AE, cleaned_longi_sheet1[i].AF, cleaned_longi_sheet1[i].AG, cleaned_longi_sheet1[i].AH, cleaned_longi_sheet1[i].AI, cleaned_longi_sheet1[i].AJ, cleaned_longi_sheet1[i].AK, cleaned_longi_sheet1[i].AL, cleaned_longi_sheet1[i].AM, cleaned_longi_sheet1[i].AN, cleaned_longi_sheet1[i].AO, cleaned_longi_sheet1[i].AP, cleaned_longi_sheet1[i].AQ, cleaned_longi_sheet1[i].AR, cleaned_longi_sheet1[i].AS, cleaned_longi_sheet1[i].AT, cleaned_longi_sheet1[i].AU, cleaned_longi_sheet1[i].AV, cleaned_longi_sheet1[i].AW, cleaned_longi_sheet1[i].AX, cleaned_longi_sheet1[i].AY, cleaned_longi_sheet1[i].AZ, cleaned_longi_sheet1[i].BA, cleaned_longi_sheet1[i].BB]
+                                                        },  function(err, results){
+                                                            if(err){return reject(err)};
+
+                                                            resolve();
+                                                        });
+
+                                                        connection.release();
+
+                                                    });
+
+                                                }                            
+
+                                            });
+                                        }
+
+                                        return coaInsertLONGI().then(function(){
+
+                                            res.send({auth:'Uploading... <br> Be patient. Large files need more time to build.'});
+
+                                        },  function(err){
+                                            if(err){({err: err + ' Error while uploading sheet1 to database.'})}
+                                        });
                                     } else {
-                                        res.send({err: 'File does not matched to supplier.'});
+                                        res.send({err: 'Invalid CoA file.'});
                                     }
 
 

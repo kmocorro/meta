@@ -262,7 +262,7 @@
                                 <div class="tab-pane" id="qa">
                                     <div class="row">
                                         <div class="col-md-4">
-                                            <div id="responseDiv">
+                                            <div id="responseDivQA">
                                                 <!-- response here-->
                                             </div>
                                             <form id="uploadcoa">
@@ -275,7 +275,7 @@
                                                     </div>
                                                     <label class="coa-form-label">Invoice:</label>
                                                     <div class="form-group has-feedback">
-                                                        <input type="text" autocomplete="off" name="invoice" id="invoice" class="form-control form-coa-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        <input type="text" autocomplete="off" name="invoice" id="invoice" class="form-control form-coa-interface" required onchange="document.getElementById('responseDivQA').style.display = 'none';">
                                                     </div>
                                                     <label class="coa-form-label">Delivery Date:</label>
                                                     <div class="form-group has-feedback">
@@ -291,9 +291,10 @@
                                                         <select class="form-control select2 select2-hidden-accessible  form-coa-interface" style="width:100%" tabindex="-1" aria-hidden="true" required name="supplier" id="supplier" >
                                                             <option selected="selected" value="1007">ACC</option>
                                                             <option value="1003">FERROTEC</option>
-                                                            <option value="1001" >TZS</option>
+                                                            <option value="1001">TZS</option>
+                                                            <option value="1005">ACMK</option>
+                                                            <option value="1006">LONGI</option>
                                                             <option disabled>NORSUN</option>
-                                                            <option disabled>LONGI</option>
                                                         </select>
                                                     </div>
                                                     <br>
@@ -890,9 +891,9 @@
             xhr.addEventListener('load', function(event){
                 console.log(event.target.response);
                 let resFromServer = JSON.parse(event.target.response);
-                document.getElementById('responseDiv').style.display='block';
+                document.getElementById('responseDivQA').style.display='block';
                 function resDiv(){
-                    let responseDiv = document.getElementById('responseDiv');
+                    let responseDiv = document.getElementById('responseDivQA');
                     
                     if(resFromServer.err){
                         document.getElementById('coafile').removeAttribute("disabled");
