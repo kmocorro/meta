@@ -296,7 +296,10 @@ module.exports = function(app){
 
     /** Reports page */
     app.get('/reports', verifyToken, function(req, res){
-
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
+        
         if(req.userID && req.claim){
             res.render('reports', {username: req.claim.username});
         } else {
