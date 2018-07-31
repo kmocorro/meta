@@ -40,7 +40,7 @@
                     <div class="collapse navbar-collapse pull-left" id="navbar-collapse">
                         <ul class="nav navbar-nav">
                             <li>
-                                <a href="/"><span class="link-nav active">Home </span></a>
+                                <a href="/"><span class="link-nav link-active">Home </span></a>
                             </li>
                             <li>
                                 <a href="/reports"><span class="link-nav">Reports </span></a>
@@ -79,7 +79,7 @@
         </header>
         <section class="content feed-area">
                 <div class="row">
-                    <div class="col-md-6 col-centered">
+                    <div class="col-md-6 col-centered no-padding">
                         <div class="box ask-card feed-activity-user">
                             <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
                                 <%= greet %>
@@ -93,7 +93,7 @@
             <% for(let i=0; i<data.feed.length; i++) { %>
                 <% if(data.feed[i].id) { %>
                 <div class="row">
-                    <div class="col-md-6 col-centered">
+                    <div class="col-md-6 col-centered no-padding">
                         <div class="box feed-card">
                             <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
                                 <h3 class="box-title feed-activity-header"><%= data.feed[i].activity_title %></h3>
