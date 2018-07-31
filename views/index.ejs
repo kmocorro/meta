@@ -31,7 +31,7 @@
     <div class="wrapper main-pg">
         <header class="main-header site-header">
             <nav class="navbar navbar-static-top">
-                <div class="col-md-8 col-centered">
+                <div class="col-md-10 col-centered">
                     <div class="navbar-header">
                         <p class="navbar-minimal">META</p>
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"><i class="fa fa-bars"></i>
@@ -79,7 +79,7 @@
         </header>
         <section class="content feed-area">
                 <div class="row">
-                    <div class="col-md-4 col-centered">
+                    <div class="col-md-6 col-centered">
                         <div class="box ask-card feed-activity-user">
                             <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
                                 <%= greet %>
@@ -93,7 +93,7 @@
             <% for(let i=0; i<data.feed.length; i++) { %>
                 <% if(data.feed[i].id) { %>
                 <div class="row">
-                    <div class="col-md-4 col-centered">
+                    <div class="col-md-6 col-centered">
                         <div class="box feed-card">
                             <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
                                 <h3 class="box-title feed-activity-header"><%= data.feed[i].activity_title %></h3>
