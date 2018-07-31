@@ -42,8 +42,17 @@
                             <li>
                                 <a href="/"><span class="link-nav link-active">Home </span></a>
                             </li>
-                            <li>
-                                <a href="/reports"><span class="link-nav">Reports </span></a>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle link-nav" data-toggle="dropdown" ><span class="">Reports </span><span class="caret caret-style"></span></a>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li>
+                                        <a href="/reports?type=daily-binning-per-wafer-supplier">Daily Binning</a>
+                                    </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a href="/reports?type=hourly-eol-silicon-parameters">Hourly EOL and Silicon Parameters</a>
+                                    </li>
+                                </ul>
                             </li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle link-nav" data-toggle="dropdown" ><span class="">Prototypes </span><span class="caret caret-style"></span></a>
@@ -79,7 +88,7 @@
         </header>
         <section class="content feed-area">
                 <div class="row">
-                    <div class="col-md-6 col-centered no-padding">
+                    <div class="col-md-5 col-centered no-padding">
                         <div class="box ask-card feed-activity-user">
                             <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
                                 <%= greet %>
@@ -93,7 +102,7 @@
             <% for(let i=0; i<data.feed.length; i++) { %>
                 <% if(data.feed[i].id) { %>
                 <div class="row">
-                    <div class="col-md-6 col-centered no-padding">
+                    <div class="col-md-5 col-centered no-padding">
                         <div class="box feed-card">
                             <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
                                 <h3 class="box-title feed-activity-header"><%= data.feed[i].activity_title %></h3>

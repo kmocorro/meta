@@ -301,7 +301,20 @@ module.exports = function(app){
         res.header('Pragma', 'no-cache');
         
         if(req.userID && req.claim){
-            res.render('reports', {username: req.claim.username});
+
+            let reportQuery = req.query.type;
+
+            if(reportQuery){
+                if(reportQuery == 'hourly-eol-silicon-parameters'){
+
+                    res.render('reports', {username: req.claim.username, url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/HourlyJoandBRRwithSiliconParameters/HourlyEOLandSiliconParameters?:iid=1'});
+                } else if(reportQuery == 'daily-binning-per-wafer-supplier'){
+
+                    res.render('reports', {username: req.claim.username, url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/BinningDistributionperwafersupplier/HourlyBinningDistribution?:iid=19'});
+                }
+            }
+
+            
         } else {
             res.render('reports', {username: ''});
         }
