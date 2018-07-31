@@ -312,6 +312,10 @@ module.exports = function(app){
 
                     res.render('reports', {username: req.claim.username, url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/BinningDistributionperwafersupplier/HourlyBinningDistribution?:iid=19'});
                 }
+            } else {
+
+                res.redirect('/');
+
             }
 
             
