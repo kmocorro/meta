@@ -123,27 +123,18 @@
         <div class="content-wrapper coa-body reports-area">
             <section class="content">
                 <div class="row">
-                    <div class="col-md-10 col-centered">
-                        <div class="nav-tabs-custom">
-                            <div class="tab-content">
-                                <div class="tab-pane active" id="reports-coa">
-                                    <div class="row">
-                                        <div class="col-md-11 col-centered table-responsive no-padding">
-                                            <div id="alerta" class="alert tableau-dismiss alert-dismissable">
-                                                <button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
-                                                <h4>
-                                                    Connecting to Tableau Server...
-                                                </h4>
-                                                Login using Tableau Server account when pop-up message appears. Refresh the page after you signed in.
-                                            </div>
-                                            <div id="vizContainer"></div>
-                                            <div id="vizContainer2" style="padding-top:10%;"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    <div id="alerta" class="alert tableau-dismiss alert-dismissable">
+                        <button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
+                            <h4>
+                                Connecting to Tableau Server...
+                            </h4>
+                        Login using Tableau Server account when pop-up message appears. Refresh the page after you signed in.
                     </div>
+                    <div id="vizContainer"></div>
+                </div>
+                <br/>
+                <div class="row">
+                    <div id="vizContainer2"></div>
                 </div>
             </section>
         </div>
