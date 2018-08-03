@@ -311,6 +311,9 @@ module.exports = function(app){
                 } else if(reportQuery == 'daily-binning-per-wafer-supplier'){
 
                     res.render('reports', {username: req.claim.username, url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/BinningDistributionperwafersupplier/HourlyBinningDistribution?:iid=19'});
+                } else if(reportQuery == 'equipment-status'){
+
+                    res.render('reports', {username: req.claim.username, url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/WTDEquipmentStatus/WTDEquipmentStatus?:iid=1'});
                 }
             } else {
 

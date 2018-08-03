@@ -56,6 +56,10 @@
                                     <li>
                                         <a href="/reports?type=hourly-eol-silicon-parameters">Hourly EOL and Silicon Parameters</a>
                                     </li>
+                                    <li class="divider"></li>
+                                    <li>
+                                        <a href="/reports?type=equipment-status">WTD Equipment Status</a>
+                                    </li>
                                 </ul>
                             </li>
                             <li class="dropdown">
@@ -94,272 +98,264 @@
                 </section>
             </div>
             <section class="content">
-                <div class="row">
+                
                     <div class="col-md-10 col-centered">
-                        <div class="nav-tabs-custom">
-                            <div class="tab-content">
-                                <div class="tab-pane active" id="upload">
-                                    <div class="row">
-                                        <div class="col-md-4">
-                                            <div id="responseDiv">
-                                                <!-- response here-->
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div id="responseDiv">
+                                    <!-- response here-->
+                                </div>
+                                <form id="uploadactivity">
+                                    <div id="toHideIfSuccess">
+                                        <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                        <h4 class="coa-body-form">Activities & experiments</h4>
+                                        <label class="coa-form-label">Datetime range:<span class="text-danger">*</span></label>
+                                        <div class="form-group">
+                                            <div class="input-group">
+                                                <div class="input-group-addon">
+                                                    <i class="fa fa-calendar"></i>
+                                                </div>
+                                                <input type="text" name="daterange" class="form-control daterangepicker-dropdown" id="daterange_picker">
                                             </div>
-                                            <form id="uploadactivity">
-                                                <div id="toHideIfSuccess">
+                                        </div>
+                                        <label class="coa-form-label">Activity Name:<span class="text-danger">*</span></label>
+                                        <div class="form-group has-feedback">
+                                            <input type="text" name="activity_title" id="activity_title" class="form-control" required pattern=".{0}|.{5,20}" title="Activity name should be atleast 5 to 20 characters." onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                        </div>
+                                        <label class="coa-form-label">TDN #: <small><span class="form-sub-text">leave blank if not applicable</span></small></label>
+                                        <div class="form-group ">
+                                            <input type="text" name="tdn_no" id="tdn_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                        </div>
+                                        <label class="coa-form-label">MRB #: <small><span class="form-sub-text">leave blank if not applicable</span></small></label>
+                                        <div class="form-group ">
+                                            <input type="text" name="mrb_no" id="mrb_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                        </div>
+                                        <label class="coa-form-label">EC #: <small><span class="form-sub-text">leave blank if not applicable</span></small></label>
+                                        <div class="form-group">
+                                            <input type="text" name="ec_no" id="ec_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                        </div>
+                                        <label class="coa-form-label">Type:<span class="text-danger">*</span></label>
+                                        <div class="form-group">
+                                            <select class="form-control select2 select2-hidden-accessible" name="activity_type" style="width:100%;" tabindex="-1" aria-hidden="true">
+                                                <option>STO</option>
+                                                <option>COL</option>
+                                                <option>FTO</option>
+                                            </select>
+                                        </div>
+                                        <label class="coa-form-label">Process:<span class="text-danger">*</span></label>
+                                        <div class="form-group has-feedback">
+                                            <select class="form-control select2 select2-hidden-accessible" name="process_name" style="width:100%;" tabindex="-1" aria-hidden="true">
+                                                <% for(let i=0; i<process_list.length;i++) { %>
+                                                    <option><%=  process_list[i] %></option>
+                                                <% } %>
+                                            </select>
+                                        </div>
+                                        <label class="coa-form-label">Description:<span class="text-danger">*</span> <small><span class="form-sub-text">160 max characters</span></small></label>
+                                        <div class="form-group has-feedback">
+                                            <textarea rows="2" maxlength="160" name="activity_details" id="activity_details" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';"></textarea>
+                                        </div>
+                                        <br>
+                                        <div class="row">
+                                            <div class="col-xs-7">
+                                                <div class="coa-sub-link">
+                                                     By clicking "Submit", you indicate that all fields are true and correct. Having trouble posting? Kindly use Chrome or Mozilla.
+                                                </div>
+                                            </div>
+                                            <div class="col-xs-5">
+                                                <button type="submit" id="submitactivity" class="btn btn-primary btn-block btn-flat">Post</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="col-md-8">
+                                <h4 class="coa-body-form">Contribution activity</h4>
+                                <ul class="timeline timeline">
+                                    <% for(let i=0; i<data.recent.length; i++) { %>
+                                        <% if(data.recent[i].id) { %>
+                                            <li>
+                                                <i class="fa fa-cloud-upload bg-gray">
+                                                </i>
+                                                <div class="timeline-item">
+                                                    <span class="time">
+                                                        ends <%= data.recent[i].timeLeft %>&nbsp;
+                                                        <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                            <span class="fa fa-ellipsis-v" style="color:slategray"></span>
+                                                        </button>
+                                                        <ul class="dropdown-menu coa-dropdown" role="menu">
+                                                            <li>
+                                                                <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>"><i class="fa fa-pencil"></i>Edit activity</a>
+                                                            </li>
+                                                            <li class="divider"></li>
+                                                            <li>
+                                                                <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>"><i class="fa fa-trash"></i>Delete activity</a>
+                                                            </li>
+                                                        </ul>
+                                                    </span>
+                                                    <h3 class=" recent-activity-timeline-header timeline-header"><%= data.recent[i].activity_title %></h3>
+                                                    <div class="timeline-body recent-activity-timeline-body"><%= data.recent[i].activity_details %>. </div>
+                                                    <div class="timeline-footer">
+                                                    <span class="footer-timeline">
+                                                        <div style="overflow-x:auto;">
+                                                            <table>
+                                                                <tr style="font-size:12px;" >
+                                                                    <td style="padding:0 5px 0;"><%= data.recent[i].upload_date %></td>
+                                                                    <td style="padding:0 5px 0;"><%= data.recent[i].activity_type %></td>
+                                                                    <td style="padding:0 5px 0;"><%= data.recent[i].process_name %></td>
+                                                                    <td style="padding:0 5px 0;"><%= data.recent[i].tdn_no  || '' %></td>
+                                                                    <td style="padding:0 5px 0;"><%= data.recent[i].mrb_no || '' %></td>
+                                                                    <td style="padding:0 5px 0;"><%= data.recent[i].ec_no || '' %></td>
+                                                                    <td style="padding:0 5px 0;"> @<%= data.recent[i].username %></td>
+                                                                </tr>
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>
+                                        <% } else { %>
+                                            <li>
+                                                <i class="fa fa-meh-o bg-gray">
+                                                </i>
+                                                <div class="timeline-item">
+                                                    <h3 class=" recent-activity-timeline-header timeline-header">You don't have any posts yet.</h3>
+                                                </div>
+                                            </li>
+                                        <% } %>
+                                    <% } %>
+                                    <li>
+                                        <i class="fa fa-clock-o bg-gray"></i>
+                                    </li>
+                                </ul>
+                            </div>
+                            <!---->
+                            <% for(let i=0; i<data.recent.length; i++) { %>
+                                <% if(data.recent[i].id) { %>
+                                <div class="modal modal-default" id="modaldelete<%= data.recent[i].id %>">
+                                    <div class="modal-dialog modal-settings">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h3 class="modal-title">Think twice! You cannot undo this action.</h3>
+                                            </div>
+                                            <div class="modal-body">
+                                                <h4>Are you sure you want to delete <span class="label label-danger"><%= data.recent[i].activity_title %></span> activity?</h4>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <form id="deleteactivitydetails<%= data.recent[i].id %>">
                                                     <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
-                                                    <h4 class="coa-body-form">Activities & experiments</h4>
-                                                    <label class="coa-form-label">Datetime range:<span class="text-danger">*</span></label>
-                                                    <div class="form-group">
-                                                        <div class="input-group">
-                                                            <div class="input-group-addon">
-                                                                <i class="fa fa-calendar"></i>
-                                                            </div>
-                                                            <input type="text" name="daterange" class="form-control daterangepicker-dropdown" id="daterange_picker">
-                                                        </div>
+                                                    <input type="hidden" name="deleteById" value="<%= data.recent[i].id %>">
+                                                    <input type="hidden" name="deleteByUsername" value="<%= data.recent[i].username %>">
+                                                    <div id="responseDivModal<%= data.recent[i].id %>">
+                                                        <!-- response here-->
                                                     </div>
-                                                    <label class="coa-form-label">Activity Name:<span class="text-danger">*</span></label>
-                                                    <div class="form-group has-feedback">
-                                                        <input type="text" name="activity_title" id="activity_title" class="form-control" required pattern=".{0}|.{5,20}" title="Activity name should be atleast 5 to 20 characters." onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    <div id="toHideButtonIfSuccess<%= data.recent[i].id %>">
+                                                        <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</button>
+                                                        <button type="submit" id="deletebyactivity<%= data.recent[i].id %>" class="btn btn-danger btn-flat">Yes, Delete</button>
                                                     </div>
-                                                    <label class="coa-form-label">TDN #: <small><span class="form-sub-text">leave blank if not applicable</span></small></label>
-                                                    <div class="form-group ">
-                                                        <input type="text" name="tdn_no" id="tdn_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                                    </div>
-                                                    <label class="coa-form-label">MRB #: <small><span class="form-sub-text">leave blank if not applicable</span></small></label>
-                                                    <div class="form-group ">
-                                                        <input type="text" name="mrb_no" id="mrb_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                                    </div>
-                                                    <label class="coa-form-label">EC #: <small><span class="form-sub-text">leave blank if not applicable</span></small></label>
-                                                    <div class="form-group">
-                                                        <input type="text" name="ec_no" id="ec_no" class="form-control" onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                                    </div>
-                                                    <label class="coa-form-label">Type:<span class="text-danger">*</span></label>
-                                                    <div class="form-group">
-                                                        <select class="form-control select2 select2-hidden-accessible" name="activity_type" style="width:100%;" tabindex="-1" aria-hidden="true">
-                                                            <option>STO</option>
-                                                            <option>COL</option>
-                                                            <option>FTO</option>
-                                                        </select>
-                                                    </div>
-                                                    <label class="coa-form-label">Process:<span class="text-danger">*</span></label>
-                                                    <div class="form-group has-feedback">
-                                                        <select class="form-control select2 select2-hidden-accessible" name="process_name" style="width:100%;" tabindex="-1" aria-hidden="true">
-                                                            <% for(let i=0; i<process_list.length;i++) { %>
-                                                                <option><%=  process_list[i] %></option>
-                                                            <% } %>
-                                                        </select>
-                                                    </div>
-                                                    <label class="coa-form-label">Description:<span class="text-danger">*</span> <small><span class="form-sub-text">160 max characters</span></small></label>
-                                                    <div class="form-group has-feedback">
-                                                        <textarea rows="2" maxlength="160" name="activity_details" id="activity_details" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';"></textarea>
-                                                    </div>
-                                                    <br>
-                                                    <div class="row">
-                                                        <div class="col-xs-7">
-                                                            <div class="coa-sub-link">
-                                                                 By clicking "Submit", you indicate that all fields are true and correct. Having trouble posting? Kindly use Chrome or Mozilla.
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <% } %>
+                            <% } %>
+                            <!---->
+                            <% for(let i=0; i<data.recent.length; i++) { %>
+                                <% if(data.recent[i].id) { %>
+                                <div class="modal modal-default" id="modalwarning<%= data.recent[i].id %>">
+                                    <div class="modal-dialog modal-settings">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h4 class="modal-title">Edit transaction id <%= data.recent[i].id %> created by <%= data.recent[i].username %> </h4>
+                                            </div>
+                                            <form id="editactivitydetails<%= data.recent[i].id %>">
+                                                <div class="modal-body">
+                                                        <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                        <input type="hidden" name="edit_id" value="<%= data.recent[i].id %>">
+                                                        <input type="hidden" name="edit_username" value="<%= data.recent[i].username %>">
+                                                        <label class="coa-modal-label">Datetime range:</label>
+                                                        <div class="form-group">
+                                                            <div class="input-group">
+                                                                <div class="input-group-addon">
+                                                                    <i class="fa fa-calendar"></i>
+                                                                </div>
+                                                                <input type="text" name="edit_daterange" class="form-control daterangepicker-dropdown" id="daterange_picker<%= data.recent[i].id %>">
                                                             </div>
                                                         </div>
-                                                        <div class="col-xs-5">
-                                                            <button type="submit" id="submitactivity" class="btn btn-primary btn-block btn-flat">Post</button>
+                                                        <label class="coa-modal-label">Activity:</label>
+                                                        <div class="form-group has-feedback">
+                                                            <input type="text" name="edit_activity_title" id="activity_title<%= data.recent[i].id %>" class="form-control" required pattern=".{0}|.{5,20}" title="Activity name should be atleast 5 to 20 characters."  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_title %>" >
                                                         </div>
+                                                        <label class="coa-modal-label">TDN #:</label>
+                                                        <div class="form-group ">
+                                                            <input type="text" name="edit_tdn_no" id="tdn_no<%= data.recent[i].id %>" class="form-control"  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].tdn_no %>">
+                                                        </div>
+                                                        <label class="coa-modal-label">MRB #:</label>
+                                                        <div class="form-group ">
+                                                            <input type="text" name="edit_mrb_no" id="mrb_no<%= data.recent[i].id %>" class="form-control"  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].mrb_no %>">
+                                                        </div>
+                                                        <label class="coa-modal-label">EC #:</label>
+                                                        <div class="form-group">
+                                                            <input type="text" name="edit_ec_no" id="ec_no<%= data.recent[i].id %>" class="form-control"  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].ec_no %>">
+                                                        </div>
+                                                        <label class="coa-modal-label">Type:</label>
+                                                        <div class="form-group">
+                                                            <select class="form-control select2 select2-hidden-accessible" name="edit_activity_type" style="width:100%;" tabindex="-1" aria-hidden="true" value="<%= data.recent[i].activity_type %>">
+                                                                <% if(data.recent[i].activity_type == 'STO') { %>
+                                                                    <option value="STO" selected>STO</option>
+                                                                    <option value="COL" >COL</option>
+                                                                    <option value="FTO" >FTO</option>
+                                                                <% } else if( data.recent[i].activity_type == 'COL') { %>
+                                                                    <option value="STO" >STO</option>
+                                                                    <option value="COL" selected>COL</option>
+                                                                    <option value="FTO" >FTO</option>
+                                                                <% } else if( data.recent[i].activity_type == 'FTO') { %>
+                                                                    <option value="STO" >STO</option>
+                                                                    <option value="COL" >COL</option>
+                                                                    <option value="FTO" selected>FTO</option>
+                                                                <% } %>
+                                                            </select>
+                                                        </div>
+                                                        <label class="coa-modal-label">Process</label>
+                                                        <div class="form-group has-feedback">
+                                                            <select class="form-control select2 select2-hidden-accessible" name="edit_process_name" style="width:100%;" tabindex="-1" aria-hidden="true" value="<%= data.recent[i].process_name %>">
+                                                                <% for(let j=0; j<process_list.length;j++) { %>
+                                                                    <% if(data.recent[i].process_name ==  process_list[j] ) { %>
+                                                                        <option value="<%=  process_list[j] %>" selected><%=  process_list[j] %></option>
+                                                                        <% for(let k=0; k<process_list.length;k++) { %>
+                                                                        <option value="<%=  process_list[k] %>"><%=  process_list[k] %></option>
+                                                                        <% } %>
+                                                                    <% } %>
+                                                                <% } %>
+                                                            </select>
+                                                        </div>
+                                                        <label class="coa-modal-label">Description</label>
+                                                        <div class="form-group has-feedback">
+                                                                <input type="text" name="edit_activity_details" id="ec_no<%= data.recent[i].id %>" class="form-control" required pattern=".{0}|.{10,160}" title="Description should be atleast 10 to 160 characters."  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_details %>">
+                                                        </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <div id="responseDivEditModal<%= data.recent[i].id %>">
+                                                        <!-- response here-->
+                                                    </div>
+                                                    <div id="toHideButtonEditIfSuccess<%= data.recent[i].id %>">
+                                                        <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</button>
+                                                        <button type="submit" id="editbyactivity<%= data.recent[i].id %>" class="btn btn-warning btn-flat">Submit Changes</button>
                                                     </div>
                                                 </div>
                                             </form>
                                         </div>
-                                        <div class="col-md-8">
-                                            <h4 class="coa-body-form">Contribution activity</h4>
-                                            <ul class="timeline timeline">
-                                                <% for(let i=0; i<data.recent.length; i++) { %>
-                                                    <% if(data.recent[i].id) { %>
-                                                        <li>
-                                                            <i class="fa fa-cloud-upload bg-gray">
-                                                            </i>
-                                                            <div class="timeline-item">
-                                                                <span class="time">
-                                                                    ends <%= data.recent[i].timeLeft %>&nbsp;
-                                                                    <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
-                                                                        <span class="fa fa-ellipsis-v" style="color:slategray"></span>
-                                                                    </button>
-                                                                    <ul class="dropdown-menu coa-dropdown" role="menu">
-                                                                        <li>
-                                                                            <a href="#edit" data-toggle="modal" data-target="#modalwarning<%= data.recent[i].id %>"><i class="fa fa-pencil"></i>Edit activity</a>
-                                                                        </li>
-                                                                        <li class="divider"></li>
-                                                                        <li>
-                                                                            <a href="#delete" data-toggle="modal" data-target="#modaldelete<%= data.recent[i].id %>"><i class="fa fa-trash"></i>Delete activity</a>
-                                                                        </li>
-                                                                    </ul>
-                                                                </span>
-                                                                <h3 class=" recent-activity-timeline-header timeline-header"><%= data.recent[i].activity_title %></h3>
-                                                                <div class="timeline-body recent-activity-timeline-body"><%= data.recent[i].activity_details %>. </div>
-                                                                <div class="timeline-footer">
-                                                                <span class="footer-timeline">
-                                                                    <div style="overflow-x:auto;">
-                                                                        <table>
-                                                                            <tr style="font-size:12px;" >
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].upload_date %></td>
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].activity_type %></td>
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].process_name %></td>
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].tdn_no  || '' %></td>
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].mrb_no || '' %></td>
-                                                                                <td style="padding:0 5px 0;"><%= data.recent[i].ec_no || '' %></td>
-                                                                                <td style="padding:0 5px 0;"> @<%= data.recent[i].username %></td>
-                                                                            </tr>
-                                                                        </table>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </li>
-                                                    <% } else { %>
-                                                        <li>
-                                                            <i class="fa fa-meh-o bg-gray">
-                                                            </i>
-                                                            <div class="timeline-item">
-                                                                <h3 class=" recent-activity-timeline-header timeline-header">You don't have any posts yet.</h3>
-                                                            </div>
-                                                        </li>
-                                                    <% } %>
-                                                <% } %>
-                                                <li>
-                                                    <i class="fa fa-clock-o bg-gray"></i>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <!---->
-                                        <% for(let i=0; i<data.recent.length; i++) { %>
-                                            <% if(data.recent[i].id) { %>
-                                            <div class="modal modal-default" id="modaldelete<%= data.recent[i].id %>">
-                                                <div class="modal-dialog modal-settings">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                            <h3 class="modal-title">Think twice! You cannot undo this action.</h3>
-                                                        </div>
-                                                        <div class="modal-body">
-                                                            <h4>Are you sure you want to delete <span class="label label-danger"><%= data.recent[i].activity_title %></span> activity?</h4>
-                                                        </div>
-                                                        <div class="modal-footer">
-                                                            <form id="deleteactivitydetails<%= data.recent[i].id %>">
-                                                                <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
-                                                                <input type="hidden" name="deleteById" value="<%= data.recent[i].id %>">
-                                                                <input type="hidden" name="deleteByUsername" value="<%= data.recent[i].username %>">
-                                                                <div id="responseDivModal<%= data.recent[i].id %>">
-                                                                    <!-- response here-->
-                                                                </div>
-                                                                <div id="toHideButtonIfSuccess<%= data.recent[i].id %>">
-                                                                    <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</button>
-                                                                    <button type="submit" id="deletebyactivity<%= data.recent[i].id %>" class="btn btn-danger btn-flat">Yes, Delete</button>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <% } %>
-                                        <% } %>
-                                        <!---->
-                                        <% for(let i=0; i<data.recent.length; i++) { %>
-                                            <% if(data.recent[i].id) { %>
-                                            <div class="modal modal-default" id="modalwarning<%= data.recent[i].id %>">
-                                                <div class="modal-dialog modal-settings">
-                                                    <div class="modal-content">
-                                                        <div class="modal-header">
-                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                                                <span aria-hidden="true">&times;</span>
-                                                            </button>
-                                                            <h4 class="modal-title">Edit transaction id <%= data.recent[i].id %> created by <%= data.recent[i].username %> </h4>
-                                                        </div>
-                                                        <form id="editactivitydetails<%= data.recent[i].id %>">
-                                                            <div class="modal-body">
-                                                                    <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
-                                                                    <input type="hidden" name="edit_id" value="<%= data.recent[i].id %>">
-                                                                    <input type="hidden" name="edit_username" value="<%= data.recent[i].username %>">
-                                                                    <label class="coa-modal-label">Datetime range:</label>
-                                                                    <div class="form-group">
-                                                                        <div class="input-group">
-                                                                            <div class="input-group-addon">
-                                                                                <i class="fa fa-calendar"></i>
-                                                                            </div>
-                                                                            <input type="text" name="edit_daterange" class="form-control daterangepicker-dropdown" id="daterange_picker<%= data.recent[i].id %>">
-                                                                        </div>
-                                                                    </div>
-                                                                    <label class="coa-modal-label">Activity:</label>
-                                                                    <div class="form-group has-feedback">
-                                                                        <input type="text" name="edit_activity_title" id="activity_title<%= data.recent[i].id %>" class="form-control" required pattern=".{0}|.{5,20}" title="Activity name should be atleast 5 to 20 characters."  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_title %>" >
-                                                                    </div>
-                                                                    <label class="coa-modal-label">TDN #:</label>
-                                                                    <div class="form-group ">
-                                                                        <input type="text" name="edit_tdn_no" id="tdn_no<%= data.recent[i].id %>" class="form-control"  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].tdn_no %>">
-                                                                    </div>
-                                                                    <label class="coa-modal-label">MRB #:</label>
-                                                                    <div class="form-group ">
-                                                                        <input type="text" name="edit_mrb_no" id="mrb_no<%= data.recent[i].id %>" class="form-control"  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].mrb_no %>">
-                                                                    </div>
-                                                                    <label class="coa-modal-label">EC #:</label>
-                                                                    <div class="form-group">
-                                                                        <input type="text" name="edit_ec_no" id="ec_no<%= data.recent[i].id %>" class="form-control"  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].ec_no %>">
-                                                                    </div>
-                                                                    <label class="coa-modal-label">Type:</label>
-                                                                    <div class="form-group">
-                                                                        <select class="form-control select2 select2-hidden-accessible" name="edit_activity_type" style="width:100%;" tabindex="-1" aria-hidden="true" value="<%= data.recent[i].activity_type %>">
-                                                                            <% if(data.recent[i].activity_type == 'STO') { %>
-                                                                                <option value="STO" selected>STO</option>
-                                                                                <option value="COL" >COL</option>
-                                                                                <option value="FTO" >FTO</option>
-                                                                            <% } else if( data.recent[i].activity_type == 'COL') { %>
-                                                                                <option value="STO" >STO</option>
-                                                                                <option value="COL" selected>COL</option>
-                                                                                <option value="FTO" >FTO</option>
-                                                                            <% } else if( data.recent[i].activity_type == 'FTO') { %>
-                                                                                <option value="STO" >STO</option>
-                                                                                <option value="COL" >COL</option>
-                                                                                <option value="FTO" selected>FTO</option>
-                                                                            <% } %>
-                                                                        </select>
-                                                                    </div>
-                                                                    <label class="coa-modal-label">Process</label>
-                                                                    <div class="form-group has-feedback">
-                                                                        <select class="form-control select2 select2-hidden-accessible" name="edit_process_name" style="width:100%;" tabindex="-1" aria-hidden="true" value="<%= data.recent[i].process_name %>">
-                                                                            <% for(let j=0; j<process_list.length;j++) { %>
-                                                                                <% if(data.recent[i].process_name ==  process_list[j] ) { %>
-                                                                                    <option value="<%=  process_list[j] %>" selected><%=  process_list[j] %></option>
-                                                                                    <% for(let k=0; k<process_list.length;k++) { %>
-                                                                                    <option value="<%=  process_list[k] %>"><%=  process_list[k] %></option>
-                                                                                    <% } %>
-                                                                                <% } %>
-                                                                            <% } %>
-                                                                        </select>
-                                                                    </div>
-                                                                    <label class="coa-modal-label">Description</label>
-                                                                    <div class="form-group has-feedback">
-                                                                            <input type="text" name="edit_activity_details" id="ec_no<%= data.recent[i].id %>" class="form-control" required pattern=".{0}|.{10,160}" title="Description should be atleast 10 to 160 characters."  onchange="document.getElementById('responseDiv').style.display = 'none';" value="<%= data.recent[i].activity_details %>">
-                                                                    </div>
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <div id="responseDivEditModal<%= data.recent[i].id %>">
-                                                                    <!-- response here-->
-                                                                </div>
-                                                                <div id="toHideButtonEditIfSuccess<%= data.recent[i].id %>">
-                                                                    <button type="button" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</button>
-                                                                    <button type="submit" id="editbyactivity<%= data.recent[i].id %>" class="btn btn-warning btn-flat">Submit Changes</button>
-                                                                </div>
-                                                            </div>
-                                                        </form>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <% } %>
-                                        <% } %>
                                     </div>
                                 </div>
-                                
-                            </div>
+                                <% } %>
+                            <% } %>
                         </div>
                     </div>
-                </div>
             </section>
         </div>
     </div>
