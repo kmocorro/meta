@@ -295,37 +295,27 @@ module.exports = function(app){
     });
 
     /** Reports page */
-    app.get('/reports', verifyToken, function(req, res){
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
-        
-        if(req.userID && req.claim){
+    app.get('/reports', function(req, res){
 
-            let reportQuery = req.query.type;
+        let reportQuery = req.query.type;
 
             if(reportQuery){
                 if(reportQuery == 'hourly-eol-silicon-parameters'){
 
-                    res.render('reports', {username: req.claim.username, url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/HourlyJoandBRRwithSiliconParameters/HourlyEOLandSiliconParameters?:iid=1'});
+                    res.render('reports', {username: 'Guest', url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/HourlyJoandBRRwithSiliconParameters/HourlyEOLandSiliconParameters?:iid=1'});
                 } else if(reportQuery == 'daily-binning-per-wafer-supplier'){
 
-                    res.render('reports', {username: req.claim.username, url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/BinningDistributionperwafersupplier/HourlyBinningDistribution?:iid=19'});
+                    res.render('reports', {username: 'Guest', url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/BinningDistributionperwafersupplier/HourlyBinningDistribution?:iid=19'});
                 } else if(reportQuery == 'equipment-status'){
 
-                    res.render('reports', {username: req.claim.username, url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/WTDEquipmentStatus/WTDEquipmentStatus?:iid=1'});
+                    res.render('reports', {username: 'Guest', url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/WTDEquipmentStatus/WTDEquipmentStatus?:iid=1'});
                 }
+                
             } else {
 
                 res.redirect('/');
 
             }
-
-            
-        } else {
-            res.render('reports', {username: ''});
-        }
-
     });
     
     /** redirect -- coa */
