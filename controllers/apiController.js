@@ -298,7 +298,8 @@ module.exports = function(app){
     app.get('/reports', function(req, res){
 
         let reportQuery = req.query.type;
-
+            console.log(req.ip);
+            
             if(reportQuery){
                 if(reportQuery == 'hourly-eol-silicon-parameters'){
 
