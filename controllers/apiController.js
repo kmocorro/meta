@@ -314,6 +314,27 @@ module.exports = function(app){
                 } else if(reportQuery == 'cycletime'){
 
                     res.render('reports', {username: 'Guest', url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/Fab4CycleTime/Fab4CycleTime?:iid=1'});
+
+                } else if(reportQuery == 'cycletime-cluster-1'){
+
+                    res.render('reports', {username: 'Guest', url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/Cluster1CycleTime/Cluster1CycleTime?:iid=2'});
+                    
+                } else if(reportQuery == 'cycletime-cluster-2'){
+
+                    res.render('reports', {username: 'Guest', url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/Cluster2CycleTime/Cluster2CycleTime?:iid=1'});
+                    
+                } else if(reportQuery == 'cycletime-cluster-3'){
+
+                    res.render('reports', {username: 'Guest', url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/Cluster3CycleTime/Cluster3CycleTime?:iid=3'});
+                    
+                } else if(reportQuery == 'cycletime-cluster-4'){
+
+                    res.render('reports', {username: 'Guest', url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/Cluster4CycleTime/Cluster4CycleTime?:iid=2'});
+                    
+                } else if(reportQuery == 'cycletime-cluster-5'){
+
+                    res.render('reports', {username: 'Guest', url_query: 'http://tableau.sunpowercorp.com/#/site/MES_MANILA/views/Cluster5CycleTime/Cluster5CycleTime?:iid=5'});
+                    
                 }
                 
             } else {
