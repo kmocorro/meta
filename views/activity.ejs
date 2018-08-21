@@ -35,7 +35,7 @@
     <div class="wrapper main-pg">
         <header class="main-header site-header">
             <nav class="navbar navbar-static-top">
-                <div class="col-md-10 col-centered no-padding">
+                <div class="col-md-12 col-centered no-padding">
                     <div class="navbar-header">
                         <a href="/" class="navbar-minimal page-title">META</a>
                         <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse" aria-expanded="false"><i class="fa fa-bars"></i>
@@ -112,19 +112,16 @@
             </nav>
         </header>
         <div class="content-wrapper coa-body activity-area">
-            <div class="col-md-10 col-centered">
+            <div class="col-md-12 col-centered">
                 <section class="content-header">
                     <h1 class="coa-body-header">My Activity</h1>
                 </section>
             </div>
             <section class="content">
                 
-                    <div class="col-md-10 col-centered">
+                    <div class="col-md-12 col-centered">
                         <div class="row">
                             <div class="col-md-4">
-                                <div id="responseDiv">
-                                    <!-- response here-->
-                                </div>
                                 <form id="uploadactivity">
                                     <div id="toHideIfSuccess">
                                         <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
@@ -175,6 +172,9 @@
                                             <textarea rows="2" maxlength="160" name="activity_details" id="activity_details" class="form-control" required onchange="document.getElementById('responseDiv').style.display = 'none';"></textarea>
                                         </div>
                                         <br>
+                                        <div id="responseDiv">
+                                            <!-- response here-->
+                                        </div>
                                         <div class="row">
                                             <div class="col-xs-7">
                                                 <div class="coa-sub-link">
