@@ -414,7 +414,8 @@ module.exports = function(app){
                                                 }, config.secret); // expiresIn: sometime
         
                                                 res.cookie('auth', token); // send cookie auth token
-                                                res.status(200).send({auth: 'Authenticated. Please wait...'});
+                                                res.status(200).send({auth: 'Authenticated.'});
+                                                //res.redirect('/');
                                                 console.log(credentials.username + ' has logged in.');
         
                                             } else {
