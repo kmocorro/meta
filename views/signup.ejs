@@ -32,74 +32,78 @@
         <section class="content">
             <div class="row">
                 <div class="container">
-                    <div class="login-box">
-                        <div class="login-logo">
-                            <a href="/"  class="page-name">META</a>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="signup-form">
-                                <div class="col-xs-12">
-                                    <p class="login-box-msg">Sign up to post your activities</p>
-                                    <div id='responseDiv'>
-                                        <!-- response here-->
-                                    </div>
-                                    <form id="emailRegister">
-                                        <div id="toHideIfSuccess">
-                                            <div class="row">
-                                                <div class="col-xs-6">
-                                                    <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
-                                                    <label class="label-form">First Name</label>
+                    <div class="col-md-6 col-centered">
+                        <div class="upper-container">
+                            <div class="login-box-main">
+                                <div class="login-logo">
+                                    <a href="/"  class="page-name">META</a>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="signup-form">
+                                        <div class="col-xs-12">
+                                            <p class="login-box-msg">Sign up to post your activities</p>
+                                            <div id='responseDiv'>
+                                                <!-- response here-->
+                                            </div>
+                                            <form id="emailRegister">
+                                                <div id="toHideIfSuccess">
+                                                    <div class="row">
+                                                        <div class="col-xs-6">
+                                                            <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                            <label class="label-form">First Name</label>
+                                                            <div class="form-group has-feedback">
+                                                                <input type="text" name="firstname" id="firstname" class="form-control form-signup-interface input-firstletter-uppercase" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-6">
+                                                            <label class="label-form">Last Name</label>
+                                                            <div class="form-group has-feedback">
+                                                                <input type="text" name="lastname" id="lastname" class="form-control form-signup-interface input-firstletter-uppercase" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="form-group has-feedback">
-                                                        <input type="text" name="firstname" id="firstname" class="form-control form-signup-interface input-firstletter-uppercase" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                            <label class="label-form">Username</label>
+                                                            <input type="text" autocomplete="off" name="username" id="username" class="form-control form-signup-interface" required pattern="(?=.*[a-z]).{3,}" onchange="document.getElementById('responseDiv').style.display = 'none';" title="Username must contain at least 3 characters, lowercase or numbers.">
                                                     </div>
-                                                </div>
-                                                <div class="col-xs-6">
-                                                    <label class="label-form">Last Name</label>
+                                                    <div class="form-group has-feedback input-group">
+                                                        <label class="label-form">Email</label>
+                                                        <input type="text" autocomplete="off" name="email" id="email" class="form-control form-signup-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';"><span class="input-group-addon group-addon-clean" disabled>@sunpowercorp.com</span>
+                                                    </div>
+                                                    <div class="form-group has-feedback ">
+                                                            <label class="label-form">Department</label>
+                                                            <select class="form-control form-signup-interface" onchange="document.getElementById('responseDiv').style.display = 'none';" name="department" id="department">
+                                                                <option value="Engineering">Engineering</option>
+                                                                <option value="Manufacturing">Manufacturing</option>
+                                                                <option value="Yield">Yield</option>
+                                                                <option value="RDD">RDD</option>
+                                                            </select>
+                                                    </div>
                                                     <div class="form-group has-feedback">
-                                                        <input type="text" name="lastname" id="lastname" class="form-control form-signup-interface input-firstletter-uppercase" required placeholder="" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        <label class="label-form">Password</label> <i class="label-form">(Do Not Use your Outlook Password)</i>
+                                                        <input type="password" autocomplete="off" name="password" id="password" class="form-control form-signup-interface" title="Password must contain at least 7 characters, including UPPER, lowercase and numbers." required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,}" onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-12">
+                                                            <div class="signup-sub-link">
+                                                                By clicking "Sign Up" you agree that this app is a prototype and is subjected to change.
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-xs-8">
+                                                            <div id="idcancel">
+                                                                <a href="/" id="cancellink" class="pull-right" style="padding-top:10px;">Cancel</a>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-xs-4">
+                                                            <button type="submit" id="signupbutton" class="btn btn-primary btn-block btn-flat">Sign Up</button>
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div class="form-group has-feedback">
-                                                    <label class="label-form">Username</label>
-                                                    <input type="text" autocomplete="off" name="username" id="username" class="form-control form-signup-interface" required pattern="(?=.*[a-z]).{3,}" onchange="document.getElementById('responseDiv').style.display = 'none';" title="Username must contain at least 3 characters, lowercase or numbers.">
-                                            </div>
-                                            <div class="form-group has-feedback input-group">
-                                                <label class="label-form">Email</label>
-                                                <input type="text" autocomplete="off" name="email" id="email" class="form-control form-signup-interface" required onchange="document.getElementById('responseDiv').style.display = 'none';"><span class="input-group-addon group-addon-clean" disabled>@sunpowercorp.com</span>
-                                            </div>
-                                            <div class="form-group has-feedback ">
-                                                    <label class="label-form">Department</label>
-                                                    <select class="form-control form-signup-interface" onchange="document.getElementById('responseDiv').style.display = 'none';" name="department" id="department">
-                                                        <option value="Engineering">Engineering</option>
-                                                        <option value="Manufacturing">Manufacturing</option>
-                                                        <option value="Yield">Yield</option>
-                                                        <option value="RDD">RDD</option>
-                                                    </select>
-                                            </div>
-                                            <div class="form-group has-feedback">
-                                                <label class="label-form">Password</label> <i class="label-form">(Do Not Use your Outlook Password)</i>
-                                                <input type="password" autocomplete="off" name="password" id="password" class="form-control form-signup-interface" title="Password must contain at least 7 characters, including UPPER, lowercase and numbers." required pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{7,}" onchange="document.getElementById('responseDiv').style.display = 'none';">
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-12">
-                                                    <div class="signup-sub-link">
-                                                        By clicking "Sign Up" you agree that this app is a prototype and is subjected to change.
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-xs-8">
-                                                    <div id="idcancel">
-                                                        <a href="/" id="cancellink" class="pull-right" style="padding-top:10px;">Cancel</a>
-                                                    </div>
-                                                </div>
-                                                <div class="col-xs-4">
-                                                    <button type="submit" id="signupbutton" class="btn btn-primary btn-block btn-flat">Sign Up</button>
-                                                </div>
-                                            </div>
+                                            </form>
                                         </div>
-                                    </form>
+                                    </div>
                                 </div>
                             </div>
                         </div>
