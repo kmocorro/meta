@@ -120,13 +120,18 @@
                         </div>
                     </div>
                 </div>
-            <% for(let i=0; i<data.feed.length; i++) { %>
-                <% if(data.feed[i].id) { %>
+                <div class="row">
+                    <div class="col-md-5 col-centered no-padding">
+                        <p style="color:darkgray; font-weight: 300; margin: 0 -5px 10px;">Downtime Feed</p>
+                    </div>
+                </div>
+            <% for(let i=0; i<downtime_feed_data.feed.length; i++) { %>
+                <% if(downtime_feed_data.feed[i].title) { %>
                 <div class="row">
                     <div class="col-md-5 col-centered no-padding">
                         <div class="box feed-card">
                             <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
-                                <h3 class="box-title feed-activity-header"><%= data.feed[i].activity_title %></h3>
+                                <h3 class="box-title feed-activity-header"><%= downtime_feed_data.feed[i].title %></h3>
 
                                 <div class="box-tools pull-right">
                                         <button type="button" disabled class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
@@ -140,25 +145,22 @@
                                 </div>
                             </div>
                             <div class="box-body feed-activity-user">
-                                @<%= data.feed[i].username %>   
+                                @meta  
                             </div>
                             <div class="box-body feed-activity-body">
-                                <%= data.feed[i].activity_details %>
+                                <%= downtime_feed_data.feed[i].eq_name %> has been changed to <%= downtime_feed_data.feed[i].substat_desc %> by <%= downtime_feed_data.feed[i].whoin %>
                             </div>
                             <!-- /.box-body -->
                             <div class="box-footer feed-activy-footer">
                                 <div style="overflow-x:auto;">
+                                    
                                     <table>
                                         <tr style="font-size:12px;" >
-                                            <td style="padding:0 5px 0;">Posted <%= data.feed[i].upload_date %></td>
-                                            <td style="padding:0 5px 0;"><%= data.feed[i].activity_type %></td>
-                                            <td style="padding:0 5px 0;"><%= data.feed[i].process_name %></td>
-                                            <td style="padding:0 5px 0;"><%= data.feed[i].tdn_no  || '-' %></td>
-                                            <td style="padding:0 5px 0;"><%= data.feed[i].mrb_no || '-' %></td>
-                                            <td style="padding:0 5px 0;"><%= data.feed[i].ec_no || '-' %></td>
-                                            <td style="padding:0 5px 0;">ends <%= data.feed[i].timeLeft %></td>
+                                            <td style="padding:0 5px 0;"><%= downtime_feed_data.feed[i].time_in %></td>
+                                            <td style="padding:0 5px 0;">duration <%= downtime_feed_data.feed[i].duration %></td>
                                         </tr>
                                     </table>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -194,6 +196,86 @@
                 </div>
                 <% } %>
             <% } %>
+            <div class="row">
+                <div class="col-md-5 col-centered no-padding">
+                    <p style="color:darkgray; font-weight: 300; margin: 0 -5px 10px;">Engineering Activities</p>
+                </div>
+            </div>
+            <% for(let i=0; i<activity_feed_data.feed.length; i++) { %>
+                <% if(activity_feed_data.feed[i].id) { %>
+                <div class="row">
+                    <div class="col-md-5 col-centered no-padding">
+                        <div class="box feed-card">
+                            <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
+                                <h3 class="box-title feed-activity-header"><%= activity_feed_data.feed[i].activity_title %></h3>
+
+                                <div class="box-tools pull-right">
+                                        <button type="button" disabled class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                            <span class="fa fa-ellipsis-v" style="color:slategray"></span>
+                                        </button>
+                                        <ul class="dropdown-menu coa-dropdown" role="menu">
+                                            <li>
+                                                <a href="#delete" data-toggle="modal" data-target="#modaldelete">Hide activity</a>
+                                            </li>
+                                        </ul>
+                                </div>
+                            </div>
+                            <div class="box-body feed-activity-user">
+                                @<%= activity_feed_data.feed[i].username %>   
+                            </div>
+                            <div class="box-body feed-activity-body">
+                                <%= activity_feed_data.feed[i].activity_details %>
+                            </div>
+                            
+                            <div class="box-footer feed-activy-footer">
+                                <div style="overflow-x:auto;">
+                                    <table>
+                                        <tr style="font-size:12px;" >
+                                            <td style="padding:0 5px 0;">Posted <%= activity_feed_data.feed[i].upload_date %></td>
+                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].activity_type %></td>
+                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].process_name %></td>
+                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].tdn_no  || '-' %></td>
+                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].mrb_no || '-' %></td>
+                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].ec_no || '-' %></td>
+                                            <td style="padding:0 5px 0;">ends <%= activity_feed_data.feed[i].timeLeft %></td>
+                                        </tr>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } else { %>
+                <div class="row">
+                    <div class="col-md-4 col-centered">
+                        <div class="box feed-card">
+                            <div class="box-header">
+                                <h3 class="box-title feed-activity-header">No feed to display</h3>
+
+                                <div class="box-tools pull-right">
+                                        <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                            <span class="fa fa-ellipsis-v" style="color:slategray"></span>
+                                        </button>
+                                        <ul class="dropdown-menu coa-dropdown" role="menu">
+                                            <li>
+                                                <a href="#delete" data-toggle="modal" data-target="#modaldelete">Hide activity</a>
+                                            </li>
+                                        </ul>
+                                </div>
+                            </div>
+                            <div class="box-body feed-activity-body">
+                                ...
+                            </div>
+                            
+                            <div class="box-footer feed-activy-footer">
+                                ...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            <% } %>
+            
         </section>
     </div>
 

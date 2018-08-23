@@ -29,11 +29,11 @@ module.exports = function(app){
 
         if(req.userID && req.claim){
 
-            mysql.pool.getConnection(function(err, connection){
-                if(err){return res.send({err: 'Cannot connect to database'})};
+            function activity_feed(){
+                return new Promise(function(resolve, reject){
 
-                function feed(){
-                    return new Promise(function(resolve, reject){
+                    mysql.pool.getConnection(function(err, connection){
+                        if(err){return res.send({err: 'Cannot connect to pool DB.'})};
 
                         connection.query({
                             sql: 'SELECT * FROM tbl_rlogs ORDER BY id DESC LIMIT 100'
@@ -104,44 +104,147 @@ module.exports = function(app){
 
                         });
 
+                        connection.release();
+
                     });
-                }
 
-                feed().then(function(data){
+                });
+            }
 
-                    function getGreetingTime (m) {
-                        let g = null; //return g
-                        
-                        if(!m || !m.isValid()) { return; } //if we can't find a valid or filled moment, we return.
-                        
-                        let split_afternoon = 12 //24hr time to split the afternoon
-                        let split_evening = 17 //24hr time to split the evening
-                        let currentHour = parseFloat(m.format("HH"));
-                        
-                        if(currentHour >= split_afternoon && currentHour <= split_evening) {
-                            g = "afternoon";
-                        } else if(currentHour >= split_evening) {
-                            g = "evening";
-                        } else {
-                            g = "morning";
-                        }
-                        
-                        return g;
+            function tool_downtime_feed(){
+                return new Promise(function(resolve, reject){
+
+                    mysql.poolMES.getConnection(function(err, connection){
+                        if(err){return res.send({err: 'Cannot connect to poolMES db.'})}
+
+                        connection.query({
+                            sql: 'SET time_zone = "+08:00"; SELECT b.eq_name, a.* ,  c.substat_desc, TIMEDIFF(NOW(), a.time_in) as duration FROM MES_EQ_CSTAT_HEAD a JOIN MES_EQ_INFO b ON a.eq_id = b.eq_id JOIN MES_EQ_SUBSTATUS c ON a.substat_id = c.substat_id WHERE a.stat_id = "D" AND a.time_in >= DATE_ADD(CURDATE(), INTERVAL 390 MINUTE)  AND a.time_out IS NULL ORDER BY duration DESC;'
+                        },  function(err, results){
+                            if(err){return reject(err);};
+
+                            // multiple statements, results[0,1]
+                            if(typeof results[1] !== 'undefined' && results[1] !== null && results.length > 0){
+                                let downtime_feed_obj = [];
+                                
+                                for(let i=0;i<results[1].length;i++){
+                                    let clean_eq = (results[1][i].eq_name).split("_");
+
+                                    // need to change this SOON. this is all for HOUR/ HOURS :|
+                                    if(parseInt(moment(results[1][i].duration, "H:mm:ss").hours()) > 0 || parseInt(moment(results[1][i].duration, "H:mm:ss").minutes()) > 15 ){
+
+                                        if(parseInt(moment(results[1][i].duration, "H:mm:ss").hours()) <= 0){
+
+                                            downtime_feed_obj.push({
+                                                title: clean_eq[1] + ' ' + clean_eq[2] + ' is ' + (results[1][i].substat_desc).toLowerCase() + ' for ' + moment(results[1][i].duration, "H:mm:ss").minutes() + ' minutes',
+                                                eq_name: results[1][i].eq_name,
+                                                time_in: moment(results[1][i].time_in, 'YYYY-MM-DD H:mm:ss').calendar(),
+                                                clean_eq_name: clean_eq[1] + ' ' + clean_eq[2],
+                                                whoin: results[1][i].who_in,
+                                                substat_desc: (results[1][i].substat_desc).toLowerCase(),
+                                                duration: results[1][i].duration
+                                            });
+
+                                        } else if(parseInt(moment(results[1][i].duration, "H:mm:ss").hours()) == 1){
+
+                                            downtime_feed_obj.push({
+                                                title: clean_eq[1] + ' ' + clean_eq[2] + ' is ' + (results[1][i].substat_desc).toLowerCase() + ' for ' + moment(results[1][i].duration, "H:mm:ss").hours() + ' hour and ' + moment(results[1][i].duration, "H:mm:ss").minutes() + ' minutes',
+                                                eq_name: results[1][i].eq_name,
+                                                time_in: moment(results[1][i].time_in, 'YYYY-MM-DD H:mm:ss').calendar(),
+                                                clean_eq_name: clean_eq[1] + ' ' + clean_eq[2],
+                                                whoin: results[1][i].who_in,
+                                                substat_desc: (results[1][i].substat_desc).toLowerCase(),
+                                                duration: results[1][i].duration
+                                            });
+
+                                        } else {
+
+                                            downtime_feed_obj.push({
+                                                title: clean_eq[1] + ' ' + clean_eq[2] + ' is ' + (results[1][i].substat_desc).toLowerCase() + ' for ' + moment(results[1][i].duration, "H:mm:ss").hours() + ' hours and ' + moment(results[1][i].duration, "H:mm:ss").minutes() + ' minutes',
+                                                eq_name: results[1][i].eq_name,
+                                                time_in: moment(results[1][i].time_in, 'YYYY-MM-DD H:mm:ss').calendar(),
+                                                clean_eq_name: clean_eq[1] + ' ' + clean_eq[2],
+                                                whoin: results[1][i].who_in,
+                                                substat_desc: (results[1][i].substat_desc).toLowerCase(),
+                                                duration: results[1][i].duration
+                                            });
+
+
+                                        }
+
+                                    }
+
+                                }
+                                
+                                let data = {
+                                    feed : downtime_feed_obj
+                                }
+
+                                resolve(data);
+
+                            } else {
+
+                                let downtime_feed_obj = [];
+
+                                downtime_feed_obj.push({
+                                    title: null,
+                                    eq_name: null,
+                                    time_in: null,
+                                    clean_eq_name: null,
+                                    whoin: null,
+                                    substat_desc: null,
+                                    duration: null
+                                });
+
+                                let data = {
+                                    feed : downtime_feed_obj
+                                }
+
+                                reject(data);
+
+                            }
+                        });
+
+                        connection.release();
+
+                    });
+
+                });
+            }
+
+            activity_feed().then(function(activity_feed_data){
+
+                function getGreetingTime (m) {
+                    let g = null; //return g
+                    
+                    if(!m || !m.isValid()) { return; } //if we can't find a valid or filled moment, we return.
+                    
+                    let split_afternoon = 12 //24hr time to split the afternoon
+                    let split_evening = 17 //24hr time to split the evening
+                    let currentHour = parseFloat(m.format("HH"));
+                    
+                    if(currentHour >= split_afternoon && currentHour <= split_evening) {
+                        g = "afternoon";
+                    } else if(currentHour >= split_evening) {
+                        g = "evening";
+                    } else {
+                        g = "morning";
                     }
                     
-                    
-                    //The let "humanizedGreeting" below will equal (assuming the time is 8pm) "Good evening, James."
-                        
-                    let humanizedGreeting = "Good " + getGreetingTime(moment()) + ", " +  req.claim.name + ".";
-                    
+                    return g;
+                }
 
-                    res.render('index', {username: req.claim.username, greet: humanizedGreeting, department: req.claim.department, data});
-                    connection.release();
+                let humanizedGreeting = "Good " + getGreetingTime(moment()) + ", " +  req.claim.name + ".";
+                
+                return tool_downtime_feed().then(function(downtime_feed_data){
+
+                    res.render('index', {username: req.claim.username, greet: humanizedGreeting, department: req.claim.department, activity_feed_data, downtime_feed_data});
 
                 },  function(err){
-                    res.send({err: 'Unable to display feed'});
+                    res.send({err: 'Unable to display downtime feed.'})
                 });
-
+    
+            },  function(err){
+                res.send({err: 'Unable to display activity feed.'});
             });
 
         } else {
