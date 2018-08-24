@@ -327,7 +327,7 @@ module.exports = function(app){
                 }
             }, config.secret);
 
-            if(query_feed.type == 'ndep'){
+            if(query_feed.type == 'ndep' && query_feed.filename){
 
                 function ndep_feed(){
                     return new Promise(function(resolve, reject){
