@@ -125,45 +125,47 @@
                 </div>
                 <% if(feed_to_display.length > 0) { %>
                     <% for(let i=0; i<feed_to_display.length; i++) { %>
-                    <div class="row">
-                        <div class="col-md-5 col-centered no-padding">
-                            <div class="box feed-card">
-                                <div class="box-body feed-activity-alert">
-                                    Tube alert
-                                </div>
-                                <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
-                                    <h3 class="box-title feed-activity-header"><%= feed_to_display[i].title %></h3>
+                        <% if(feed_to_display[i].title) != '' %>
+                            <div class="row">
+                                <div class="col-md-5 col-centered no-padding">
+                                    <div class="box feed-card">
+                                        <div class="box-body feed-activity-alert">
+                                            Tube alert
+                                        </div>
+                                        <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
+                                            <h3 class="box-title feed-activity-header"><%= feed_to_display[i].title %></h3>
 
-                                    <div class="box-tools pull-right">
-                                            <button type="button" disabled class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
-                                                <span class="fa fa-ellipsis-v" style="color:slategray"></span>
-                                            </button>
-                                            <ul class="dropdown-menu coa-dropdown" role="menu">
-                                                <li>
-                                                    <a href="#delete" data-toggle="modal" data-target="#modaldelete">Hide activity</a>
-                                                </li>
-                                            </ul>
-                                    </div>
-                                </div>
-                                <div class="box-body feed-activity-user">
-                                    @meta  
-                                </div>
-                                <div class="box-body feed-activity-body">
-                                        <%= feed_to_display[i].body %>
-                                </div>
-                                <!-- /.box-body -->
-                                <div class="box-footer feed-activy-footer">
-                                    <div style="overflow-x:auto;">
-                                        <table>
-                                            <tr style="font-size:12px;" >
-                                                <td style="padding:0 5px 0;"><%= feed_to_display[i].posted_date %></td>
-                                            </tr>
-                                        </table>
+                                            <div class="box-tools pull-right">
+                                                    <button type="button" disabled class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                        <span class="fa fa-ellipsis-v" style="color:slategray"></span>
+                                                    </button>
+                                                    <ul class="dropdown-menu coa-dropdown" role="menu">
+                                                        <li>
+                                                            <a href="#delete" data-toggle="modal" data-target="#modaldelete">Hide activity</a>
+                                                        </li>
+                                                    </ul>
+                                            </div>
+                                        </div>
+                                        <div class="box-body feed-activity-user">
+                                            @meta  
+                                        </div>
+                                        <div class="box-body feed-activity-body">
+                                                <%= feed_to_display[i].body %>
+                                        </div>
+                                        <!-- /.box-body -->
+                                        <div class="box-footer feed-activy-footer">
+                                            <div style="overflow-x:auto;">
+                                                <table>
+                                                    <tr style="font-size:12px;" >
+                                                        <td style="padding:0 5px 0;"><%= feed_to_display[i].posted_date %></td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
+                        <% } %>
                     <% } %>
                 <% } else { %>
                     <div class="row">
