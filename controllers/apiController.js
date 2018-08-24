@@ -7,6 +7,7 @@ let formidable = require('formidable');
 let XLSX = require('xlsx');
 let mysql = require('../db/dbConfig');
 let moment = require('moment');
+let fs = require('fs');
 
 module.exports = function(app){
     // parse out json and app can handle url requests
@@ -29,6 +30,13 @@ module.exports = function(app){
 
         if(req.userID && req.claim){
 
+            let authenticity_token = jwt.sign({
+                id: uuidv4(),
+                claim: {
+                    signup: 'valid'
+                }
+            }, config.secret);
+
             function activity_feed(){
                 return new Promise(function(resolve, reject){
 
@@ -36,31 +44,32 @@ module.exports = function(app){
                         if(err){return res.send({err: 'Cannot connect to pool DB.'})};
 
                         connection.query({
-                            sql: 'SELECT * FROM tbl_rlogs ORDER BY id DESC LIMIT 100'
+                            sql: 'SET time_zone = "+08:00"; SELECT * FROM tbl_rlogs WHERE upload_date >= DATE_ADD(CURDATE(), INTERVAL 390 MINUTE);'
                         },  function(err, results){
                             if(err){return reject()};
 
-                            if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                            if(typeof results[1] !== 'undefined' && results[1] !== null && results.length > 0){
                                 let feed_obj = [];
+                                console.log(results);
 
-                                for(let i=0;i<results.length;i++){
+                                for(let i=0;i<results[1].length;i++){
 
                                     feed_obj.push({
-                                        id: results[i].id,
-                                        upload_date: moment(results[i].upload_date).calendar() || null, 
-                                        activity_title: results[i].activity_title || null,
-                                        activity_details: results[i].activity_details.charAt(0).toUpperCase() + results[i].activity_details.slice(1) || null,
-                                        activity_type: results[i].activity_type || null,
-                                        mrb_no: results[i].mrb_no || null,
-                                        tdn_no: results[i].tdn_no || null,
-                                        ec_no: results[i].ec_no || null,
-                                        startDate: moment(results[i].startDate).format('YYYY-MM-DD h:mm A') || null,
-                                        endDate: moment(results[i].endDate).format('YYYY-MM-DD h:mm A') || null,
-                                        process_name: results[i].process_name || null,
-                                        comments: results[i].comments || null,
-                                        username: results[i].name || null,
-                                        duration: results[i].duration || null,
-                                        timeLeft: moment( results[i].endDate).endOf('day').fromNow() || null
+                                        id: results[1][i].id,
+                                        upload_date: moment(results[1][i].upload_date).calendar() || null, 
+                                        activity_title: results[1][i].activity_title || null,
+                                        activity_details: results[1][i].activity_details.charAt(0).toUpperCase() + results[1][i].activity_details.slice(1) || null,
+                                        activity_type: results[1][i].activity_type || null,
+                                        mrb_no: results[1][i].mrb_no || null,
+                                        tdn_no: results[1][i].tdn_no || null,
+                                        ec_no: results[1][i].ec_no || null,
+                                        startDate: moment(results[1][i].startDate).format('YYYY-MM-DD h:mm A') || null,
+                                        endDate: moment(results[1][i].endDate).format('YYYY-MM-DD h:mm A') || null,
+                                        process_name: results[1][i].process_name || null,
+                                        comments: results[1][i].comments || null,
+                                        username: results[1][i].name || null,
+                                        duration: results[1][i].duration || null,
+                                        timeLeft: moment( results[1][i].endDate).endOf('day').fromNow() || null
                                     });
 
                                 }
@@ -73,6 +82,7 @@ module.exports = function(app){
 
                             } else {
 
+                                //console.log('empty');
                                 let feed_obj = [];
 
                                 feed_obj.push({
@@ -97,7 +107,7 @@ module.exports = function(app){
                                     feed : feed_obj
                                 }
 
-                                reject(data);
+                                resolve(data);
 
                             }
 
@@ -186,7 +196,7 @@ module.exports = function(app){
                                 let downtime_feed_obj = [];
 
                                 downtime_feed_obj.push({
-                                    title: null,
+                                    //title: null,
                                     eq_name: null,
                                     time_in: null,
                                     clean_eq_name: null,
@@ -205,6 +215,43 @@ module.exports = function(app){
                         });
 
                         connection.release();
+
+                    });
+
+                });
+            }
+
+            function processList(){
+                return new Promise(function(resolve, reject){
+                    
+                    mysql.pool.getConnection(function(err, connection){
+
+                        connection.query({
+                            sql: 'SELECT * FROM tbl_process_list'
+                        },  function(err, results){
+                            if(err){return reject()};
+    
+                            if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+    
+                                let process_list = [];
+    
+                                for(let i=0;i<results.length;i++){
+                                    if(results[i].id){
+                                        process_list.push(
+                                            results[i].process
+                                        );
+                                    }
+                                }
+    
+                                resolve(process_list);
+    
+                            }
+    
+    
+                        });
+
+                        connection.release();
+
 
                     });
 
@@ -237,7 +284,14 @@ module.exports = function(app){
                 
                 return tool_downtime_feed().then(function(downtime_feed_data){
 
-                    res.render('index', {username: req.claim.username, greet: humanizedGreeting, department: req.claim.department, activity_feed_data, downtime_feed_data});
+                    return processList().then(function(process_list){
+
+                        res.render('index', {username: req.claim.username, greet: humanizedGreeting, department: req.claim.department, activity_feed_data, downtime_feed_data, process_list, authenticity_token});
+
+                    },  function(err){
+                        res.send({err: 'Unable to display process list.'});
+                    });
+
 
                 },  function(err){
                     res.send({err: 'Unable to display downtime feed.'})
@@ -246,6 +300,85 @@ module.exports = function(app){
             },  function(err){
                 res.send({err: 'Unable to display activity feed.'});
             });
+
+        } else {
+            res.redirect('login');
+        }
+
+    });
+
+    app.get('/feed', verifyToken, function(req, res){
+        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
+        res.header('Expires', '-1');
+        res.header('Pragma', 'no-cache');
+
+        if(req.userID && req.claim){
+
+            let query_feed = {
+                type: req.query.type,
+                filename: req.query.filename,
+                team: req.query.team
+            };
+
+            let authenticity_token = jwt.sign({
+                id: uuidv4(),
+                claim: {
+                    signup: 'valid'
+                }
+            }, config.secret);
+
+            if(query_feed.type == 'ndep'){
+
+                function ndep_feed(){
+                    return new Promise(function(resolve, reject){
+
+                        fs.readFile('./public/feed/'+ query_feed.filename, {encoding:'utf8'}, function(err, data){
+                            if(err){return reject(err)};
+                            
+                            let arr_data = data.split('\n');
+                            let feed_to_display = [];
+
+                            for(let i=0; i<arr_data.length;i++){
+                                feed_to_display.push({
+                                    title: arr_data[i],
+                                    posted_date: moment().calendar()
+                                });
+                            }
+                            resolve(feed_to_display);
+                        });
+
+                    });
+                }
+
+                ndep_feed().then(function(feed_to_display){
+                    function getGreetingTime (m) {
+                        let g = null; //return g
+                        
+                        if(!m || !m.isValid()) { return; } //if we can't find a valid or filled moment, we return.
+                        
+                        let split_afternoon = 12 //24hr time to split the afternoon
+                        let split_evening = 17 //24hr time to split the evening
+                        let currentHour = parseFloat(m.format("HH"));
+                        
+                        if(currentHour >= split_afternoon && currentHour <= split_evening) {
+                            g = "afternoon";
+                        } else if(currentHour >= split_evening) {
+                            g = "evening";
+                        } else {
+                            g = "morning";
+                        }
+                        
+                        return g;
+                    }
+    
+                    let humanizedGreeting = "Good " + getGreetingTime(moment()) + ", " +  req.claim.name + ".";
+
+                    res.render('feed',{username: req.claim.username, greet: humanizedGreeting, feed_to_display, authenticity_token, query_feed});
+                });
+
+            } else {
+                res.send('No feed found.');
+            }
 
         } else {
             res.redirect('login');

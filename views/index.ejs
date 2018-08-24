@@ -12,6 +12,10 @@
     <link rel="stylesheet" href="./assets/bower_components/font-awesome/css/font-awesome.min.css">
     <!-- Ionicons -->
     <link rel="stylesheet" href="./assets/bower_components/Ionicons/css/ionicons.min.css">
+    <!-- Date Range picker -->
+    <link rel="stylesheet" href="../assets/bower_components/bootstrap-daterangepicker/daterangepicker.css">
+    <!-- Select2 -->
+    <link rel="stylesheet" href="../assets/bower_components/select2/dist/css/select2.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="./assets/dist/css/skins/_all-skins.min.css">
     <link rel="stylesheet" href="./assets/dist/css/AdminLTE.min.css">
@@ -115,166 +119,195 @@
                                 <%= greet %>
                             </div>
                             <div class="box-body ask-activity-body">
-                                <h4 class="box-title ask-activity-header"><a href="/activity" class="ask-activity-link">What is your activity?</a></h4>
+                                <h4 class="box-title ask-activity-header"><a href="#activity" data-toggle="modal" data-target="#modalactivity" class="ask-activity-link">What is your activity?</a></h4>
                             </div>
+                                <div class="modal modal-default" id="modalactivity">
+                                    <div class="modal-dialog modal-settings">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                                <h2 class="activity-modal-head">Add activity</h2>
+                                            </div>
+                                            <form id="uploadactivity">
+                                                <div class="modal-body">
+                                                        <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                        <label class="activity-modal-head">Datetime range:</label>
+                                                        <div class="form-group">
+                                                            <div class="input-group">
+                                                                <div class="input-group-addon">
+                                                                    <i class="fa fa-calendar"></i>
+                                                                </div>
+                                                                <input type="text" name="daterange" class="form-control daterangepicker-dropdown" id="daterange_picker">
+                                                            </div>
+                                                        </div>
+                                                        <label class="activity-modal-head">Activity:</label>
+                                                        <div class="form-group has-feedback">
+                                                            <input type="text" name="activity_title" id="activity_title" class="form-control" required pattern=".{0}|.{5,20}" title="Activity name should be atleast 5 to 20 characters."  onchange="document.getElementById('responseDiv').style.display = 'none';" >
+                                                        </div>
+                                                        <label class="activity-modal-head">TDN #:</label>
+                                                        <div class="form-group ">
+                                                            <input type="text" name="tdn_no" id="tdn_no" class="form-control"  onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        </div>
+                                                        <label class="activity-modal-head">MRB #:</label>
+                                                        <div class="form-group ">
+                                                            <input type="text" name="mrb_no" id="mrb_no" class="form-control"  onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        </div>
+                                                        <label class="activity-modal-head">EC #:</label>
+                                                        <div class="form-group">
+                                                            <input type="text" name="ec_no" id="ec_no" class="form-control"  onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        </div>
+                                                        <label class="activity-modal-head">Type:</label>
+                                                        <div class="form-group">
+                                                            <select class="form-control select2 select2-hidden-accessible" id="activity_type" name="activity_type" style="width:100%;" tabindex="-1" aria-hidden="true">
+                                                                <option value="STO" selected>STO</option>
+                                                                <option value="COL" >COL</option>
+                                                                <option value="FTO" >FTO</option>
+                                                            </select>
+                                                        </div>
+                                                        <label class="activity-modal-head">Process:</label>
+                                                        <div class="form-group has-feedback">
+                                                            <select class="form-control select2 select2-hidden-accessible" id="process_name" name="process_name" style="width:100%;" tabindex="-1" aria-hidden="true">
+                                                                <% for(let j=0; j<process_list.length;j++) { %>
+                                                                    <option value="<%=  process_list[j] %>"><%=  process_list[j] %></option>
+                                                                <% } %>
+                                                            </select>
+                                                        </div>
+                                                        <label class="activity-modal-head">Description:</label>
+                                                        <div class="form-group has-feedback">
+                                                                <input type="text" name="activity_details" id="activity_details" class="form-control" required pattern=".{0}|.{10,160}" title="Description should be atleast 10 to 160 characters."  onchange="document.getElementById('responseDiv').style.display = 'none';">
+                                                        </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <div id="responseDiv">
+                                                        <!-- response here-->
+                                                    </div>
+                                                    <div id="toHideButtonIfSuccess">
+                                                        <button type="button" id="cancelactivity" class="btn btn-default btn-flat " data-dismiss="modal" aria-label="Close" >Cancel</button>
+                                                        <button type="submit" id="submitactivity" class="btn btn-primary btn-flat">Post activity</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-5 col-centered no-padding">
-                        <p style="color:darkgray; font-weight: 300; margin: 0 -5px 10px;">Downtime Feed</p>
+                        <p style="color:darkgray; font-weight: 300; margin: 0 -5px 10px;">Real-time Feed</p>
                     </div>
                 </div>
-            <% for(let i=0; i<downtime_feed_data.feed.length; i++) { %>
-                <% if(downtime_feed_data.feed[i].title) { %>
-                <div class="row">
-                    <div class="col-md-5 col-centered no-padding">
-                        <div class="box feed-card">
-                            <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
-                                <h3 class="box-title feed-activity-header"><%= downtime_feed_data.feed[i].title %></h3>
+            
+                <% if(downtime_feed_data.feed.length > 0) { %>
+                    <% for(let i=0; i<downtime_feed_data.feed.length; i++) { %>
+                    <div class="row">
+                        <div class="col-md-5 col-centered no-padding">
+                            <div class="box feed-card">
+                                <div class="box-body feed-activity-alert">
+                                    Downtime alert
+                                </div>
+                                <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
+                                    <h3 class="box-title feed-activity-header"><%= downtime_feed_data.feed[i].title %></h3>
 
-                                <div class="box-tools pull-right">
-                                        <button type="button" disabled class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
-                                            <span class="fa fa-ellipsis-v" style="color:slategray"></span>
-                                        </button>
-                                        <ul class="dropdown-menu coa-dropdown" role="menu">
-                                            <li>
-                                                <a href="#delete" data-toggle="modal" data-target="#modaldelete">Hide activity</a>
-                                            </li>
-                                        </ul>
+                                    <div class="box-tools pull-right">
+                                            <button type="button" disabled class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                <span class="fa fa-ellipsis-v" style="color:slategray"></span>
+                                            </button>
+                                            <ul class="dropdown-menu coa-dropdown" role="menu">
+                                                <li>
+                                                    <a href="#delete" data-toggle="modal" data-target="#modaldelete">Hide activity</a>
+                                                </li>
+                                            </ul>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="box-body feed-activity-user">
-                                @meta  
-                            </div>
-                            <div class="box-body feed-activity-body">
-                                <%= downtime_feed_data.feed[i].eq_name %> has been changed to <%= downtime_feed_data.feed[i].substat_desc %> by <%= downtime_feed_data.feed[i].whoin %>
-                            </div>
-                            <!-- /.box-body -->
-                            <div class="box-footer feed-activy-footer">
-                                <div style="overflow-x:auto;">
-                                    
-                                    <table>
-                                        <tr style="font-size:12px;" >
-                                            <td style="padding:0 5px 0;"><%= downtime_feed_data.feed[i].time_in %></td>
-                                            <td style="padding:0 5px 0;">duration <%= downtime_feed_data.feed[i].duration %></td>
-                                        </tr>
-                                    </table>
-                                    
+                                <div class="box-body feed-activity-user">
+                                    @meta  
+                                </div>
+                                <div class="box-body feed-activity-body">
+                                </div>
+                                <!-- /.box-body -->
+                                <div class="box-footer feed-activy-footer">
+                                    <div style="overflow-x:auto;">
+                                        <table>
+                                            <tr style="font-size:12px;" >
+                                                <td style="padding:0 5px 0;"><%= downtime_feed_data.feed[i].eq_name %></td>
+                                                <td style="padding:0 5px 0;">-</td>
+                                                <td style="padding:0 5px 0;"><%= downtime_feed_data.feed[i].time_in %></td>
+                                            </tr>
+                                        </table>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <% } %>
+                <% } else { %>
+                    <div class="row">
+                        <div class="col-md-4 col-centered">
+                            <p style="text-align: center;color:rgb(199, 199, 199); font-weight: 300; margin: 0 -5px 10px;">No real-time feed to display.</p>
+                        </div>
+                    </div>
+                <% } %>
+                <div class="row">
+                    <div class="col-md-5 col-centered no-padding">
+                        <p style="color:darkgray; font-weight: 300; margin: 24px -5px 10px;">Activity Feed</p>
+                    </div>
                 </div>
+                <% if(activity_feed_data.feed.length > 0) { %>
+                    <% for(let i=0; i<activity_feed_data.feed.length; i++) { %>
+                    <div class="row">
+                        <div class="col-md-5 col-centered no-padding">
+                            <div class="box feed-card">
+                                <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
+                                    <h3 class="box-title feed-activity-header"><%= activity_feed_data.feed[i].activity_title %></h3>
+
+                                    <div class="box-tools pull-right">
+                                            <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
+                                                <span class="fa fa-ellipsis-v" style="color:slategray"></span>
+                                            </button>
+                                            <ul class="dropdown-menu coa-dropdown" role="menu">
+                                                <li>
+                                                    <a href="/activity">Manage</a>
+                                                </li>
+                                            </ul>
+                                    </div>
+                                </div>
+                                <div class="box-body feed-activity-user">
+                                    @<%= activity_feed_data.feed[i].username %>   
+                                </div>
+                                <div class="box-body feed-activity-body">
+                                    <%= activity_feed_data.feed[i].activity_details %>
+                                </div>
+                                
+                                <div class="box-footer feed-activy-footer">
+                                    <div style="overflow-x:auto;">
+                                        <table>
+                                            <tr style="font-size:12px;" >
+                                                <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].upload_date %></td>
+                                                <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].activity_type %></td>
+                                                <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].process_name %></td>
+                                                <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].tdn_no  || '-' %></td>
+                                                <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].mrb_no || '-' %></td>
+                                                <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].ec_no || '-' %></td>
+                                                <td style="padding:0 5px 0;">activity ends <%= activity_feed_data.feed[i].timeLeft %></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% } %>
                 <% } else { %>
                 <div class="row">
                     <div class="col-md-4 col-centered">
-                        <div class="box feed-card">
-                            <div class="box-header">
-                                <h3 class="box-title feed-activity-header">No feed to display</h3>
-
-                                <div class="box-tools pull-right">
-                                        <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
-                                            <span class="fa fa-ellipsis-v" style="color:slategray"></span>
-                                        </button>
-                                        <ul class="dropdown-menu coa-dropdown" role="menu">
-                                            <li>
-                                                <a href="#delete" data-toggle="modal" data-target="#modaldelete">Hide activity</a>
-                                            </li>
-                                        </ul>
-                                </div>
-                            </div>
-                            <div class="box-body feed-activity-body">
-                                ...
-                            </div>
-                            <!-- /.box-body -->
-                            <div class="box-footer feed-activy-footer">
-                                ...
-                            </div>
-                        </div>
+                        <p style="text-align: center;color:rgb(199, 199, 199); font-weight: 300; margin: 0 -5px 10px;">No engineering activities as of today.</p>
                     </div>
                 </div>
                 <% } %>
-            <% } %>
-            <div class="row">
-                <div class="col-md-5 col-centered no-padding">
-                    <p style="color:darkgray; font-weight: 300; margin: 0 -5px 10px;">Engineering Activities</p>
-                </div>
-            </div>
-            <% for(let i=0; i<activity_feed_data.feed.length; i++) { %>
-                <% if(activity_feed_data.feed[i].id) { %>
-                <div class="row">
-                    <div class="col-md-5 col-centered no-padding">
-                        <div class="box feed-card">
-                            <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
-                                <h3 class="box-title feed-activity-header"><%= activity_feed_data.feed[i].activity_title %></h3>
-
-                                <div class="box-tools pull-right">
-                                        <button type="button" disabled class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
-                                            <span class="fa fa-ellipsis-v" style="color:slategray"></span>
-                                        </button>
-                                        <ul class="dropdown-menu coa-dropdown" role="menu">
-                                            <li>
-                                                <a href="#delete" data-toggle="modal" data-target="#modaldelete">Hide activity</a>
-                                            </li>
-                                        </ul>
-                                </div>
-                            </div>
-                            <div class="box-body feed-activity-user">
-                                @<%= activity_feed_data.feed[i].username %>   
-                            </div>
-                            <div class="box-body feed-activity-body">
-                                <%= activity_feed_data.feed[i].activity_details %>
-                            </div>
-                            
-                            <div class="box-footer feed-activy-footer">
-                                <div style="overflow-x:auto;">
-                                    <table>
-                                        <tr style="font-size:12px;" >
-                                            <td style="padding:0 5px 0;">Posted <%= activity_feed_data.feed[i].upload_date %></td>
-                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].activity_type %></td>
-                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].process_name %></td>
-                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].tdn_no  || '-' %></td>
-                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].mrb_no || '-' %></td>
-                                            <td style="padding:0 5px 0;"><%= activity_feed_data.feed[i].ec_no || '-' %></td>
-                                            <td style="padding:0 5px 0;">ends <%= activity_feed_data.feed[i].timeLeft %></td>
-                                        </tr>
-                                    </table>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <% } else { %>
-                <div class="row">
-                    <div class="col-md-4 col-centered">
-                        <div class="box feed-card">
-                            <div class="box-header">
-                                <h3 class="box-title feed-activity-header">No feed to display</h3>
-
-                                <div class="box-tools pull-right">
-                                        <button type="button" class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
-                                            <span class="fa fa-ellipsis-v" style="color:slategray"></span>
-                                        </button>
-                                        <ul class="dropdown-menu coa-dropdown" role="menu">
-                                            <li>
-                                                <a href="#delete" data-toggle="modal" data-target="#modaldelete">Hide activity</a>
-                                            </li>
-                                        </ul>
-                                </div>
-                            </div>
-                            <div class="box-body feed-activity-body">
-                                ...
-                            </div>
-                            
-                            <div class="box-footer feed-activy-footer">
-                                ...
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <% } %>
-            <% } %>
             
         </section>
     </div>
@@ -284,5 +317,147 @@
 <script src="./assets/bower_components/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="./assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+<!-- Daterange Picker -->
+<script src="../assets/bower_components/moment/min/moment.min.js"></script>
+<script src="../assets/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
+<!-- Select2-->
+<script src="../assets/bower_components/select2/dist/js/select2.full.min.js"></script>
+<!-- Initialize -->
+<script>
+    $(function(){
+
+        // Select2 initialize
+        $('.select2').select2();
+
+        // Daterange_picker
+        $('#daterange_picker').daterangepicker({ 
+            timePicker: true, 
+            timePickerIncrement: 30, 
+            locale: {
+                format: 'YYYY-MM-DD h:mm A'
+            }
+        });
+    });
+</script>
+<!-- Upload script -->
+<script>
+    window.addEventListener('load', function(){
+
+        function goUpload(){
+
+            let xhr = new XMLHttpRequest();
+            let fd = new FormData(form); // bind form data object and form element
+            
+            xhr.addEventListener('load', function(event){
+                console.log(event.target.response);
+                let resFromServer = JSON.parse(event.target.response);
+                document.getElementById('responseDiv').style.display='block';
+
+                function resDiv(){
+                    let responseDiv = document.getElementById('responseDiv');
+                    
+                    if(resFromServer.err){
+
+                        document.getElementById('daterange_picker').removeAttribute("disabled");
+                        document.getElementById('submitactivity').removeAttribute("disabled");
+                        document.getElementById('cancelactivity').removeAttribute("disabled");
+                        document.getElementById('activity_title').removeAttribute("disabled");
+                        document.getElementById('tdn_no').removeAttribute("disabled");
+                        document.getElementById('mrb_no').removeAttribute("disabled");
+                        document.getElementById('ec_no').removeAttribute("disabled");
+                        document.getElementById('activity_type').removeAttribute("disabled");
+                        document.getElementById('process_name').removeAttribute("disabled");
+                        document.getElementById('activity_details').removeAttribute("disabled");
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("responseDivErr");
+                            responseDiv.innerHTML = resFromServer.err
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("responseDivErr");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("responseDivErr");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.err
+                            }
+                        }
+
+                    } else {
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("responseDivSuccess");
+                            responseDiv.innerHTML = resFromServer.auth;
+
+                            let hideDiv = document.getElementById('toHideButtonIfSuccess');
+                            hideDiv.style.display = "none";
+                            
+                            setTimeout(function(){
+                                window.location.href="/";
+                            }, 50);
+
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("responseDivSuccess");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("responseDivSuccess");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.auth;
+
+                                let hideDiv = document.getElementById('toHideButtonIfSuccess');
+                                hideDiv.style.display = "none";
+                                
+                                setTimeout(function(){
+                                    window.location.href="/";
+                                }, 50);
+                            }
+                        }
+                    }
+
+                    
+                }
+
+                resDiv();
+            });
+
+            xhr.addEventListener('error', function(event){
+                alert('Something went wrong.');
+            });
+
+            xhr.open('POST', '/api/activity');
+            xhr.send(fd);
+
+        }
+
+        // access FORM element
+        let form = document.getElementById('uploadactivity');
+        // take over submit event
+        form.addEventListener('submit', function(event){
+            event.preventDefault();
+            //document.getElementById('responseDiv').style.display="none";
+            goUpload();
+            document.getElementById('daterange_picker').setAttribute("disabled", "disabled");
+            document.getElementById('submitactivity').setAttribute("disabled", "disabled");
+            document.getElementById('cancelactivity').setAttribute("disabled", "disabled");
+            document.getElementById('activity_title').setAttribute("disabled", "disabled");
+            document.getElementById('tdn_no').setAttribute("disabled", "disabled");
+            document.getElementById('mrb_no').setAttribute("disabled", "disabled");
+            document.getElementById('ec_no').setAttribute("disabled", "disabled");
+            document.getElementById('activity_type').setAttribute("disabled", "disabled");
+            document.getElementById('process_name').setAttribute("disabled", "disabled");
+            document.getElementById('activity_details').setAttribute("disabled", "disabled");
+
+        });
+
+
+    });
+</script>
 </body>
 </html>
