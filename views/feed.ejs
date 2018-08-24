@@ -112,7 +112,7 @@
                 <div class="row">
                     <div class="col-md-5 col-centered no-padding">
                         <div class="box ask-card feed-activity-user">
-                            <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
+                            <div class="box-header" style="position:initial;  padding: 4px 10px 4px;">
                                 <%= greet %>
                             </div>
                         </div>
@@ -167,10 +167,10 @@
                             </div>
                         <% } %>
                     <% } %>
-                <% } else { %>
+                <% } else if(!feed_to_display.title) { %>
                     <div class="row">
                         <div class="col-md-4 col-centered">
-                            <p style="text-align: center;color:rgb(199, 199, 199); font-weight: 300; margin: 0 -5px 10px;">No <%= query_feed.type %> feed to display.</p>
+                            <p style="text-align: center;color:rgb(199, 199, 199); font-weight: 300; margin: 0 -5px 10px;">No feed to display.</p>
                         </div>
                     </div>
                 <% } %>
