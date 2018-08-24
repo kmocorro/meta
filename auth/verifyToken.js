@@ -32,7 +32,7 @@ function verifyToken(req, res, next){
                 }
             }, config.secret, { expiresIn: 300 });
 
-            return res.status(200).render('login', {authenticity_token});
+            return res.redirect('login', {authenticity_token});
 
             } else {
                 req.userID = decoded.id;

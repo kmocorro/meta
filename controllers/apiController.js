@@ -307,101 +307,94 @@ module.exports = function(app){
 
     });
 
-    app.get('/feed', verifyToken, function(req, res){
-        res.header('Cache-Control', 'private, no-cache, no-store, must-revalidate');
-        res.header('Expires', '-1');
-        res.header('Pragma', 'no-cache');
+    app.get('/feed', function(req, res){
+        
+        let query_feed = {
+            type: (req.query.type).toUpperCase(),
+            filename: req.query.filename,
+            team: req.query.team
+        };
 
-        if(req.userID && req.claim){
-
-            let query_feed = {
-                type: (req.query.type).toUpperCase(),
-                filename: req.query.filename,
-                team: req.query.team
-            };
-
-            let authenticity_token = jwt.sign({
-                id: uuidv4(),
-                claim: {
-                    signup: 'valid'
-                }
-            }, config.secret);
+        let authenticity_token = jwt.sign({
+            id: uuidv4(),
+            claim: {
+                signup: 'valid'
+            }
+        }, config.secret);
+        
+        function getGreetingTime (m) {
+            let g = null; //return g
             
-            function getGreetingTime (m) {
-                let g = null; //return g
-                
-                if(!m || !m.isValid()) { return; } //if we can't find a valid or filled moment, we return.
-                
-                let split_afternoon = 12 //24hr time to split the afternoon
-                let split_evening = 17 //24hr time to split the evening
-                let currentHour = parseFloat(m.format("HH"));
-                
-                if(currentHour >= split_afternoon && currentHour <= split_evening) {
-                    g = "afternoon";
-                } else if(currentHour >= split_evening) {
-                    g = "evening";
-                } else {
-                    g = "morning";
-                }
-                
-                return g;
-            }
-
-            if(query_feed.type == 'NDEP' && query_feed.filename == 'ndep.txt'){
-
-                function ndep_feed(){
-                    return new Promise(function(resolve, reject){
-
-                        fs.readFile('./public/feed/'+ query_feed.filename, {encoding:'utf8'}, function(err, data){
-                            if(err){return reject(err)};
-
-                            if(data){
-                                let arr_data = data.split('\n');
-                                let feed_to_display = [];
-    
-                                for(let i=0; i<arr_data.length;i++){
-                                    let titleOrbody = arr_data[i].split(':');
-    
-                                    feed_to_display.push({
-                                        title: titleOrbody[0],
-                                        body: titleOrbody[1],
-                                        posted_date: moment().calendar()
-                                    });
-                                }
-
-                                resolve(feed_to_display);
-
-                            } else {
-
-                                let feed_to_display = [];
-
-                                resolve(feed_to_display);
-
-                            }
-                            
-                            
-                        });
-
-                    });
-                }
-
-                ndep_feed().then(function(feed_to_display){
-    
-                    let humanizedGreeting = "Good " + getGreetingTime(moment()) + ", " +  req.claim.name + ".";
-
-                    res.render('feed',{username: req.claim.username, greet: humanizedGreeting, feed_to_display, authenticity_token, query_feed});
-                });
-
+            if(!m || !m.isValid()) { return; } //if we can't find a valid or filled moment, we return.
+            
+            let split_afternoon = 12 //24hr time to split the afternoon
+            let split_evening = 17 //24hr time to split the evening
+            let currentHour = parseFloat(m.format("HH"));
+            
+            if(currentHour >= split_afternoon && currentHour <= split_evening) {
+                g = "afternoon";
+            } else if(currentHour >= split_evening) {
+                g = "evening";
             } else {
-                let humanizedGreeting = "Good " + getGreetingTime(moment()) + ", " +  req.claim.name + ".";
-                let feed_to_display = [];
-
-                res.render('feed',{username: req.claim.username, greet: humanizedGreeting, feed_to_display, authenticity_token, query_feed});
+                g = "morning";
             }
+            
+            return g;
+        }
+
+        if(query_feed.type == 'NDEP' && query_feed.filename == 'ndep.txt'){
+
+            function ndep_feed(){
+                return new Promise(function(resolve, reject){
+
+                    fs.readFile('./public/feed/'+ query_feed.filename, {encoding:'utf8'}, function(err, data){
+                        if(err){return reject(err)};
+
+                        if(data){
+                            let arr_data = data.split('\n');
+                            let feed_to_display = [];
+
+                            for(let i=0; i<arr_data.length;i++){
+                                let titleOrbody = arr_data[i].split(':');
+
+                                feed_to_display.push({
+                                    title: titleOrbody[0],
+                                    body: titleOrbody[1],
+                                    posted_date: moment().calendar()
+                                });
+                            }
+
+                            resolve(feed_to_display);
+
+                        } else {
+
+                            let feed_to_display = [];
+
+                            resolve(feed_to_display);
+
+                        }
+                        
+                        
+                    });
+
+                });
+            }
+
+            ndep_feed().then(function(feed_to_display){
+
+                let humanizedGreeting = "Good " + getGreetingTime(moment()) + ", User!";
+
+                res.render('feed',{greet: humanizedGreeting, feed_to_display, authenticity_token, query_feed});
+            });
 
         } else {
-            res.redirect('login');
+            let humanizedGreeting = "Good " + getGreetingTime(moment()) + ",  User!";
+            let feed_to_display = [];
+
+            res.render('feed',{greet: humanizedGreeting, feed_to_display, authenticity_token, query_feed});
         }
+
+            
 
     });
 
