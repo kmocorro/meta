@@ -315,7 +315,7 @@ module.exports = function(app){
         if(req.userID && req.claim){
 
             let query_feed = {
-                type: req.query.type,
+                type: (req.query.type).toUpperCase(),
                 filename: req.query.filename,
                 team: req.query.team
             };
@@ -339,8 +339,11 @@ module.exports = function(app){
                             let feed_to_display = [];
 
                             for(let i=0; i<arr_data.length;i++){
+                                let titleOrbody = arr_data[i].split(':');
+
                                 feed_to_display.push({
-                                    title: arr_data[i],
+                                    title: titleOrbody[0],
+                                    body: titleOrbody[1],
                                     posted_date: moment().calendar()
                                 });
                             }

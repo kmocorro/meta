@@ -3,7 +3,8 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>Feed - META</title>
+    <meta http-equiv="refresh" content="120">
+    <title><%= query_feed.type %> Feed - META</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Bootstrap 3.3.7 -->
@@ -119,7 +120,7 @@
                 </div>
                 <div class="row">
                     <div class="col-md-5 col-centered no-padding">
-                        <p style="color:darkgray; font-weight: 300; margin: 0 -5px 10px;">NDEP Feed</p>
+                        <p style="color:darkgray; font-weight: 300; margin: 0 -5px 10px;"><%= query_feed.type> Feed</p>
                     </div>
                 </div>
                 <% if(feed_to_display.length > 0) { %>
@@ -148,6 +149,7 @@
                                     @meta  
                                 </div>
                                 <div class="box-body feed-activity-body">
+                                        <%= feed_to_display[i].body %>
                                 </div>
                                 <!-- /.box-body -->
                                 <div class="box-footer feed-activy-footer">
