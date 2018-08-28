@@ -517,7 +517,12 @@
                                             </div>
                                             <div class="col-md-8">
                                                 <h4 class="coa-body-form">Results</h4>
-                                                <div id="responseDivResults">
+                                                <div id="toHideResultsDefault" class="coa-body-form">
+                                                    <div class="col-md-12">
+                                                        No results found.
+                                                    </div>
+                                                </div>
+                                                <div id="responseDivResults" class="coa-body-form">
 
                                                 </div>
                                             </div>
@@ -561,7 +566,7 @@
 
         // Daterange as button
         $('#daterange-btn').daterangepicker({
-            maxDate: moment(new Date()).subtract(1, 'days'),
+            maxDate: moment(new Date()).subtract(1 ,'days'),
             ranges: {
                 'Today'       : [moment(), moment()],
                 'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
@@ -1100,7 +1105,6 @@
                 console.log(event.target.response);
                 let resFromServer = JSON.parse(event.target.response);
                 document.getElementById('responseDivResults').style.display='block';
-                document.getElementById('resToHide').style.display="block";
                 document.getElementById('download-loading').style.display='none';
 
                 function resDiv(){
@@ -1133,6 +1137,7 @@
 
                         document.getElementById('daterange-btn').removeAttribute("disabled");
                         document.getElementById('coa-download-submit').removeAttribute("disabled");
+                        document.getElementById('toHideResultsDefault').style.display='none';
                         document.getElementById('responseDivResults').style.display='block';
 
                         if (responseDiv.classList) { 
@@ -1181,6 +1186,7 @@
             document.getElementById('coa-download-submit').setAttribute("disabled", "disabled");
             document.getElementById('download-loading').style.display='block';
             document.getElementById('responseDivResults').style.display='none';
+            document.getElementById('toHideResultsDefault').style.display='none';
         });
 
 
