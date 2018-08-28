@@ -2624,159 +2624,177 @@ module.exports = function(app){
                             mysql.pool.getConnection(function(err, connection){
                                 if(err){ return reject(err)};
 
-                                if(download_credentials.startDate == download_credentials.endDate){
+                                let filePath = './public/coa/';
 
-                                    connection.query({
-                                        sql: 'SELECT * FROM view_tableau_v4 WHERE upload_date >= ?',
-                                        values: [download_credentials.startDate]
-                                    },  function(err, results){
-                                        if(err){return reject(err)};
+                                // for query preparation, upload_date
+                                if(download_credentials.startDate == download_credentials.endDate){ 
+
+                                    // filename and filetoDL
+                                    let fileName = moment(download_credentials.startDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
+                                    let fileToDL = filePath + moment(download_credentials.startDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
+
+                                    // extract data if file doesn't exists.
+                                    if(!fs.existsSync(fileToDL)){
+
+                                        connection.query({
+                                            sql: 'SELECT * FROM view_tableau_v4 WHERE upload_date >= ?',
+                                            values: [download_credentials.startDate]
+                                        },  function(err, results){
+                                            if(err){return reject(err)};
+        
+                                            if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                                
+                                                let toWorkSheet = [];
     
-                                        if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
-                                            
-                                            let toWorkSheet = [];
-
-                                            for(let i=0; i<results.length; i++){
-                                                toWorkSheet.push({
-                                                    supplier_id: results[i].supplier_id,
-                                                    delivery_date: results[i].delivery_date,
-                                                    order_no: results[i].order_no,
-                                                    upload_time: results[i].upload_time,
-                                                    u_name: results[i].u_name,
-                                                    ingot_lot_id: results[i].ingot_lot_id,
-                                                    b_box: results[i].b_box,
-                                                    wafer_qty: results[i].wafer_qty,
-                                                    rz_ave: results[i].rz_ave,
-                                                    ra_ave: results[i].ra_ave,
-                                                    oi_top: results[i].oi_top,
-                                                    oi_bottom: results[i].oi_bottom,
-                                                    cs_top: results[i].cs_top,
-                                                    cs_bottom: results[i].cs_bottom,
-                                                    mclt_top: results[i].mclt_top,
-                                                    mclt_bottom: results[i].mclt_bottom,
-                                                    res_top: results[i].res_top,
-                                                    res_bottom: results[i].res_bottom,
-                                                    dia_ave: results[i].dia_ave,
-                                                    dia_std: results[i].dia_std,
-                                                    dia_min: results[i].dia_min,
-                                                    dia_max: results[i].dia_max,
-                                                    flat_width_ave: results[i].flat_width_ave,
-                                                    flat_width_std: results[i].flat_width_std,
-                                                    flat_length_ave: results[i].flat_length_ave,
-                                                    flat_length_std: results[i].flat_length_std,
-                                                    corner_length_ave: results[i].corner_length_ave,
-                                                    corner_length_std: results[i].corner_length_std,
-                                                    center_thickness_ave: results[i].center_thickness_ave,
-                                                    center_thickness_std: results[i].center_thickness_std,
-                                                    ttv_ave: results[i].ttv_ave,
-                                                    verticality_ave: results[i].verticality_ave,
-                                                    id: results[i].id,
-                                                    upload_date: results[i].upload_date,
-                                                    box_id: results[i].box_id,
-                                                    runcard: results[i].runcard,
-                                                    username: results[i].username
-                                                    
-                                                });
+                                                for(let i=0; i<results.length; i++){
+                                                    toWorkSheet.push({
+                                                        supplier_id: results[i].supplier_id,
+                                                        delivery_date: results[i].delivery_date,
+                                                        order_no: results[i].order_no,
+                                                        upload_time: results[i].upload_time,
+                                                        u_name: results[i].u_name,
+                                                        ingot_lot_id: results[i].ingot_lot_id,
+                                                        b_box: results[i].b_box,
+                                                        wafer_qty: results[i].wafer_qty,
+                                                        rz_ave: results[i].rz_ave,
+                                                        ra_ave: results[i].ra_ave,
+                                                        oi_top: results[i].oi_top,
+                                                        oi_bottom: results[i].oi_bottom,
+                                                        cs_top: results[i].cs_top,
+                                                        cs_bottom: results[i].cs_bottom,
+                                                        mclt_top: results[i].mclt_top,
+                                                        mclt_bottom: results[i].mclt_bottom,
+                                                        res_top: results[i].res_top,
+                                                        res_bottom: results[i].res_bottom,
+                                                        dia_ave: results[i].dia_ave,
+                                                        dia_std: results[i].dia_std,
+                                                        dia_min: results[i].dia_min,
+                                                        dia_max: results[i].dia_max,
+                                                        flat_width_ave: results[i].flat_width_ave,
+                                                        flat_width_std: results[i].flat_width_std,
+                                                        flat_length_ave: results[i].flat_length_ave,
+                                                        flat_length_std: results[i].flat_length_std,
+                                                        corner_length_ave: results[i].corner_length_ave,
+                                                        corner_length_std: results[i].corner_length_std,
+                                                        center_thickness_ave: results[i].center_thickness_ave,
+                                                        center_thickness_std: results[i].center_thickness_std,
+                                                        ttv_ave: results[i].ttv_ave,
+                                                        verticality_ave: results[i].verticality_ave,
+                                                        id: results[i].id,
+                                                        upload_date: results[i].upload_date,
+                                                        box_id: results[i].box_id,
+                                                        runcard: results[i].runcard,
+                                                        username: results[i].username
+                                                        
+                                                    });
+                                                }
+    
+                                                let worksheet = XLSX.utils.json_to_sheet(toWorkSheet);
+    
+                                                let workbook = XLSX.utils.book_new();
+                                                XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    
+                                                XLSX.writeFile(workbook, fileToDL);
+    
+                                                resolve(fileName);
+        
+                                            } else {
+                                                reject('No results found.');
                                             }
+        
+                                        });
+        
+                                        connection.release();
 
-                                            let worksheet = XLSX.utils.json_to_sheet(toWorkSheet);
+                                    } else {
+                                        
+                                        resolve(fileName);
 
-                                            let workbook = XLSX.utils.book_new();
-                                            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+                                    }
 
-                                            let filePath = './public/coa/';
-                                            let fileName = moment(download_credentials.startDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
-                                            let fileToDL = filePath + moment(download_credentials.startDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
-
-                                            XLSX.writeFile(workbook, fileToDL);
-
-                                            resolve(fileName);
-    
-                                        } else {
-                                            reject('No results found.');
-                                        }
-    
-                                    });
-    
-                                    connection.release();
-
+                                // if startDate and endDate doesn't the same
                                 } else {
 
-                                    connection.query({
-                                        sql: 'SELECT * FROM view_tableau_v4 WHERE upload_date >= ? && upload_date <= ?',
-                                        values: [download_credentials.startDate, download_credentials.endDate]
-                                    },  function(err, results){
-                                        if(err){return reject(err)};
+                                    let fileName = moment(download_credentials.startDate).format('YYYY-MM-DD')+'-to-'+moment(download_credentials.endDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
 
-                                        if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
-                                            
-                                            let toWorkSheet = [];
+                                    let fileToDL = filePath + moment(download_credentials.startDate).format('YYYY-MM-DD')+'-to-'+moment(download_credentials.endDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
 
-                                            for(let i=0; i<results.length; i++){
-                                                toWorkSheet.push({
-                                                    supplier_id: results[i].supplier_id,
-                                                    delivery_date: results[i].delivery_date,
-                                                    order_no: results[i].order_no,
-                                                    upload_time: results[i].upload_time,
-                                                    u_name: results[i].u_name,
-                                                    ingot_lot_id: results[i].ingot_lot_id,
-                                                    b_box: results[i].b_box,
-                                                    wafer_qty: results[i].wafer_qty,
-                                                    rz_ave: results[i].rz_ave,
-                                                    ra_ave: results[i].ra_ave,
-                                                    oi_top: results[i].oi_top,
-                                                    oi_bottom: results[i].oi_bottom,
-                                                    cs_top: results[i].cs_top,
-                                                    cs_bottom: results[i].cs_bottom,
-                                                    mclt_top: results[i].mclt_top,
-                                                    mclt_bottom: results[i].mclt_bottom,
-                                                    res_top: results[i].res_top,
-                                                    res_bottom: results[i].res_bottom,
-                                                    dia_ave: results[i].dia_ave,
-                                                    dia_std: results[i].dia_std,
-                                                    dia_min: results[i].dia_min,
-                                                    dia_max: results[i].dia_max,
-                                                    flat_width_ave: results[i].flat_width_ave,
-                                                    flat_width_std: results[i].flat_width_std,
-                                                    flat_length_ave: results[i].flat_length_ave,
-                                                    flat_length_std: results[i].flat_length_std,
-                                                    corner_length_ave: results[i].corner_length_ave,
-                                                    corner_length_std: results[i].corner_length_std,
-                                                    center_thickness_ave: results[i].center_thickness_ave,
-                                                    center_thickness_std: results[i].center_thickness_std,
-                                                    ttv_ave: results[i].ttv_ave,
-                                                    verticality_ave: results[i].verticality_ave,
-                                                    id: results[i].id,
-                                                    upload_date: results[i].upload_date,
-                                                    box_id: results[i].box_id,
-                                                    runcard: results[i].runcard,
-                                                    username: results[i].username
-                                                    
-                                                });
-                                            }
+                                    if(!fs.existsSync(fileToDL)){
 
-                                            let worksheet = XLSX.utils.json_to_sheet(toWorkSheet);
-
-                                            let workbook = XLSX.utils.book_new();
-                                            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
-
-                                            let filePath = './public/coa/';
-                                            let fileName = moment(download_credentials.startDate).format('YYYY-MM-DD')+'-to-'+moment(download_credentials.endDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
-
-                                            let fileToDL = filePath + moment(download_credentials.startDate).format('YYYY-MM-DD')+'-to-'+moment(download_credentials.endDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
-                                            
-
-                                            XLSX.writeFile(workbook, fileToDL);
-
-                                            resolve(fileName);
+                                        connection.query({
+                                            sql: 'SELECT * FROM view_tableau_v4 WHERE upload_date >= ? && upload_date <= ?',
+                                            values: [download_credentials.startDate, download_credentials.endDate]
+                                        },  function(err, results){
+                                            if(err){return reject(err)};
     
-                                        } else {
-                                            reject('No results found.');
-                                        }
+                                            if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                                
+                                                let toWorkSheet = [];
+    
+                                                for(let i=0; i<results.length; i++){
+                                                    toWorkSheet.push({
+                                                        supplier_id: results[i].supplier_id,
+                                                        delivery_date: results[i].delivery_date,
+                                                        order_no: results[i].order_no,
+                                                        upload_time: results[i].upload_time,
+                                                        u_name: results[i].u_name,
+                                                        ingot_lot_id: results[i].ingot_lot_id,
+                                                        b_box: results[i].b_box,
+                                                        wafer_qty: results[i].wafer_qty,
+                                                        rz_ave: results[i].rz_ave,
+                                                        ra_ave: results[i].ra_ave,
+                                                        oi_top: results[i].oi_top,
+                                                        oi_bottom: results[i].oi_bottom,
+                                                        cs_top: results[i].cs_top,
+                                                        cs_bottom: results[i].cs_bottom,
+                                                        mclt_top: results[i].mclt_top,
+                                                        mclt_bottom: results[i].mclt_bottom,
+                                                        res_top: results[i].res_top,
+                                                        res_bottom: results[i].res_bottom,
+                                                        dia_ave: results[i].dia_ave,
+                                                        dia_std: results[i].dia_std,
+                                                        dia_min: results[i].dia_min,
+                                                        dia_max: results[i].dia_max,
+                                                        flat_width_ave: results[i].flat_width_ave,
+                                                        flat_width_std: results[i].flat_width_std,
+                                                        flat_length_ave: results[i].flat_length_ave,
+                                                        flat_length_std: results[i].flat_length_std,
+                                                        corner_length_ave: results[i].corner_length_ave,
+                                                        corner_length_std: results[i].corner_length_std,
+                                                        center_thickness_ave: results[i].center_thickness_ave,
+                                                        center_thickness_std: results[i].center_thickness_std,
+                                                        ttv_ave: results[i].ttv_ave,
+                                                        verticality_ave: results[i].verticality_ave,
+                                                        id: results[i].id,
+                                                        upload_date: results[i].upload_date,
+                                                        box_id: results[i].box_id,
+                                                        runcard: results[i].runcard,
+                                                        username: results[i].username
+                                                        
+                                                    });
+                                                }
+    
+                                                let worksheet = XLSX.utils.json_to_sheet(toWorkSheet);
+    
+                                                let workbook = XLSX.utils.book_new();
+                                                XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+    
+                                                XLSX.writeFile(workbook, fileToDL);
+    
+                                                resolve(fileName);
+        
+                                            } else {
+                                                reject('No results found.');
+                                            }
+    
+                                        });
+    
+                                        connection.release();
 
-                                    });
-
-                                    connection.release();
+                                    } else {
+                                        
+                                        resolve(fileName);
+                                    }
                                 }
                                 
 
@@ -2786,6 +2804,7 @@ module.exports = function(app){
                     }
 
                     searchCoA().then(function(fileName){
+                        
                         res.send({link: 'You may now download coa report here: <a href="/coadownload?file=' + fileName + '" target="_blank">download here</a>' });
 
                     },  function(err){
