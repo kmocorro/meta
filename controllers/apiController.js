@@ -2600,5 +2600,226 @@ module.exports = function(app){
 
     });
 
+    /** coa report download */
+    app.post('/api/coareport', verifyToken, function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){ return res.send({err: 'Invalid action. Try again.'})};
+
+            if(req.userID && req.claim){
+                if(fields){
+
+                    let dateField = (fields.daterange_val).split('-');
+
+                    let download_credentials = {
+                        token: fields.authenticity_token,
+                        startDate: moment(dateField[0], 'MMMM DD, YYYY').format(),
+                        endDate: moment(dateField[1], 'MMMM DD, YYYY').format()
+                    }
+
+                    function searchCoA(){
+                        return new Promise(function(resolve, reject){
+
+                            mysql.pool.getConnection(function(err, connection){
+                                if(err){ return reject(err)};
+
+                                if(download_credentials.startDate == download_credentials.endDate){
+
+                                    connection.query({
+                                        sql: 'SELECT * FROM view_tableau_v4 WHERE upload_date >= ?',
+                                        values: [download_credentials.startDate]
+                                    },  function(err, results){
+                                        if(err){return reject(err)};
+    
+                                        if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                            
+                                            let toWorkSheet = [];
+
+                                            for(let i=0; i<results.length; i++){
+                                                toWorkSheet.push({
+                                                    supplier_id: results[i].supplier_id,
+                                                    delivery_date: results[i].delivery_date,
+                                                    order_no: results[i].order_no,
+                                                    upload_time: results[i].upload_time,
+                                                    u_name: results[i].u_name,
+                                                    ingot_lot_id: results[i].ingot_lot_id,
+                                                    b_box: results[i].b_box,
+                                                    wafer_qty: results[i].wafer_qty,
+                                                    rz_ave: results[i].rz_ave,
+                                                    ra_ave: results[i].ra_ave,
+                                                    oi_top: results[i].oi_top,
+                                                    oi_bottom: results[i].oi_bottom,
+                                                    cs_top: results[i].cs_top,
+                                                    cs_bottom: results[i].cs_bottom,
+                                                    mclt_top: results[i].mclt_top,
+                                                    mclt_bottom: results[i].mclt_bottom,
+                                                    res_top: results[i].res_top,
+                                                    res_bottom: results[i].res_bottom,
+                                                    dia_ave: results[i].dia_ave,
+                                                    dia_std: results[i].dia_std,
+                                                    dia_min: results[i].dia_min,
+                                                    dia_max: results[i].dia_max,
+                                                    flat_width_ave: results[i].flat_width_ave,
+                                                    flat_width_std: results[i].flat_width_std,
+                                                    flat_length_ave: results[i].flat_length_ave,
+                                                    flat_length_std: results[i].flat_length_std,
+                                                    corner_length_ave: results[i].corner_length_ave,
+                                                    corner_length_std: results[i].corner_length_std,
+                                                    center_thickness_ave: results[i].center_thickness_ave,
+                                                    center_thickness_std: results[i].center_thickness_std,
+                                                    ttv_ave: results[i].ttv_ave,
+                                                    verticality_ave: results[i].verticality_ave,
+                                                    id: results[i].id,
+                                                    upload_date: results[i].upload_date,
+                                                    box_id: results[i].box_id,
+                                                    runcard: results[i].runcard,
+                                                    username: results[i].username
+                                                    
+                                                });
+                                            }
+
+                                            let worksheet = XLSX.utils.json_to_sheet(toWorkSheet);
+
+                                            let workbook = XLSX.utils.book_new();
+                                            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+                                            let filePath = './public/coa/';
+                                            let fileName = moment(download_credentials.startDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
+                                            let fileToDL = filePath + moment(download_credentials.startDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
+
+                                            XLSX.writeFile(workbook, fileToDL);
+
+                                            resolve(fileName);
+    
+                                        } else {
+                                            reject('No results found.');
+                                        }
+    
+                                    });
+    
+                                    connection.release();
+
+                                } else {
+
+                                    connection.query({
+                                        sql: 'SELECT * FROM view_tableau_v4 WHERE upload_date >= ? && upload_date <= ?',
+                                        values: [download_credentials.startDate, download_credentials.endDate]
+                                    },  function(err, results){
+                                        if(err){return reject(err)};
+
+                                        if(typeof results[0] !== 'undefined' && results[0] !== null && results.length > 0){
+                                            
+                                            let toWorkSheet = [];
+
+                                            for(let i=0; i<results.length; i++){
+                                                toWorkSheet.push({
+                                                    supplier_id: results[i].supplier_id,
+                                                    delivery_date: results[i].delivery_date,
+                                                    order_no: results[i].order_no,
+                                                    upload_time: results[i].upload_time,
+                                                    u_name: results[i].u_name,
+                                                    ingot_lot_id: results[i].ingot_lot_id,
+                                                    b_box: results[i].b_box,
+                                                    wafer_qty: results[i].wafer_qty,
+                                                    rz_ave: results[i].rz_ave,
+                                                    ra_ave: results[i].ra_ave,
+                                                    oi_top: results[i].oi_top,
+                                                    oi_bottom: results[i].oi_bottom,
+                                                    cs_top: results[i].cs_top,
+                                                    cs_bottom: results[i].cs_bottom,
+                                                    mclt_top: results[i].mclt_top,
+                                                    mclt_bottom: results[i].mclt_bottom,
+                                                    res_top: results[i].res_top,
+                                                    res_bottom: results[i].res_bottom,
+                                                    dia_ave: results[i].dia_ave,
+                                                    dia_std: results[i].dia_std,
+                                                    dia_min: results[i].dia_min,
+                                                    dia_max: results[i].dia_max,
+                                                    flat_width_ave: results[i].flat_width_ave,
+                                                    flat_width_std: results[i].flat_width_std,
+                                                    flat_length_ave: results[i].flat_length_ave,
+                                                    flat_length_std: results[i].flat_length_std,
+                                                    corner_length_ave: results[i].corner_length_ave,
+                                                    corner_length_std: results[i].corner_length_std,
+                                                    center_thickness_ave: results[i].center_thickness_ave,
+                                                    center_thickness_std: results[i].center_thickness_std,
+                                                    ttv_ave: results[i].ttv_ave,
+                                                    verticality_ave: results[i].verticality_ave,
+                                                    id: results[i].id,
+                                                    upload_date: results[i].upload_date,
+                                                    box_id: results[i].box_id,
+                                                    runcard: results[i].runcard,
+                                                    username: results[i].username
+                                                    
+                                                });
+                                            }
+
+                                            let worksheet = XLSX.utils.json_to_sheet(toWorkSheet);
+
+                                            let workbook = XLSX.utils.book_new();
+                                            XLSX.utils.book_append_sheet(workbook, worksheet, "Sheet1");
+
+                                            let filePath = './public/coa/';
+                                            let fileName = moment(download_credentials.startDate).format('YYYY-MM-DD')+'-to-'+moment(download_credentials.endDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
+
+                                            let fileToDL = filePath + moment(download_credentials.startDate).format('YYYY-MM-DD')+'-to-'+moment(download_credentials.endDate).format('YYYY-MM-DD')+'-meta-coa-reports.xlsx';
+                                            
+
+                                            XLSX.writeFile(workbook, fileToDL);
+
+                                            resolve(fileName);
+    
+                                        } else {
+                                            reject('No results found.');
+                                        }
+
+                                    });
+
+                                    connection.release();
+                                }
+                                
+
+                            });
+
+                        });
+                    }
+
+                    searchCoA().then(function(fileName){
+                        res.send({link: 'You may now download coa report here: <a href="/coadownload?file=' + fileName + '" target="_blank">download here</a>' });
+
+                    },  function(err){
+                        res.send({err: err});
+                    })
+
+                } else {
+                    res.send({err: 'Invalid form. Try again.'});
+                }
+            } else {
+                res.send({err: 'Invalid token. Please refresh page.'});
+            }
+
+        });
+
+    });
+
+    /** coa report download link */
+    app.get('/coadownload', verifyToken, function(req,res){
+        
+        if(req.userID && req.claim){
+
+            let query_file_to_download = {
+                path: './public/coa/',
+                file: req.query.file
+            }
+
+            res.download(query_file_to_download.path + query_file_to_download.file);
+
+        } else {
+            res.send({err: 'Invalid token.'});
+        }
+
+    });
+
 
 }

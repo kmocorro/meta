@@ -14,6 +14,8 @@
     <link rel="stylesheet" href="../assets/bower_components/Ionicons/css/ionicons.min.css">
     <!-- Datepicker -->
     <link rel="stylesheet" href="../assets/bower_components/bootstrap-datepicker/dist/css/bootstrap-datepicker.min.css">
+    <!-- Date range picker-->
+    <link rel="stylesheet" href="../assets/bower_components/bootstrap-daterangepicker/daterangepicker.css">
     <!-- Select2 -->
     <link rel="stylesheet" href="../assets/bower_components/select2/dist/css/select2.min.css">
     <!-- Theme style -->
@@ -481,12 +483,43 @@
                                 </div>
                                 <div class="tab-pane" id="download">
                                     <div class="row">
-                                        <div class="col-md-11 col-centered table-responsive no-padding">
-                                            <div id="alerta" class="alert tableau-dismiss alert-dismissable">
-                                                <button class="close" type="button" data-dismiss="alert" aria-hidden="true">×</button>
-                                                <h4>
-                                                   This will be available soon.
-                                                </h4>
+                                        <div class="user-search-panel">
+                                            <div class="col-md-4">
+                                                <form id="coa-download">
+                                                    <input type="hidden" name="authenticity_token" value="<%= authenticity_token %>">
+                                                    <h4 class="coa-body-form">CoA Report</h4>
+                                                    <div id="resToHide">
+                                                        <div class="form-group">
+                                                            <div class="input-group go-block">
+                                                                <button type="button" name="daterange-btn" class="btn btn-default btn-flat btn-block " id="daterange-btn">
+                                                                <span>Select date range</span>
+                                                                <input type="hidden" name="daterange_val">
+                                                                <i class="fa fa-caret-down"></i>
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="download-runreport">
+                                                                <div class="col-xs-7">
+                                                                    <div class="coa-sub-link-download">
+                                                                        Results will always depends on box id and runcard tagged by Kitting.
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-xs-5">
+                                                                    <button type="submit" id="coa-download-submit" class="btn btn-warning btn-block btn-flat">Run report</button>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div id="download-loading">
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <h4 class="coa-body-form">Results</h4>
+                                                <div id="responseDivResults">
+
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -506,9 +539,12 @@
 <script src="../assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
 <!-- Date Picker -->
 <script src="../assets/bower_components/bootstrap-datepicker/dist/js/bootstrap-datepicker.min.js"></script>
+<!-- Date range picker-->
+<script src="../assets/bower_components/moment/min/moment.min.js"></script>
+<script src="../assets/bower_components/bootstrap-daterangepicker/daterangepicker.js"></script>
 <!-- Select2-->
 <script src="../assets/bower_components/select2/dist/js/select2.full.min.js"></script>
-<!-- KITTING Script-->
+<!-- Initialize Script-->
 <script>
     $(function(){
 
@@ -519,6 +555,29 @@
         $('#datepicker').datepicker({
             autoclose: true
         });
+        
+        // loading icon
+        $('#download-loading').hide();
+
+        // Daterange as button
+        $('#daterange-btn').daterangepicker({
+            maxDate: new Date(),
+            ranges: {
+                'Today'       : [moment(), moment()],
+                'Yesterday'   : [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days' : [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month'  : [moment().startOf('month'), moment().endOf('month')],
+                'Last Month'  : [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+                },
+                startDate: moment().subtract(6, 'days'),
+                endDate  : moment()
+            },
+            function (start, end) {
+                $('#daterange-btn span').html(start.format('MMMM D, YYYY') + ' - ' + end.format('MMMM D, YYYY'));
+                $('#daterange-btn input').val(start.format('MMMM D, YYYY') + '-' + end.format('MMMM D, YYYY'));
+            }
+        );
 
     });
 </script>
@@ -1023,6 +1082,105 @@
             document.getElementById('invoice').setAttribute("disabled", "disabled");
             document.getElementById('supplier').setAttribute("disabled", "disabled");
             document.getElementById('submitcoafile').setAttribute("disabled", "disabled");
+        });
+
+
+    });
+</script>
+<!-- Download Coa Report script -->
+<script>
+    window.addEventListener('load', function(){
+
+        function goDownload(){
+
+            let xhr = new XMLHttpRequest();
+            let fd = new FormData(form); // bind form data object and form element
+            
+            xhr.addEventListener('load', function(event){
+                console.log(event.target.response);
+                let resFromServer = JSON.parse(event.target.response);
+                document.getElementById('responseDivResults').style.display='block';
+                document.getElementById('resToHide').style.display="block";
+                document.getElementById('download-loading').style.display='none';
+
+                function resDiv(){
+                    let responseDiv = document.getElementById('responseDivResults');
+                    
+                    if(resFromServer.err){
+
+                        document.getElementById('daterange-btn').removeAttribute("disabled");
+                        document.getElementById('coa-download-submit').removeAttribute("disabled");
+                        document.getElementById('responseDivResults').style.display='block';
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("responseDivErr");
+                            responseDiv.innerHTML = resFromServer.err
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("responseDivErr");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("responseDivErr");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.err
+                            }
+                        }
+
+                    } else {
+
+                        document.getElementById('daterange-btn').removeAttribute("disabled");
+                        document.getElementById('coa-download-submit').removeAttribute("disabled");
+                        document.getElementById('responseDivResults').style.display='block';
+
+                        if (responseDiv.classList) { 
+                            responseDiv.classList.add("resp");
+                            responseDiv.innerHTML = resFromServer.link;
+                               
+                        } else {
+                            // For IE9
+                            var classes = responseDiv.className.split(" ");
+                            var i = classes.indexOf("resp");
+
+                            if (i >= 0) {
+                                classes.splice(i, 1);
+                            } else { 
+                                classes.push("resp");
+                                responseDiv.className = classes.join(" "); 
+                                responseDiv.innerHTML = resFromServer.link;
+                                
+                            }
+                        }
+                    }
+
+                    
+                }
+
+                resDiv();
+            });
+
+            xhr.addEventListener('error', function(event){
+                alert('Something went wrong.');
+            });
+
+            xhr.open('POST', '/api/coareport');
+            xhr.send(fd);
+
+        }
+
+        // access FORM element
+        let form = document.getElementById('coa-download');
+        // take over submit event
+        form.addEventListener('submit', function(event){
+            event.preventDefault();
+            document.getElementById('responseDiv').style.display="none";
+            goDownload();
+            document.getElementById('daterange-btn').setAttribute("disabled", "disabled");
+            document.getElementById('coa-download-submit').setAttribute("disabled", "disabled");
+            document.getElementById('download-loading').style.display='block';
+            document.getElementById('responseDivResults').style.display='none';
         });
 
 
