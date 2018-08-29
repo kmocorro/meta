@@ -382,13 +382,13 @@ module.exports = function(app){
 
             ndep_feed().then(function(feed_to_display){
 
-                let humanizedGreeting = "Good " + getGreetingTime(moment()) + ", User!";
+                let humanizedGreeting = "Good " + getGreetingTime(moment()) + ".";
 
                 res.render('feed',{greet: humanizedGreeting, feed_to_display, authenticity_token, query_feed});
             });
 
         } else {
-            let humanizedGreeting = "Good " + getGreetingTime(moment()) + ",  User!";
+            let humanizedGreeting = "Good " + getGreetingTime(moment()) + ".";
             let feed_to_display = [];
 
             res.render('feed',{greet: humanizedGreeting, feed_to_display, authenticity_token, query_feed});
