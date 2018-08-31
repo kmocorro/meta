@@ -229,7 +229,7 @@
                                     </div>
                                 </div>
                                 <div class="box-body feed-activity-user">
-                                    @meta  
+                                    @<%= downtime_feed_data.feed[i].whoin %>
                                 </div>
                                 <div class="box-body feed-activity-body">
                                 </div>
@@ -238,9 +238,9 @@
                                     <div style="overflow-x:auto;">
                                         <table>
                                             <tr style="font-size:12px;" >
-                                                <td style="padding:0 5px 0;"><%= downtime_feed_data.feed[i].eq_name %></td>
-                                                <td style="padding:0 5px 0;">&#183;</td>
                                                 <td style="padding:0 5px 0;"><%= downtime_feed_data.feed[i].time_in %></td>
+                                                <td style="padding:0 5px 0;">&#183;</td>
+                                                <td style="padding:0 5px 0;"><%= downtime_feed_data.feed[i].eq_name %></td>
                                             </tr>
                                         </table>
                                     </div>
