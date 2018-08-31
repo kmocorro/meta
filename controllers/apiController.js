@@ -486,10 +486,10 @@ module.exports = function(app){
                     });
 
                 }).connect({
-                    host: '10.3.10.253',
+                    host: '',
                     port: 22,
-                    username: 'applmgr',
-                    privateKey: fs.readFileSync('./public/id_rsa') //should change later
+                    username: '',
+                    privateKey: fs.readFileSync('') //should change later
                 });
 
                 console.log(fields);
