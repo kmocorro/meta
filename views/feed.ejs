@@ -117,7 +117,11 @@
                     <div class="col-md-5 col-centered no-padding">
                         <div class="box ask-card feed-activity-user">
                             <div class="box-header" style="position:initial;  padding: 4px 10px 4px;">
-                                <%= greet %> <a href="/signup">Sign up</a> today to receive realtime tool alert.
+                                <% if(greet) { %>
+                                    <%= greet %> 
+                                <% } else { %>
+                                    <a href="/signup">Sign up</a> today to receive realtime tool alert.
+                                <% } %>
                             </div>
                         </div>
                     </div>

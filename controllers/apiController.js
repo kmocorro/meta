@@ -7,6 +7,8 @@ let formidable = require('formidable');
 let XLSX = require('xlsx');
 let mysql = require('../db/dbConfig');
 let moment = require('moment');
+let shell = require('shelljs');
+let Client = require('ssh2').Client;
 let fs = require('fs');
 
 module.exports = function(app){
@@ -395,6 +397,106 @@ module.exports = function(app){
         }
 
             
+
+    });
+
+    app.get('/inline', function(req, res){
+
+        let noxe_tools = [
+            'Noxe 17/18',
+            'Noxe 19/20',
+            'Noxe 21/22',
+        ];
+
+        let toxe_tools = [
+            'Toxe 17/18',
+            'Toxe 19/20',
+            'Toxe 21/22'
+        ];
+
+        let inline_tools = [];
+
+        for(let i=0; i<noxe_tools.length;i++){
+            inline_tools.push({
+                id: (i+1),
+                name: 'NOXE' + (i + 1),
+                noxe: noxe_tools[i],
+                modalVal: 'modalnoxe' + (i + 1)
+            });
+        }
+        
+        for(let i=0; i<toxe_tools.length;i++){
+            inline_tools.push({
+                id: (i+1),
+                name: 'TOXE' + (i + 1),
+                toxe: toxe_tools[i],
+                modalVal: 'modaltoxe' + (i + 1)
+            });
+        }
+
+        res.render('inline', {inline_tools});
+    });
+
+    /** api inline */
+    app.post('/api/inline', function(req, res){
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, function(err, fields){
+            if(err){return res.send(err)};
+
+            if(fields){ 
+                let sshFilPathExecute = 'NOXE/NOXE_Relayer.sh ' + fields.inline_name + ' ' + fields.status + ' ' + fields.duration;
+                let conn = new Client();
+
+                conn.on('ready', function() {
+                    console.log('Client :: ready');
+
+                    // stablish ssh connection
+                    conn.shell(function(err, stream) {
+                        if (err) throw err;
+
+                        stream.on('close', function() {
+                            console.log('Stream :: close');
+
+                            conn.end();
+                        }).on('data', function(data) {
+                            console.log('STDOUT: ' + data);
+
+                        }).stderr.on('data', function(data) {
+                            console.log('STDERR: ' + data);
+                        });
+                        
+                        stream.end('ls -l\nexit\n');
+                    });
+
+                    // execute sh
+                    conn.exec(sshFilPathExecute, function(err, stream){
+                        console.log('Executing command...');
+                        if(err) throw err;
+
+                        stream.on('data', function(data){
+                            console.log('STDOUT: ' + data);
+                        });
+                        stream.stderr.on('data', function(data){
+                            console.log('STDERR: '+ data);
+                        });
+                        stream.on('close', function(code, signal){
+                            console.log('Process closed with code ' + code);
+                        });
+                    });
+
+                }).connect({
+                    host: '10.3.10.253',
+                    port: 22,
+                    username: 'applmgr',
+                    privateKey: fs.readFileSync('./public/id_rsa') //should change later
+                });
+
+                console.log(fields);
+
+            }
+
+        });
 
     });
 
