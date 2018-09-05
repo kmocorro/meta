@@ -3,7 +3,6 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="refresh" content="120">
     <title>Inline - META</title>
     <!-- Tell the browser to be responsive to screen width -->
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
@@ -119,9 +118,9 @@
                         <% if(inline_tools) { %>
                             <% for(let i=0; i<inline_tools.length; i++) { %>
                                 <% if(inline_tools[i].noxe) { %>
-                                    <a class="btn btn-app" data-toggle="modal" data-target="#<%= inline_tools[i].modalVal %>">
+                                    <button type="button" id="<%= inline_tools[i].name %>" class="btn btn-app" data-toggle="modal" data-target="#<%= inline_tools[i].modalVal %>">
                                         <i class="fa fa-building"></i><%= inline_tools[i].noxe %>
-                                    </a>
+                                    </button>
                                 <% } %>
                             <% } %>
                         <% } %>
@@ -133,9 +132,9 @@
                         <% if(inline_tools) { %>
                             <% for(let i=0; i<inline_tools.length; i++) { %>
                                 <% if(inline_tools[i].toxe) { %>
-                                    <a class="btn btn-app" data-toggle="modal" data-target="#<%= inline_tools[i].modalVal %>">
+                                    <button class="btn btn-app" id="<%= inline_tools[i].name %>" data-toggle="modal" data-target="#<%= inline_tools[i].modalVal %>">
                                         <i class="fa fa-building"></i><%= inline_tools[i].toxe %>
-                                    </a>
+                                    </button>
                                 <% } %>
                             <% } %>
                         <% } %>
@@ -155,14 +154,14 @@
                                     </div>
                                     <form id="uploadinline<%= inline_tools[i].name %>">
                                         <div class="modal-body">
-                                            <input type="hidden" name="inline_name" value="<%= inline_tools[i].name %>">
+                                            <input type="hidden" name="inline_name" id="inline_name<%= inline_tools[i].name %>" value="<%= inline_tools[i].name %>">
                                             <%= (inline_tools[i].noxe).toUpperCase() %>
-                                            <select name="status">
+                                            <select name="status" id="status<%= inline_tools[i].name %>">
                                                 <option value="5S" selected>Tool 5S</option>
                                                 <option value="STANDBY" >Standby</option>
                                             </select>
                                             for 
-                                            <select name="duration">
+                                            <select name="duration" id="duration<%= inline_tools[i].name %>">
                                                 <option value="5" selected>5</option>
                                                 <option value="10">10</option>
                                             </select> 
@@ -203,14 +202,14 @@
                                     </div>
                                     <form id="uploadinline<%= inline_tools[i].name %>">
                                         <div class="modal-body">
-                                            <input type="hidden" name="inline_name" value="<%= inline_tools[i].name %>">
+                                            <input type="hidden" name="inline_name" id="inline_name<%= inline_tools[i].name %>" value="<%= inline_tools[i].name %>">
                                             <%= (inline_tools[i].toxe).toUpperCase() %>
-                                            <select name="status">
+                                            <select name="status" id="status<%= inline_tools[i].name %>">
                                                 <option value="5S" selected>Tool 5S</option>
                                                 <option value="STANDBY" >Standby</option>
                                             </select>
                                             for 
-                                            <select name="duration">
+                                            <select name="duration" id="duration<%= inline_tools[i].name %>">
                                                 <option value="5" selected>5</option>
                                                 <option value="10">10</option>
                                             </select> 
@@ -250,174 +249,75 @@
 <script src="../assets/bower_components/jquery/dist/jquery.min.js"></script>
 <!-- Bootstrap 3.3.7 -->
 <script src="../assets/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-<!-- Inline Upload script -->
+<!-- Socket IO-->
+<script src="/socket.io/socket.io.js"></script> 
+<!-- Socket IO oh ohh ohhh-->
 <script>
-    window.addEventListener('load', function(){
+    
+    $(function(){
+        let inline = io.connect('/inline');
+        
+        <% if(inline_tools) { %>
+            <% for(let i=0; i<inline_tools.length; i++) { %>
+                <% if(inline_tools[i].noxe) { %>
 
-        <% for(let i=0; i<inline_tools.length; i++) { %>
-            <% if(inline_tools[i].noxe) { %>
-                function goChange<%= inline_tools[i].name %>(){
-                    let xhr = new XMLHttpRequest();
-                    let fd = new FormData(form<%= inline_tools[i].name %>); // bind form data object and form element
-                    
-                    xhr.addEventListener('load', function(event){
-                        console.log(event.target.response);
-                        let resFromServer = JSON.parse(event.target.response);
-                        document.getElementById('responseDiv<%= inline_tools[i].name %>').style.display='block';
-                        function resDiv(){
-                            let responseDiv = document.getElementById('responseDiv<%= inline_tools[i].name %>');
-                            
-                            if(resFromServer.err){
+                    $('#uploadinline<%= inline_tools[i].name %>').submit(function(){
+                        inline.emit('inline-thread', {
+                            inline_name: $('#inline_name<%= inline_tools[i].name %>').val(),
+                            status: $('#status<%= inline_tools[i].name %>').val(),
+                            duration: $('#duration<%= inline_tools[i].name %>').val()
+                        });
 
-                                if (responseDiv.classList) { 
-                                    responseDiv.classList.add("responseDivErr");
-                                    responseDiv.innerHTML = resFromServer.err
-                                } else {
-                                    // For IE9
-                                    var classes = responseDiv.className.split(" ");
-                                    var i = classes.indexOf("responseDivErr");
+                        $('#<%= inline_tools[i].modalVal %>').modal('toggle');
 
-                                    if (i >= 0) {
-                                        classes.splice(i, 1);
-                                    } else { 
-                                        classes.push("responseDivErr");
-                                        responseDiv.className = classes.join(" "); 
-                                        responseDiv.innerHTML = resFromServer.err
-                                    }
-                                }
+                        return false;
+                        
+                    });
 
-                            } else {
+                
+                <% } else if(inline_tools[i].toxe) { %>
+                        
+                    $('#uploadinline<%= inline_tools[i].name %>').submit(function(){
+                        inline.emit('inline-thread', {
+                            inline_name: $('#inline_name<%= inline_tools[i].name %>').val(),
+                            status: $('#status<%= inline_tools[i].name %>').val(),
+                            duration: $('#duration<%= inline_tools[i].name %>').val()
+                        });
 
-                                if (responseDiv.classList) { 
-                                    responseDiv.classList.add("responseDivUploading");
-                                    responseDiv.innerHTML = resFromServer.auth;
-                                        
-                                    
-                                } else {
-                                    // For IE9
-                                    var classes = responseDiv.className.split(" ");
-                                    var i = classes.indexOf("responseDivUploading");
+                        $('#<%= inline_tools[i].modalVal %>').modal('toggle');
 
-                                    if (i >= 0) {
-                                        classes.splice(i, 1);
-                                    } else { 
-                                        classes.push("responseDivUploading");
-                                        responseDiv.className = classes.join(" "); 
-                                        responseDiv.innerHTML = resFromServer.auth;
-                                        
-                                    }
-                                }
-                            }
+                        return false;
+                        
+                    });
 
-                            
+                <% } %>
+                
+                inline.on('inline-thread-response', function(data){
+
+                    if(data.message.inline_name == '<%= inline_tools[i].name %>'){
+
+                        if(data.message.status_name == 'Status Changed'){
+
+                            document.getElementById('<%= inline_tools[i].name %>').setAttribute("disabled", 'disabled');
+                            localStorage.setItem('<%= inline_tools[i].name %>-button', 'disabled');
+
+                        } else if(data.message.status_name == 'Status Reverted'){
+
+                            document.getElementById('<%= inline_tools[i].name %>').removeAttribute("disabled");
+                            localStorage.setItem('<%= inline_tools[i].name %>-button', '');
                         }
 
-                        resDiv();
-                    });
+                        console.log(data.message.inline_name , ' - ' , data.message.status_name , ' - ', data.message.status_info, ' - ', data.message.duration, ' - ', ' minutes');
 
-                    xhr.addEventListener('error', function(event){
-                        alert('Something went wrong.');
-                    });
+                    }
 
-                    xhr.open('POST', '/api/inline');
-                    xhr.send(fd);
-                    
-                }
-
-                // access FORM element
-                let form<%= inline_tools[i].name %> = document.getElementById('uploadinline<%= inline_tools[i].name %>');
-                // take over submit event
-                form<%= inline_tools[i].name %>.addEventListener('submit', function(event){
-                    event.preventDefault();
-                    document.getElementById('responseDiv<%= inline_tools[i].name %>').style.display="none";
-                    goChange<%= inline_tools[i].name %>();
-                });
-
-            <% } else if(inline_tools[i].toxe) { %>
-                
-                function goChange<%= inline_tools[i].name %>(){
-                    let xhr = new XMLHttpRequest();
-                    let fd = new FormData(form<%= inline_tools[i].name %>); // bind form data object and form element
-                        
-                        xhr.addEventListener('load', function(event){
-                            console.log(event.target.response);
-                            let resFromServer = JSON.parse(event.target.response);
-                            document.getElementById('responseDiv<%= inline_tools[i].name %>').style.display='block';
-                            function resDiv(){
-                                let responseDiv = document.getElementById('responseDiv<%= inline_tools[i].name %>');
-                                
-                                if(resFromServer.err){
-
-                                    if (responseDiv.classList) { 
-                                        responseDiv.classList.add("responseDivErr");
-                                        responseDiv.innerHTML = resFromServer.err
-                                    } else {
-                                        // For IE9
-                                        var classes = responseDiv.className.split(" ");
-                                        var i = classes.indexOf("responseDivErr");
-
-                                        if (i >= 0) {
-                                            classes.splice(i, 1);
-                                        } else { 
-                                            classes.push("responseDivErr");
-                                            responseDiv.className = classes.join(" "); 
-                                            responseDiv.innerHTML = resFromServer.err
-                                        }
-                                    }
-
-                                } else {
-
-                                    if (responseDiv.classList) { 
-                                        responseDiv.classList.add("responseDivUploading");
-                                        responseDiv.innerHTML = resFromServer.auth;
-                                            
-                                        
-                                    } else {
-                                        // For IE9
-                                        var classes = responseDiv.className.split(" ");
-                                        var i = classes.indexOf("responseDivUploading");
-
-                                        if (i >= 0) {
-                                            classes.splice(i, 1);
-                                        } else { 
-                                            classes.push("responseDivUploading");
-                                            responseDiv.className = classes.join(" "); 
-                                            responseDiv.innerHTML = resFromServer.auth;
-                                            
-                                        }
-                                    }
-                                }
-
-                                
-                            }
-
-                            resDiv();
-                        });
-
-                        xhr.addEventListener('error', function(event){
-                            alert('Something went wrong.');
-                        });
-
-                        xhr.open('POST', '/api/inline');
-                        xhr.send(fd);
-                        
-                }
-                // access FORM element
-                let form<%= inline_tools[i].name %> = document.getElementById('uploadinline<%= inline_tools[i].name %>');
-                
-                // take over submit event
-                form<%= inline_tools[i].name %>.addEventListener('submit', function(event){
-                    event.preventDefault();
-                    document.getElementById('responseDiv<%= inline_tools[i].name %>').style.display="none";
-                    goChange<%= inline_tools[i].name %>();
                 });
 
             <% } %>
-
         <% } %>
 
-
     });
+
 </script>
 </body>
 </html>

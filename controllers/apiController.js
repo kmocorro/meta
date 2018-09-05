@@ -7,9 +7,9 @@ let formidable = require('formidable');
 let XLSX = require('xlsx');
 let mysql = require('../db/dbConfig');
 let moment = require('moment');
-let shell = require('shelljs');
 let Client = require('ssh2').Client;
 let fs = require('fs');
+let sshConfig = require('../config').sshConfig;
 
 module.exports = function(app){
     // parse out json and app can handle url requests
@@ -437,7 +437,7 @@ module.exports = function(app){
         res.render('inline', {inline_tools});
     });
 
-    /** api inline */
+    /** api inline quick change status */
     app.post('/api/inline', function(req, res){
         let form = new formidable.IncomingForm();
 
@@ -445,9 +445,16 @@ module.exports = function(app){
             if(err){return res.send(err)};
 
             if(fields){ 
-                let sshFilPathExecute = 'NOXE/NOXE_Relayer.sh ' + fields.inline_name + ' ' + fields.status + ' ' + fields.duration;
-                let conn = new Client();
+            
+                /**
+                 * Run script file + parameters
+                 * @param fields.inline_name = NOXE1-3 || TOXE1-3
+                 * @param fields.status = 5S || STANDBY
+                 */
 
+                let sshFilePathExecute = 'NOXE/NOXE_Relayer.sh ' + fields.inline_name + ' ' + fields.status + ' ' + fields.duration;
+
+                let conn = new Client();
                 conn.on('ready', function() {
                     console.log('Client :: ready');
 
@@ -455,22 +462,21 @@ module.exports = function(app){
                     conn.shell(function(err, stream) {
                         if (err) throw err;
 
+                        stream.on('data', function(data) {
+                            console.log('STDOUT: ' + data);
+                        });
+                        stream.stderr.on('data', function(data) {
+                            console.log('STDERR: ' + data);
+
+                        });
                         stream.on('close', function() {
                             console.log('Stream :: close');
-
-                            conn.end();
-                        }).on('data', function(data) {
-                            console.log('STDOUT: ' + data);
-
-                        }).stderr.on('data', function(data) {
-                            console.log('STDERR: ' + data);
                         });
-                        
-                        stream.end('ls -l\nexit\n');
+
                     });
 
-                    // execute sh
-                    conn.exec(sshFilPathExecute, function(err, stream){
+                    // execute sh file 
+                    conn.exec(sshFilePathExecute, function(err, stream){
                         console.log('Executing command...');
                         if(err) throw err;
 
@@ -482,14 +488,16 @@ module.exports = function(app){
                         });
                         stream.on('close', function(code, signal){
                             console.log('Process closed with code ' + code);
+
+                            conn.end();
                         });
                     });
 
                 }).connect({
-                    host: '',
-                    port: 22,
-                    username: '',
-                    privateKey: fs.readFileSync('') //should change later
+                    host: sshConfig.host,
+                    port: sshConfig.port,
+                    username: sshConfig.username,
+                    privateKey: sshConfig.privateKey
                 });
 
                 console.log(fields);

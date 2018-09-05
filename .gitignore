@@ -6,3 +6,6 @@
 /db/d*
 /mail/c*
 /mail/s*
+
+config.js
+privkey
