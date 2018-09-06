@@ -268,6 +268,7 @@
                             duration: $('#duration<%= inline_tools[i].name %>').val()
                         });
 
+                        document.getElementById('<%= inline_tools[i].name %>').setAttribute("disabled", 'disabled');
                         $('#<%= inline_tools[i].modalVal %>').modal('toggle');
 
                         return false;
@@ -283,7 +284,8 @@
                             status: $('#status<%= inline_tools[i].name %>').val(),
                             duration: $('#duration<%= inline_tools[i].name %>').val()
                         });
-
+                        
+                        document.getElementById('<%= inline_tools[i].name %>').setAttribute("disabled", 'disabled');
                         $('#<%= inline_tools[i].modalVal %>').modal('toggle');
 
                         return false;
@@ -299,12 +301,12 @@
                         if(data.message.status_name == 'Status Changed'){
 
                             document.getElementById('<%= inline_tools[i].name %>').setAttribute("disabled", 'disabled');
-                            localStorage.setItem('<%= inline_tools[i].name %>-button', 'disabled');
+                            //localStorage.setItem('<%= inline_tools[i].name %>-button', 'disabled');
 
                         } else if(data.message.status_name == 'Status Reverted'){
 
                             document.getElementById('<%= inline_tools[i].name %>').removeAttribute("disabled");
-                            localStorage.setItem('<%= inline_tools[i].name %>-button', '');
+                            //localStorage.setItem('<%= inline_tools[i].name %>-button', '');
                         }
 
                         console.log(data.message.inline_name , ' - ' , data.message.status_name , ' - ', data.message.status_info, ' - ', data.message.duration, ' - ', ' minutes');
