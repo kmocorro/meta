@@ -154,9 +154,11 @@
                                                     </ul>
                                             </div>
                                         </div>
+                                        <!---
                                         <div class="box-body feed-activity-user">
                                             @meta  
                                         </div>
+                                        -->
                                         <div class="box-body feed-activity-body">
                                                 <%= feed_to_display[i].body %>
                                         </div>
@@ -165,6 +167,8 @@
                                             <div style="overflow-x:auto;">
                                                 <table>
                                                     <tr style="font-size:12px;" >
+                                                        <td style="padding:0 5px 0;">Run <%= feed_to_display[i].run_number %></td>
+                                                        <td style="padding:0 5px 0;">&#183;</td>
                                                         <td style="padding:0 5px 0;"><%= feed_to_display[i].posted_date %></td>
                                                     </tr>
                                                 </table>

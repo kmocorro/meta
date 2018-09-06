@@ -358,11 +358,14 @@ module.exports = function(app){
 
                             for(let i=0; i<arr_data.length;i++){
                                 let titleOrbody = arr_data[i].split(':');
+                                let runNumber = titleOrbody[i].split('#');
+                                
 
                                 feed_to_display.push({
                                     title: titleOrbody[0],
                                     body: titleOrbody[1],
-                                    posted_date: moment().calendar()
+                                    posted_date: moment().calendar(),
+                                    run_number: runNumber[1] || '-'
                                 });
                             }
 
