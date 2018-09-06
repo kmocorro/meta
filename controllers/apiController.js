@@ -374,7 +374,6 @@ module.exports = function(app){
                                 }
                                 
                             }
-
                             
                             for(let i=0; i<arr_data.length;i++){
                                 let separateTitleAndBody = arr_data[i].split(':');

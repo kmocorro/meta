@@ -137,12 +137,27 @@
                     <div class="col-md-5 col-centered no-padding">
                         <div class="col-md-6 col-sm-6 col-xs-12 no-padding">
                             <div class="info-box">
-                                <span class="info-box-icon bg-red"><i class="ion ion-ios-flag-outline"></i></span>
-                                <div class="info-box-content">
-                                <span class="info-box-text">Tube Alert</span>
-                                <% if(dashboard.tube_alerts.length > 0) { %>
-                                    <span class="info-box-number"><%= dashboard.tube_alerts.length %></span>
+                                <% if(dashboard.feed) { %>
+                                    <% if(dashboard.tube_alerts.length >= 2) { %>
+                                        <span class="info-box-icon bg-red"><i class="ion ion-ios-flag-outline"></i></span>
+                                        <div class="info-box-content">
+                                        <span class="info-box-text">Tube Alerts</span>
+                                        <span class="info-box-number"><%= dashboard.tube_alerts.length %></span>
+                                    <% } else if(dashboard.tube_alerts.length == 1) { %>
+                                        <span class="info-box-icon bg-red"><i class="ion ion-ios-flag-outline"></i></span>
+                                        <div class="info-box-content">
+                                        <span class="info-box-text">Tube Alert</span>
+                                        <span class="info-box-number"><%= dashboard.tube_alerts.length %></span>
+                                    <% } else { %>
+                                        <span class="info-box-icon bg-default"><i class="ion ion-ios-flag-outline"></i></span>
+                                        <div class="info-box-content">
+                                        <span class="info-box-text">Tube Alert</span>
+                                        <span class="info-box-number">0</span>
+                                    <% } %>
                                 <% } else { %>
+                                    <span class="info-box-icon bg-default"><i class="ion ion-ios-flag-outline"></i></span>
+                                    <div class="info-box-content">
+                                    <span class="info-box-text">Tube Alert</span>
                                     <span class="info-box-number">0</span>
                                 <% } %>
                                 </div>
@@ -152,12 +167,27 @@
                         </div>
                         <div class="col-md-6 col-sm-6 col-xs-12 no-padding">
                             <div class="info-box">
-                                <span class="info-box-icon bg-yellow"><i class="ion ion-ios-eye-outline"></i></span>
-                                <div class="info-box-content">
-                                <span class="info-box-text">Tube Warning</span>
-                                <% if(dashboard.tube_warnings.length > 0) { %>
-                                    <span class="info-box-number"><%= dashboard.tube_warnings.length %></span>
+                                <% if(dashboard.feed) { %>
+                                    <% if(dashboard.tube_warnings.length >= 2) { %>
+                                        <span class="info-box-icon bg-yellow"><i class="ion ion-ios-eye-outline"></i></span>
+                                        <div class="info-box-content">
+                                        <span class="info-box-text">Tube Warnings</span>
+                                        <span class="info-box-number"><%= dashboard.tube_warnings.length %></span>
+                                    <% } else if(dashboard.tube_warnings.length == 1) { %>
+                                        <span class="info-box-icon bg-yellow"><i class="ion ion-ios-eye-outline"></i></span>
+                                        <div class="info-box-content">
+                                        <span class="info-box-text">Tube Warning</span>
+                                        <span class="info-box-number"><%= dashboard.tube_warnings.length %></span>
+                                    <% } else { %>
+                                        <span class="info-box-icon bg-default"><i class="ion ion-ios-eye-outline"></i></span>
+                                        <div class="info-box-content">
+                                        <span class="info-box-text">Tube Warning</span>
+                                        <span class="info-box-number">0</span>
+                                    <% } %>
                                 <% } else { %>
+                                    <span class="info-box-icon bg-default"><i class="ion ion-ios-eye-outline"></i></span>
+                                    <div class="info-box-content">
+                                    <span class="info-box-text">Tube Warning</span>
                                     <span class="info-box-number">0</span>
                                 <% } %>
                                 </div>
@@ -167,16 +197,18 @@
                         </div>
                     </div>
                 </div>
-                <% if(dashboard.feed.length > 0) { %>
+
+                <br/>
+                <% if(dashboard.feed) { %>
                     <% for(let i=0; i<dashboard.feed.length; i++) { %>
                         <% if(dashboard.feed[i].title) { %>
                             <div class="row">
                                 <div class="col-md-5 col-centered no-padding">
                                     <div class="box feed-card">
                                         <% if(dashboard.feed[i].info == 'Abort') { %>
-                                        <div class="box-body feed-activity-alert">
-                                            Tube alert
-                                        </div>
+                                            <div class="box-body feed-activity-alert">
+                                                Tube alert
+                                            </div>
                                         <% } else { %>
                                             <div class="box-body feed-activity-warning">
                                                 Tube warning
@@ -222,7 +254,7 @@
                             </div>
                         <% } %>
                     <% } %>
-                <% } else if(!dashboard.feed.title) { %>
+                <% } else { %>
                     <div class="row">
                         <div class="col-md-4 col-centered">
                             <p style="text-align: center;color:rgb(199, 199, 199); font-weight: 300; margin: 0 -5px 10px;">No feed to display.</p>
