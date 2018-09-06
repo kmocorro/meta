@@ -366,6 +366,7 @@ module.exports = function(app){
                                     feed_to_display.push({
                                         title: titleOrbody[0].split(' ')[0],
                                         body: titleOrbody[1],
+                                        info: titleOrbody[1].split(' ')[0],
                                         posted_date: moment().calendar(),
                                         run_number: titleOrbody[0].split('#')[1]
                                     });
@@ -403,7 +404,7 @@ module.exports = function(app){
                                 tube_warnings
                             };
 
-                            //console.log(dashboard.tube_alerts);
+                            //console.log(dashboard);
                             resolve(dashboard);
 
                         } else {
