@@ -355,6 +355,8 @@ module.exports = function(app){
                         if(data){
                             let arr_data = data.split('\n');
                             let feed_to_display = [];
+                            let tube_alerts = [];
+                            let tube_warnings = [];
 
                             for(let i=0; i<arr_data.length;i++){
                                 let titleOrbody = arr_data[i].split(':');
@@ -369,18 +371,46 @@ module.exports = function(app){
                                     });
 
                                 }
-
                                 
                             }
 
-                            console.log(feed_to_display);
-                            resolve(feed_to_display);
+                            
+                            for(let i=0; i<arr_data.length;i++){
+                                let separateTitleAndBody = arr_data[i].split(':');
+
+                                if(separateTitleAndBody[i]){
+
+                                    if(separateTitleAndBody[1].split(' ')[0] == 'Abort'){
+    
+                                        tube_alerts.push({
+                                            alert:  separateTitleAndBody[1].split(' ')[0]
+                                        });
+    
+                                    } else if(separateTitleAndBody[1].split(' ')[0] == 'MISSING' || separateTitleAndBody[1].split(' ')[0] == 'PWEDE' ){
+                                        
+                                        tube_warnings.push({
+                                            warning: separateTitleAndBody[1].split(' ')[0]
+                                        });
+    
+                                    }
+
+                                }
+                            }
+
+                            let dashboard = {
+                                feed: feed_to_display,
+                                tube_alerts,
+                                tube_warnings
+                            };
+
+                            //console.log(dashboard.tube_alerts);
+                            resolve(dashboard);
 
                         } else {
 
-                            let feed_to_display = [];
+                            let dashboard = [];
 
-                            resolve(feed_to_display);
+                            resolve(dashboard);
 
                         }
                         
@@ -390,18 +420,19 @@ module.exports = function(app){
                 });
             }
 
-            ndep_feed().then(function(feed_to_display){
+            ndep_feed().then(function(dashboard){
 
                 let humanizedGreeting = "Good " + getGreetingTime(moment()) + ".";
+                
 
-                res.render('feed',{greet: humanizedGreeting, feed_to_display, authenticity_token, query_feed});
+                res.render('feed',{greet: humanizedGreeting, dashboard, authenticity_token, query_feed});
             });
 
         } else {
             let humanizedGreeting = "Good " + getGreetingTime(moment()) + ".";
-            let feed_to_display = [];
+            let dashboard = [];
 
-            res.render('feed',{greet: humanizedGreeting, feed_to_display, authenticity_token, query_feed});
+            res.render('feed',{greet: humanizedGreeting, dashboard, authenticity_token, query_feed});
         }
 
             

@@ -113,6 +113,7 @@
             </nav>
         </header>
         <section class="content feed-area">
+                <!--
                 <div class="row">
                     <div class="col-md-5 col-centered no-padding">
                         <div class="box ask-card feed-activity-user">
@@ -126,23 +127,58 @@
                         </div>
                     </div>
                 </div>
+                -->
                 <div class="row">
                     <div class="col-md-5 col-centered no-padding">
-                        <p style="color:darkgray; font-weight: 300; margin: 0 -5px 10px;"><%= query_feed.type %> Feed</p>
+                        <p style="color:darkgray; font-weight: 300; margin: 0 0px 10px;"><%= query_feed.type %> Feed</p>
                     </div>
                 </div>
-                <% if(feed_to_display.length > 0) { %>
-                    <% for(let i=0; i<feed_to_display.length; i++) { %>
-                        <% if(feed_to_display[i].title) { %>
+                <div class="row">
+                    <div class="col-md-5 col-centered no-padding">
+                        <div class="col-md-6 col-sm-6 col-xs-12 no-padding">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-red"><i class="ion ion-ios-flag-outline"></i></span>
+                                <div class="info-box-content">
+                                <span class="info-box-text">Tube Alert</span>
+                                <% if(dashboard.tube_alerts.length > 0) { %>
+                                    <span class="info-box-number"><%= dashboard.tube_alerts.length %></span>
+                                <% } else { %>
+                                    <span class="info-box-number">0</span>
+                                <% } %>
+                                </div>
+                                <!-- /.info-box-content -->
+                            </div>
+                            <!-- /.info-box -->
+                        </div>
+                        <div class="col-md-6 col-sm-6 col-xs-12 no-padding">
+                            <div class="info-box">
+                                <span class="info-box-icon bg-yellow"><i class="ion ion-ios-eye-outline"></i></span>
+                                <div class="info-box-content">
+                                <span class="info-box-text">Tube Warning</span>
+                                <% if(dashboard.tube_warnings.length > 0) { %>
+                                    <span class="info-box-number"><%= dashboard.tube_warnings.length %></span>
+                                <% } else { %>
+                                    <span class="info-box-number">0</span>
+                                <% } %>
+                                </div>
+                                <!-- /.info-box-content -->
+                            </div>
+                            <!-- /.info-box -->
+                        </div>
+                    </div>
+                </div>
+                <% if(dashboard.feed.length > 0) { %>
+                    <% for(let i=0; i<dashboard.feed.length; i++) { %>
+                        <% if(dashboard.feed[i].title) { %>
                             <div class="row">
                                 <div class="col-md-5 col-centered no-padding">
                                     <div class="box feed-card">
-                                        <div class="box-body feed-activity-alert">
-                                            Tube alert
+                                        <div class="box-body feed-activity-warning">
+                                            Tube warning
                                         </div>
                                         <div class="box-header" style="position:initial;  padding: 4px 10px 0;">
-                                            <h3 class="box-title feed-activity-header"><%= feed_to_display[i].title %></h3>
-
+                                            <h3 class="box-title feed-activity-header"><%= dashboard.feed[i].title %></h3>
+                                            <!--
                                             <div class="box-tools pull-right">
                                                     <button type="button" disabled class="btn btn-link btn-flat dropdown-toggle" data-toggle="dropdown">
                                                         <span class="fa fa-ellipsis-v" style="color:slategray"></span>
@@ -153,6 +189,7 @@
                                                         </li>
                                                     </ul>
                                             </div>
+                                            -->
                                         </div>
                                         <!---
                                         <div class="box-body feed-activity-user">
@@ -160,16 +197,16 @@
                                         </div>
                                         -->
                                         <div class="box-body feed-activity-body">
-                                                <%= feed_to_display[i].body %>
+                                                <%= dashboard.feed[i].body %>
                                         </div>
                                         <!-- /.box-body -->
                                         <div class="box-footer feed-activy-footer">
                                             <div style="overflow-x:auto;">
                                                 <table>
-                                                    <tr style="font-size:12px;" >
-                                                        <td style="padding:0 5px 0;">Run <%= feed_to_display[i].run_number %></td>
-                                                        <td style="padding:0 5px 0;">&#183;</td>
-                                                        <td style="padding:0 5px 0;"><%= feed_to_display[i].posted_date %></td>
+                                                    <tr style="font-size:9px;" >
+                                                        <td style="padding:0 1px 0;">Run <%= dashboard.feed[i].run_number %></td>
+                                                        <td style="padding:0 1px 0;">&#183;</td>
+                                                        <td style="padding:0 1px 0;"><%= dashboard.feed[i].posted_date %></td>
                                                     </tr>
                                                 </table>
                                             </div>
@@ -179,7 +216,7 @@
                             </div>
                         <% } %>
                     <% } %>
-                <% } else if(!feed_to_display.title) { %>
+                <% } else if(!dashboard.feed.title) { %>
                     <div class="row">
                         <div class="col-md-4 col-centered">
                             <p style="text-align: center;color:rgb(199, 199, 199); font-weight: 300; margin: 0 -5px 10px;">No feed to display.</p>
