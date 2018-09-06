@@ -255,7 +255,7 @@
 <script>
     
     $(function(){
-        let socket = io.connect('/');
+        let socket = io.connect('/', {transports: ['websocket']});
         
         <% if(inline_tools) { %>
             <% for(let i=0; i<inline_tools.length; i++) { %>
