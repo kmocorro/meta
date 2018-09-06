@@ -255,14 +255,14 @@
 <script>
     
     $(function(){
-        let inline = io.connect('/inline');
+        let socket = io.connect('/');
         
         <% if(inline_tools) { %>
             <% for(let i=0; i<inline_tools.length; i++) { %>
                 <% if(inline_tools[i].noxe) { %>
 
                     $('#uploadinline<%= inline_tools[i].name %>').submit(function(){
-                        inline.emit('inline-thread', {
+                        socket.emit('inline-thread', {
                             inline_name: $('#inline_name<%= inline_tools[i].name %>').val(),
                             status: $('#status<%= inline_tools[i].name %>').val(),
                             duration: $('#duration<%= inline_tools[i].name %>').val()
@@ -278,7 +278,7 @@
                 <% } else if(inline_tools[i].toxe) { %>
                         
                     $('#uploadinline<%= inline_tools[i].name %>').submit(function(){
-                        inline.emit('inline-thread', {
+                        socket.emit('inline-thread', {
                             inline_name: $('#inline_name<%= inline_tools[i].name %>').val(),
                             status: $('#status<%= inline_tools[i].name %>').val(),
                             duration: $('#duration<%= inline_tools[i].name %>').val()
@@ -292,7 +292,7 @@
 
                 <% } %>
                 
-                inline.on('inline-thread-response', function(data){
+                socket.on('inline-thread-response', function(data){
 
                     if(data.message.inline_name == '<%= inline_tools[i].name %>'){
 

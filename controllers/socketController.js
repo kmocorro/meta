@@ -4,9 +4,7 @@ let mysql = require('../db/dbConfig');
 
 module.exports = function(io){
 
-    let inline = io
-    .of('/inline')
-    .on('connection', function(socket){
+    io.on('connection', function(socket){
         
         socket.on('inline-thread', function(inline_msg){ // inline_msg: { inline_name : , status : , durations : }
 
